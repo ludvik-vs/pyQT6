@@ -36,20 +36,19 @@ class CreateClient(QWidget):
 
         # Crear QLabels con fondo transparente
         nombre_label = QLabel("Nombre Completo del Cliente:", self)
-        nombre_label.setStyleSheet("background-color: transparent;")
         layout.addRow(nombre_label, self.nombre_cliente)
 
         phone_1_label = QLabel("Teléfono Contacto 1:", self)
-        phone_1_label.setStyleSheet("background-color: transparent;")
         layout.addRow(phone_1_label, self.phone_contacto_1)
 
         phone2_label = QLabel("Teléfono Contacto 2:", self)
-        phone2_label.setStyleSheet("background-color: transparent;")
         layout.addRow(phone2_label, self.phone_contacto_2)
 
         correo_label = QLabel("Correo Electrónico:", self)
-        correo_label.setStyleSheet("background-color: transparent;")
         layout.addRow(correo_label, self.email)
+
+        #aplicar estilos
+        self.estilos_create_client(label=nombre_label, edit=self.nombre_cliente)
 
         # Crear un layout horizontal para los botones
         button_layout = QHBoxLayout()
@@ -67,6 +66,53 @@ class CreateClient(QWidget):
         self.result_label.setStyleSheet("background-color: transparent;")
         self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.result_label)
+
+    def estilos_create_client(self, label=None, edit=None, button=None):
+        if label:
+            label.setStyleSheet("""
+                QLabel {
+                    background-color: transparent;
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #333;
+                    padding: 5px;
+                }
+            """)
+
+        if edit:
+            edit.setStyleSheet("""
+                QLineEdit {
+                    border: 2px solid #ccc;
+                    border-radius: 5px;
+                    padding: 5px;
+                    font-size: 14px;
+                    color: #333;
+                }
+                QLineEdit:focus {
+                    border-color: #3498db;
+                }
+            """)
+
+        if button:
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: #3498db;
+                    color: white;
+                    border: 2px solid #2980b9;
+                    border-radius: 10px;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: #2980b9;
+                }
+                QPushButton:pressed {
+                    position: relative;
+                    top: 2px;
+                    left: 2px;
+                }
+            """)
 
     def clear_form(self):
         """Limpiar todos los campos del formulario."""
