@@ -29,7 +29,7 @@ class TreeMenu(QTreeView):
         # Definir estructura del árbol
         tree_structure = {
             'Inicio': ['ACRIL CAR', 'Alta de Cliente', 'Operaciones con Cliente', 'Tabla de Clientes'],
-            'Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Adelanto de Salario', 'Registro por Colaborador'],
+            'Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
             'Operaciones con Ordenes': ['Crear Orden', 'Actualizar Orden', 'Cerrar Orden'],
             'Operaciones de Caja': ['Ingresos de Caja', 'Salidas de Caja', 'Arqueo de Caja'],
             'Operaciones de Administración': ['Operaciones de Usuario', 'Aprobar Descuento', 'Eliminar Orden']
