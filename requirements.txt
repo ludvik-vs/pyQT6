@@ -1,5 +1,7 @@
 click==8.1.8
 colorama==0.4.6
+et_xmlfile==2.0.0
+openpyxl==3.1.5
 PyQt6==6.4.2
 pyqt6-plugins==6.4.2.2.3
 PyQt6-Qt6==6.4.3
