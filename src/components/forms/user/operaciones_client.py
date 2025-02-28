@@ -23,7 +23,7 @@ class ClientOperations(QWidget):
         self.email = QLineEdit(self)
 
         # Botones
-        self.load_btn = QPushButton('Cargar', self)
+        self.load_btn = QPushButton('Cargar datos del Cliente', self)
         self.limpiar_btn = QPushButton('Limpiar Formulario', self)
         self.actualizar_cliente_btn = QPushButton('Actualizar Cliente', self)
         self.eliminar_cliente_btn = QPushButton('Eliminar Cliente', self)

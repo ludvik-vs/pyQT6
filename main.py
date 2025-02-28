@@ -10,7 +10,6 @@ from src.components.login.login_dialog import LoginDialog
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        # self.setStyleSheet("background-color: #04011c")
         self.setStyleSheet("background-color: lightgrey")
         self.db_manager = DatabaseManager()
         self.db_manager.connect()
@@ -19,9 +18,8 @@ class MainWindow(QMainWindow):
         self.display_widget = DisplayWidget()
         self.login_form = LoginDialog(self.auth_service)
         self.showMaximized()
-
-        # Conectar signal del TreeMenu con el slot de MainWindow
         self.aside_widget.tree_menu.item_selected.connect(self.update_display)
+        
     
     def update_display(self, text):
         """Actualiza el contenido del DisplayWidget con el texto del ítem seleccionado."""

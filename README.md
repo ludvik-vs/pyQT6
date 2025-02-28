@@ -1,8 +1,14 @@
 py -3.10 -m venv .venv
 
+windows
 .venv\Scripts\activate
 
+ubuntu
+source .venv/bin/activate
+
 pip install PyQt6 pyqt6-tools
+
+pip install -r requirements.txt 
 
 pip freeze > requirements.txt
 

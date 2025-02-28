@@ -71,7 +71,8 @@ class ClientTableWidget(QWidget):
             self.table.setItem(row, 3, QTableWidgetItem(client["contact_2"] or ""))
             self.table.setItem(row, 4, QTableWidgetItem(client["email"]))
         
-        self.table.resizeColumnsToContents()
+        #self.table.resizeColumnsToContents()
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.result_label.setText(f"Mostrando {len(clients)} clientes")
 
     def filter_table(self):
