@@ -1,6 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QMainWindow, QApplication, QStyleFactory, QWidget, QGridLayout, QDialog
 from PyQt6.QtGui import QScreen
+from PyQt6.QtCore import Qt
 from src.services.auth_service import AuthService
 from src.db.database_manager import DatabaseManager
 from src.components.widgets.aside_bar.aside_widget import AsideWidget
@@ -18,8 +19,9 @@ class MainWindow(QMainWindow):
         self.aside_widget = AsideWidget(self.auth_service)
         self.display_widget = DisplayWidget()
         self.login_form = LoginDialog(self.auth_service)
-        self.showMaximized()
+        self.init_ui()
         self.aside_widget.tree_menu.item_selected.connect(self.update_display)
+        self.login_form.login_successful.connect(self.on_login_success)
 
         # Asegurarse de que los widgets también usen el estilo Fusion
         self.setStyle(QApplication.style())
@@ -34,31 +36,34 @@ class MainWindow(QMainWindow):
     def start_login(self):
         """Iniciar el diálogo de login y manejar el resultado."""
         print("Iniciando diálogo de login...")
-        self.login_form.login_successful.connect(self.on_login_success)
+        self.center_login_form()
         result = self.login_form.exec()
         print(f"Resultado del diálogo: {result}")
 
-        if result == QDialog.DialogCode.Rejected:
-            print("Cerrando base de datos...")
-            self.db_manager.close()
-            print("Saliendo del programa...")
-            sys.exit(0)
+        if result == QDialog.DialogCode.Accepted:
+            self.show()  # Mostrar la ventana principal solo si el login fue exitoso
         else:
-            print("Login exitoso, continuando...")
+            self.handle_login_failure()
+
+    def handle_login_failure(self):
+        """Manejar el fallo del login."""
+        print("Cerrando base de datos...")
+        self.db_manager.close()
+        print("Saliendo del programa...")
+        sys.exit(0)
 
     def on_login_success(self, user_data):
         """Manejar el éxito del login."""
         print(f"Login exitoso: {user_data}")
-        self.init_ui()
-        self.login_form.accept()
-        self.showMaximized()
-        self.maximize_to_screen()
+        #self.show() # Remove this line
+        #self.login_form.accept() # This line is already done by login_form.exec()
 
-    def maximize_to_screen(self):
-        """Ajustar la ventana al tamaño de la pantalla."""
-        screen = QScreen.availableGeometry(QApplication.primaryScreen())
-        self.resize(screen.size())
-        self.move(screen.topLeft())
+    def center_login_form(self):
+        """Centrar el diálogo de login en la pantalla."""
+        screen_geometry = QScreen.availableGeometry(QApplication.primaryScreen())
+        login_form_geometry = self.login_form.frameGeometry()
+        login_form_geometry.moveCenter(screen_geometry.center())
+        self.login_form.move(login_form_geometry.topLeft())
 
     def init_ui(self):
         """Configurar la interfaz principal."""
