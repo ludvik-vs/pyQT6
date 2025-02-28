@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QMessageBox
+    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QMessageBox, QHBoxLayout
 )
 from PyQt6.QtCore import Qt
 from src.services.client_service import ClientService
@@ -51,9 +51,14 @@ class CreateClient(QWidget):
         correo_label.setStyleSheet("background-color: transparent;")
         layout.addRow(correo_label, self.email)
 
-        # Añadir botones al layout
-        layout.addWidget(self.limpiar_btn)
-        layout.addWidget(self.alta_cliente_btn)
+        # Crear un layout horizontal para los botones
+        button_layout = QHBoxLayout()
+        button_layout.setSpacing(60)
+        button_layout.addWidget(self.limpiar_btn)
+        button_layout.addWidget(self.alta_cliente_btn)
+
+        # Añadir el layout de botones al layout principal
+        layout.addRow(button_layout)
 
         self.setLayout(layout)
 

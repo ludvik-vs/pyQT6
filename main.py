@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QMainWindow, QApplication, QWidget, QGridLayout, QDialog
+from PyQt6.QtWidgets import QMainWindow, QApplication, QStyleFactory, QWidget, QGridLayout, QDialog
 from PyQt6.QtGui import QScreen
 from src.services.auth_service import AuthService
 from src.db.database_manager import DatabaseManager
@@ -10,6 +10,7 @@ from src.components.login.login_dialog import LoginDialog
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("ACRIL CAR NI")
         self.setStyleSheet("background-color: lightgrey")
         self.db_manager = DatabaseManager()
         self.db_manager.connect()
@@ -19,8 +20,13 @@ class MainWindow(QMainWindow):
         self.login_form = LoginDialog(self.auth_service)
         self.showMaximized()
         self.aside_widget.tree_menu.item_selected.connect(self.update_display)
-        
-    
+
+        # Asegurarse de que los widgets también usen el estilo Fusion
+        self.setStyle(QApplication.style())
+        self.aside_widget.setStyle(QApplication.style())
+        self.display_widget.setStyle(QApplication.style())
+        self.login_form.setStyle(QApplication.style())
+
     def update_display(self, text):
         """Actualiza el contenido del DisplayWidget con el texto del ítem seleccionado."""
         self.display_widget.set_content(text)
@@ -70,6 +76,7 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     print("Iniciando aplicación...")
     app = QApplication(sys.argv)
+    app.setStyle(QStyleFactory.create("Fusion"))
     window = MainWindow()
     window.start_login()
     print("Entrando al bucle de eventos...")
