@@ -1,20 +1,32 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QGridLayout
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
-#from src.db.database_manager import DatabaseManager
+
+# Client
 from src.db.db_operations.db_client import DatabaseClient
-from src.components.forms.orders.create_orders import CrearOrdenForm
-from src.components.forms.user.create_client import CreateClient
 from src.services.client_service import ClientService
+from src.components.forms.user.create_client import CreateClient
 from src.components.forms.user.operaciones_client import ClientOperations
 from src.components.tables.clients_table import ClientTableWidget
+
+# Colaborator
+from src.services.rh_service import ColaboratorService
+from src.components.forms.user.create_colaborator import CreateColaborator
+from src.components.tables.tabla_planilla import ColaboratorTableWidget
+
+# Orders
+from src.components.forms.orders.create_orders import CrearOrdenForm
 
 class DisplayWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.setStyleSheet("background-color: #fafafc;")
-        self.db_manager = DatabaseClient()
-        self.client_service = ClientService(self.db_manager)
+        #--------------------------------------------------------------
+        self.client_db_manager = DatabaseClient()
+        self.client_service = ClientService(self.client_db_manager)
+        #--------------------------------------------------------------
+        self.colaborator_service = ColaboratorService()
+        #--------------------------------------------------------------
         self.init_ui()
 
     def init_ui(self):
@@ -51,6 +63,12 @@ class DisplayWidget(QWidget):
             self.layout.addWidget(form, 0, 0, Qt.AlignmentFlag.AlignCenter)
         elif text == "Tabla de Clientes":
             form = ClientTableWidget(self.client_service)
+            self.layout.addWidget(form)
+        elif text == "Alta de Colaborador":
+            form = CreateColaborator(self.colaborator_service)
+            self.layout.addWidget(form)
+        elif text == "Tabla Planilla":
+            form = ColaboratorTableWidget(self.colaborator_service)
             self.layout.addWidget(form)
         elif text == "Crear Orden":
             form = CrearOrdenForm()

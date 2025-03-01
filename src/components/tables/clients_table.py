@@ -33,7 +33,7 @@ class ClientTableWidget(QWidget):
 
         # Botón de exportar a Excel
         self.export_excel_btn = QPushButton(self)
-        self.export_excel_btn.setIcon(QIcon.fromTheme("document-save-as"))  # Icono de guardar como (puedes cambiarlo)
+        self.export_excel_btn.setIcon(QIcon.fromTheme("document-save-as"))
         self.export_excel_btn.setText("Exportar a Excel")
         self.export_excel_btn.clicked.connect(self.export_to_excel_dialog)
         filter_export_layout.addWidget(self.export_excel_btn)
