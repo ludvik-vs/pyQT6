@@ -44,13 +44,15 @@ class MainWindow(QMainWindow):
                 padding: 10px;
                 border-radius: 4px;
                 font-size: 18px;
-                background-color: lightgray;
+                background-color: #91969e;
+                max-width: 200px;
+                min-height: 40px
             }
             QPushButton:hover {
-                background-color: gray;
+                background-color: #c0c2c4;
             }
             QPushButton:pressed {
-                background-color: gray;
+                background-color: #c0c2c4;
             }
         """)
         self.user_db_manager = DatabaseUser()
