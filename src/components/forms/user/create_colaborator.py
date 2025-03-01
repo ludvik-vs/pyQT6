@@ -11,8 +11,8 @@ class CreateColaborator(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        # Establecer el fondo del formulario como blanco
-        self.setStyleSheet("background-color: white;")
+        # Establecer el fondo del formulario como gris claro
+        self.setStyleSheet("background-color: #f4f4f4;")
 
         # Campos del formulario
         self.nombre = QLineEdit(self)
@@ -91,9 +91,6 @@ class CreateColaborator(QWidget):
         informacion_label = QLabel("Información Adicional:", self)
         layout.addRow(informacion_label, self.informacion_adicional)
 
-        # Aplicar estilos
-        self.estilos_create_colaborator(label=nombre_label, edit=self.nombre)
-
         # Crear un layout horizontal para los botones
         button_layout = QHBoxLayout()
         button_layout.setSpacing(60)
@@ -110,53 +107,6 @@ class CreateColaborator(QWidget):
         self.result_label.setStyleSheet("background-color: transparent;")
         self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.result_label)
-
-    def estilos_create_colaborator(self, label=None, edit=None, button=None):
-        if label:
-            label.setStyleSheet("""
-                QLabel {
-                    background-color: transparent;
-                    font-size: 14px;
-                    font-weight: bold;
-                    color: #333;
-                    padding: 5px;
-                }
-            """)
-
-        if edit:
-            edit.setStyleSheet("""
-                QLineEdit, QDateEdit, QCheckBox {
-                    border: 2px solid #ccc;
-                    border-radius: 5px;
-                    padding: 5px;
-                    font-size: 14px;
-                    color: #333;
-                }
-                QLineEdit:focus, QDateEdit:focus, QCheckBox:focus {
-                    border-color: #3498db;
-                }
-            """)
-
-        if button:
-            button.setStyleSheet("""
-                QPushButton {
-                    background-color: #3498db;
-                    color: white;
-                    border: 2px solid #2980b9;
-                    border-radius: 10px;
-                    padding: 10px 20px;
-                    font-size: 16px;
-                    font-weight: bold;
-                }
-                QPushButton:hover {
-                    background-color: #2980b9;
-                }
-                QPushButton:pressed {
-                    position: relative;
-                    top: 2px;
-                    left: 2px;
-                }
-            """)
 
     def clear_form(self):
         """Limpiar todos los campos del formulario."""

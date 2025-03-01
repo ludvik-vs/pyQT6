@@ -33,8 +33,9 @@ class DisplayWidget(QWidget):
         self.layout = QGridLayout()
         self.setLayout(self.layout)
 
-        # Set the column stretch factor for the first (and only) column to 80%
-        self.layout.setColumnStretch(0,0)
+        # Asegúrate de que el layout se expanda
+        self.layout.setColumnStretch(0, 1)
+        self.layout.setRowStretch(1, 0)
 
         # Mostrar la imagen inicial
         self.set_content("ACRIL CAR")
@@ -57,26 +58,26 @@ class DisplayWidget(QWidget):
             self.layout.addWidget(image_label, 0, 0, Qt.AlignmentFlag.AlignCenter)
         elif text == "Alta de Cliente":
             form = CreateClient(self.client_service)
-            self.layout.addWidget(form, 0, 0, Qt.AlignmentFlag.AlignCenter)
+            self.layout.addWidget(form, 0, 0)
         elif text == "Operaciones con Cliente":
             form = ClientOperations(self.client_service)
-            self.layout.addWidget(form, 0, 0, Qt.AlignmentFlag.AlignCenter)
+            self.layout.addWidget(form, 0, 0)
         elif text == "Tabla de Clientes":
             form = ClientTableWidget(self.client_service)
             self.layout.addWidget(form)
         elif text == "Alta de Colaborador":
             form = CreateColaborator(self.colaborator_service)
-            self.layout.addWidget(form)
+            self.layout.addWidget(form, 0, 0)
         elif text == "Tabla Planilla":
             form = ColaboratorTableWidget(self.colaborator_service)
             self.layout.addWidget(form)
         elif text == "Crear Orden":
             form = CrearOrdenForm()
-            self.layout.addWidget(form, 0, 0, Qt.AlignmentFlag.AlignCenter)
+            self.layout.addWidget(form, 0, 0)
         else:
             label = QLabel(f"Formulario para: {text}", self)
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.layout.addWidget(label, 0, 0, Qt.AlignmentFlag.AlignCenter)
+            self.layout.addWidget(label, 0, 0)
 
     def clear_layout(self):
         """Elimina todos los widgets del layout."""

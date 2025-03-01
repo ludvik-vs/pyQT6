@@ -12,7 +12,47 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("ACRIL CAR NI")
-        self.setStyleSheet("background-color: lightgrey")
+        self.setStyleSheet("""
+            QLabel {
+                background-color: transparent;
+                font-size: 18px;
+                font-weight: bold;
+                color: black;
+                padding: 5px;
+            }
+            QLineEdit {
+                border: 2px solid #ccc;
+                border-radius: 5px;
+                padding: 5px;
+                font-size: 18px;
+                color: black;
+            }
+            QLineEdit:focus {
+                border-color: #0078d4;
+            }
+            QMainWindow {
+                background-color: #f0f2f5;
+            }
+            QWidget {
+                font-family: Arial, sans-serif;
+                font-size: 18px;
+                color: #333;
+            }
+            QPushButton {
+                color: black;
+                border: 1px solid black; 
+                padding: 10px;
+                border-radius: 4px;
+                font-size: 18px;
+                background-color: lightgray;
+            }
+            QPushButton:hover {
+                background-color: gray;
+            }
+            QPushButton:pressed {
+                background-color: gray;
+            }
+        """)
         self.user_db_manager = DatabaseUser()
         self.user_db_manager.connect()
         self.auth_service = AuthService(self.user_db_manager)
@@ -41,7 +81,7 @@ class MainWindow(QMainWindow):
         print(f"Resultado del diálogo: {result}")
 
         if result == QDialog.DialogCode.Accepted:
-            self.show()  # Mostrar la ventana principal solo si el login fue exitoso
+            self.show()
         else:
             self.handle_login_failure()
 
@@ -55,8 +95,6 @@ class MainWindow(QMainWindow):
     def on_login_success(self, user_data):
         """Manejar el éxito del login."""
         print(f"Login exitoso: {user_data}")
-        #self.show() # Remove this line
-        #self.login_form.accept() # This line is already done by login_form.exec()
 
     def center_login_form(self):
         """Centrar el diálogo de login en la pantalla."""
