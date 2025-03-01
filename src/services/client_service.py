@@ -1,12 +1,12 @@
 from PyQt6.QtCore import pyqtSignal, QObject
-from src.db.database_manager import DatabaseManager
+from src.db.db_operations.db_client import DatabaseClient
 
 class ClientService(QObject):
-    client_created = pyqtSignal(dict)  # Señal que se emite cuando un cliente es creado
-    client_updated = pyqtSignal(dict)  # Señal que se emite cuando un cliente es actualizado
-    client_removed = pyqtSignal(int)   # Señal que se emite cuando un cliente es eliminado
+    client_created = pyqtSignal(dict)  
+    client_updated = pyqtSignal(dict)  
+    client_removed = pyqtSignal(int)
 
-    def __init__(self, db_manager: DatabaseManager):
+    def __init__(self, db_manager: DatabaseClient):
         super().__init__()
         self.db_manager = db_manager
 

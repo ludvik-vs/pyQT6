@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QMainWindow, QApplication, QStyleFactory, QWidget, Q
 from PyQt6.QtGui import QScreen
 from PyQt6.QtCore import Qt
 from src.services.auth_service import AuthService
-from src.db.database_manager import DatabaseManager
+from src.db.db_operations.db_user import DatabaseUser
 from src.components.widgets.aside_bar.aside_widget import AsideWidget
 from src.components.widgets.main_display.display_widget import DisplayWidget
 from src.components.login.login_dialog import LoginDialog
@@ -13,9 +13,9 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("ACRIL CAR NI")
         self.setStyleSheet("background-color: lightgrey")
-        self.db_manager = DatabaseManager()
-        self.db_manager.connect()
-        self.auth_service = AuthService(self.db_manager)
+        self.user_db_manager = DatabaseUser()
+        self.user_db_manager.connect()
+        self.auth_service = AuthService(self.user_db_manager)
         self.aside_widget = AsideWidget(self.auth_service)
         self.display_widget = DisplayWidget()
         self.login_form = LoginDialog(self.auth_service)
@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
     def handle_login_failure(self):
         """Manejar el fallo del login."""
         print("Cerrando base de datos...")
-        self.db_manager.close()
+        self.user_db_manager.close()
         print("Saliendo del programa...")
         sys.exit(0)
 

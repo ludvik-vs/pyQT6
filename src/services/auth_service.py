@@ -1,13 +1,13 @@
 from PyQt6.QtCore import pyqtSignal, QObject
-from src.db.database_manager import DatabaseManager
+from src.db.db_operations.db_user import DatabaseUser
 
 class AuthService(QObject):
-    user_authenticated = pyqtSignal(dict)  # Señal que se emite cuando un usuario se autentica
+    user_authenticated = pyqtSignal(dict)
 
-    def __init__(self, db_manager: DatabaseManager):
+    def __init__(self, db_manager: DatabaseUser):
         super().__init__()
         self.db_manager = db_manager
-        self.current_user = None  # Almacena la información del usuario autenticado
+        self.current_user = None
 
     def authenticate(self, username, password):
         """
@@ -22,8 +22,8 @@ class AuthService(QObject):
                 "role": user_data[2]
             }
             self.current_user = user_dict
-            self.user_authenticated.emit(user_dict)  # Emitir la señal con los datos del usuario
-            return user_dict  # Devuelve el diccionario con username y role
+            self.user_authenticated.emit(user_dict) 
+            return user_dict
         return None
 
     def get_current_user(self):

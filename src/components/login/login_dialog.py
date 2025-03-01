@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QMessageBox
 from PyQt6.QtCore import pyqtSignal
-from src.services.auth_service import AuthService  # Asegúrate de ajustar la ruta
+from src.services.auth_service import AuthService
 
 class LoginDialog(QDialog):
     login_successful = pyqtSignal(dict)

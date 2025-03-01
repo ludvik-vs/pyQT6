@@ -1,7 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QLabel, QGridLayout
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
-from src.db.database_manager import DatabaseManager
+#from src.db.database_manager import DatabaseManager
+from src.db.db_operations.db_client import DatabaseClient
 from src.components.forms.orders.create_orders import CrearOrdenForm
 from src.components.forms.user.create_client import CreateClient
 from src.services.client_service import ClientService
@@ -12,7 +13,7 @@ class DisplayWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.setStyleSheet("background-color: #fafafc;")
-        self.db_manager = DatabaseManager()
+        self.db_manager = DatabaseClient()
         self.client_service = ClientService(self.db_manager)
         self.init_ui()
 
