@@ -35,7 +35,7 @@ class DisplayWidget(QWidget):
 
         # Asegúrate de que el layout se expanda
         self.layout.setColumnStretch(0, 1)
-        self.layout.setRowStretch(1, 0)
+        self.layout.setRowStretch(0, 1)
 
         # Mostrar la imagen inicial
         self.set_content("ACRIL CAR")
@@ -64,13 +64,13 @@ class DisplayWidget(QWidget):
             self.layout.addWidget(form, 0, 0)
         elif text == "Tabla de Clientes":
             form = ClientTableWidget(self.client_service)
-            self.layout.addWidget(form)
+            self.layout.addWidget(form, 0, 0)
         elif text == "Alta de Colaborador":
             form = CreateColaborator(self.colaborator_service)
             self.layout.addWidget(form, 0, 0)
         elif text == "Tabla Planilla":
             form = ColaboratorTableWidget(self.colaborator_service)
-            self.layout.addWidget(form)
+            self.layout.addWidget(form, 0, 0)
         elif text == "Crear Orden":
             form = CrearOrdenForm()
             self.layout.addWidget(form, 0, 0)

@@ -89,7 +89,7 @@ class ClientTableWidget(QWidget):
     def load_clients(self):
         """Cargar todos los clientes en la tabla."""
         clients = self.client_service.get_all_clients()
-        self.table.setRowCount(0)  # Limpiar tabla
+        self.table.setRowCount(0)
 
         for row, client in enumerate(clients):
             self.table.insertRow(row)
@@ -133,8 +133,8 @@ class ClientTableWidget(QWidget):
         )
 
         if file_path:
-            if not file_path.lower().endswith(".xlsx"): # Verifica si termina en .xlsx (insensible a mayúsculas/minúsculas)
-                file_path += ".xlsx" # Añade la extensión si falta
+            if not file_path.lower().endswith(".xlsx"):
+                file_path += ".xlsx"
 
             try:
                 self.export_table_to_excel(file_path)

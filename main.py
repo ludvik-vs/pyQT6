@@ -8,53 +8,15 @@ from src.components.widgets.aside_bar.aside_widget import AsideWidget
 from src.components.widgets.main_display.display_widget import DisplayWidget
 from src.components.login.login_dialog import LoginDialog
 
+def load_styles():
+    with open("main.css", "r") as file:
+        return file.read()
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("ACRIL CAR NI")
-        self.setStyleSheet("""
-            QLabel {
-                background-color: transparent;
-                font-size: 18px;
-                font-weight: bold;
-                color: black;
-                padding: 5px;
-            }
-            QLineEdit {
-                border: 2px solid #ccc;
-                border-radius: 5px;
-                padding: 5px;
-                font-size: 18px;
-                color: black;
-            }
-            QLineEdit:focus {
-                border-color: #0078d4;
-            }
-            QMainWindow {
-                background-color: #f0f2f5;
-            }
-            QWidget {
-                font-family: Arial, sans-serif;
-                font-size: 18px;
-                color: #333;
-            }
-            QPushButton {
-                color: black;
-                border: 1px solid black; 
-                padding: 10px;
-                border-radius: 4px;
-                font-size: 18px;
-                background-color: #91969e;
-                max-width: 200px;
-                min-height: 40px
-            }
-            QPushButton:hover {
-                background-color: #c0c2c4;
-            }
-            QPushButton:pressed {
-                background-color: #c0c2c4;
-            }
-        """)
+        self.setStyleSheet(load_styles())
         self.user_db_manager = DatabaseUser()
         self.user_db_manager.connect()
         self.auth_service = AuthService(self.user_db_manager)
@@ -65,7 +27,6 @@ class MainWindow(QMainWindow):
         self.aside_widget.tree_menu.item_selected.connect(self.update_display)
         self.login_form.login_successful.connect(self.on_login_success)
 
-        # Asegurarse de que los widgets también usen el estilo Fusion
         self.setStyle(QApplication.style())
         self.aside_widget.setStyle(QApplication.style())
         self.display_widget.setStyle(QApplication.style())
