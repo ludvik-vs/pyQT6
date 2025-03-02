@@ -1,4 +1,7 @@
-from PyQt6.QtWidgets import QWidget, QLineEdit, QFormLayout, QTextEdit, QComboBox, QPushButton, QDoubleSpinBox, QLabel
+from PyQt6.QtWidgets import (
+    QWidget, QLineEdit, QFormLayout, QTextEdit, QComboBox, QPushButton, QDoubleSpinBox, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QSpacerItem
+)
+from PyQt6.QtCore import Qt
 
 class CrearOrdenForm(QWidget):
     def __init__(self):
@@ -33,53 +36,67 @@ class CrearOrdenForm(QWidget):
         self.tipo_pago_combo.addItems(['Contado Efectivo', 'Contado Tarjeta', 'Contado Transferencia', 'Crédito'])
 
         # Añadir campos al layout
-        layout = QFormLayout()
-        layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.DontWrapRows)
-        layout.setVerticalSpacing(18)
+        form_layout = QFormLayout()
+        form_layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.DontWrapRows)
+        form_layout.setVerticalSpacing(18)
 
         # Crear QLabels con fondo transparente
         orden_label = QLabel("Número de Orden:", self)
         orden_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(orden_label, self.orden_input)
+        form_layout.addRow(orden_label, self.orden_input)
 
         cliente_label = QLabel("Cliente:", self)
         cliente_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(cliente_label, self.cliente_input)
+        form_layout.addRow(cliente_label, self.cliente_input)
 
         vehicle_label = QLabel("Vehículo (Placa):", self)
         vehicle_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(vehicle_label, self.vehicle_input)
+        form_layout.addRow(vehicle_label, self.vehicle_input)
 
         description_label = QLabel("Descripción del Servicio:", self)
         description_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(description_label, self.description_input)
+        form_layout.addRow(description_label, self.description_input)
 
         operarios_label = QLabel("Operario Asignado:", self)
         operarios_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(operarios_label, self.operarios_combo)
+        form_layout.addRow(operarios_label, self.operarios_combo)
 
         estatus_label = QLabel("Estatus de la Orden:", self)
         estatus_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(estatus_label, self.estatus_combo)
+        form_layout.addRow(estatus_label, self.estatus_combo)
 
         costo_label = QLabel("Costo Total de Servicios:", self)
         costo_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(costo_label, self.costo_total_servicios_input)
+        form_layout.addRow(costo_label, self.costo_total_servicios_input)
 
         tipo_pago_label = QLabel("Tipo de Pago:", self)
         tipo_pago_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(tipo_pago_label, self.tipo_pago_combo)
+        form_layout.addRow(tipo_pago_label, self.tipo_pago_combo)
 
         # Botones Procesar Orden y Limpiar Formulario
         self.procesar_btn = QPushButton('Procesar Orden', self)
-        layout.addWidget(self.procesar_btn)
         self.limpiar_btn = QPushButton('Limpiar Formulario', self)
-        layout.addWidget(self.limpiar_btn)
+
+        # Contenedor horizontal para los botones
+        button_container = QHBoxLayout()
+        button_container.addWidget(self.procesar_btn)
+        button_container.addWidget(self.limpiar_btn)
+
+        # Crear el layout principal
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(form_layout)
+
+        # Añadir espacio entre el formulario y los botones
+        spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        main_layout.addItem(spacer)
+
+        main_layout.addLayout(button_container)
+
+        # Establecer el layout principal en el widget
+        self.setLayout(main_layout)
 
         # Conectar el botón de limpiar al método de limpieza
         self.limpiar_btn.clicked.connect(self.clear_form)
-
-        self.setLayout(layout)
 
     def clear_form(self):
         """Limpiar todos los campos del formulario."""

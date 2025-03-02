@@ -115,18 +115,20 @@ class ColaboratorTableWidget(QWidget):
         filter_text = self.filter_input.text().lower()
         all_colaborators = self.colaborator_service.get_all_colaborators()
 
+        if all_colaborators and isinstance(all_colaborators[0], tuple):
+            colaborator_keys = [
+                "id", "nombre", "apellido", "telefono_personal", "documento_identidad",
+                "fecha_ingreso", "nombre_contacto_emergencia", "telefono_emergencia", "fecha_baja",
+                "salario", "is_active", "puesto", "fecha_nacimiento", "numero_seguro_social", "informacion_adicional"
+            ]
+            all_colaborators = [dict(zip(colaborator_keys, colaborator)) for colaborator in all_colaborators]
+
         filtered_colaborators = [
             colaborator for colaborator in all_colaborators
             if filter_text in colaborator["nombre"].lower() or filter_text in colaborator["apellido"].lower()
         ]
 
         self.table.setRowCount(0)
-        colaborator_keys = [
-            "id", "nombre", "apellido", "telefono_personal", "documento_identidad",
-            "fecha_ingreso", "nombre_contacto_emergencia", "telefono_emergencia", "fecha_baja",
-            "salario", "is_active", "puesto", "fecha_nacimiento", "numero_seguro_social", "informacion_adicional"
-        ]
-        filtered_colaborators = [dict(zip(colaborator_keys, colaborator)) for colaborator in filtered_colaborators]
 
         for row, colaborator in enumerate(filtered_colaborators):
             self.table.insertRow(row)
@@ -145,7 +147,6 @@ class ColaboratorTableWidget(QWidget):
             self.table.setItem(row, 12, QTableWidgetItem(colaborator["fecha_nacimiento"] or ""))
             self.table.setItem(row, 13, QTableWidgetItem(colaborator["numero_seguro_social"] or ""))
             self.table.setItem(row, 14, QTableWidgetItem(colaborator["informacion_adicional"]))
-
 
         self.result_label.setText(f"Mostrando {len(filtered_colaborators)} colaboradores filtrados")
 

@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QMessageBox, QHBoxLayout, QSizePolicy
+    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QMessageBox, QHBoxLayout, QVBoxLayout, QSizePolicy, QSpacerItem
 )
 from PyQt6.QtCore import Qt
 from src.services.client_service import ClientService
@@ -15,7 +15,6 @@ class ClientOperations(QWidget):
 
         # Campos del formulario
         self.client_id = QLineEdit(self)
-        #self.client_id.setMinimumWidth(600)  # Asegurarse de que ocupe todo el ancho disponible
         self.nombre_cliente = QLineEdit(self)
         self.nombre_cliente.setMinimumWidth(600)
         self.phone_contacto_1 = QLineEdit(self)
@@ -35,43 +34,51 @@ class ClientOperations(QWidget):
         self.eliminar_cliente_btn.clicked.connect(self.eliminar_cliente)
 
         # Layout principal
-        layout = QFormLayout()
-        layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.DontWrapRows)
-        layout.setVerticalSpacing(18)
+        form_layout = QFormLayout()
+        form_layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.DontWrapRows)
+        form_layout.setVerticalSpacing(18)
 
         # Otros campos
         client_id_label = QLabel("ID del Cliente:", self)
         client_id_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(client_id_label, self.client_id)
-        layout.addRow(self.load_btn)
+        form_layout.addRow(client_id_label, self.client_id)
+        form_layout.addRow(self.load_btn)
         nombre_label = QLabel("Nombre Completo del Cliente:", self)
         nombre_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(nombre_label, self.nombre_cliente)
+        form_layout.addRow(nombre_label, self.nombre_cliente)
 
         phone_1_label = QLabel("Teléfono Contacto 1:", self)
         phone_1_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(phone_1_label, self.phone_contacto_1)
+        form_layout.addRow(phone_1_label, self.phone_contacto_1)
 
         phone2_label = QLabel("Teléfono Contacto 2:", self)
         phone2_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(phone2_label, self.phone_contacto_2)
+        form_layout.addRow(phone2_label, self.phone_contacto_2)
 
         correo_label = QLabel("Correo Electrónico:", self)
         correo_label.setStyleSheet("background-color: transparent;")
-        layout.addRow(correo_label, self.email)
+        form_layout.addRow(correo_label, self.email)
 
+        # Añadir botones a un contenedor horizontal
+        button_container = QHBoxLayout()
+        button_container.addWidget(self.limpiar_btn)
+        button_container.addWidget(self.actualizar_cliente_btn)
+        button_container.addWidget(self.eliminar_cliente_btn)
 
-        # Añadir botones
-        layout.addWidget(self.limpiar_btn)
-        layout.addWidget(self.actualizar_cliente_btn)
-        layout.addWidget(self.eliminar_cliente_btn)
+        # Crear el layout principal
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(form_layout)
+        spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        main_layout.addItem(spacer)
+        main_layout.addLayout(button_container)
 
-        self.setLayout(layout)
+        # Establecer el layout principal en el widget
+        self.setLayout(main_layout)
 
         # Label para resultados
         self.result_label = QLabel(self)
         self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.result_label)
+        main_layout.addWidget(self.result_label)
 
         # Asegurarse de que el formulario ocupe todo el ancho del contenedor padre
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -149,8 +156,22 @@ class ClientOperations(QWidget):
             self.result_label.setText("Actualización de cliente cancelada.")
 
     def eliminar_cliente(self):
-        email = self.email.text()
-        client_data = self.client_service.get_client(email)
+        client_id_text = self.client_id.text().strip()
+
+        if not client_id_text:
+            self.result_label.setStyleSheet("color: red;")
+            self.result_label.setText("Por favor ingrese un ID de cliente.")
+            return
+
+        try:
+            client_id = int(client_id_text)  # Convertir el ID de string a integer
+        except ValueError:
+            self.result_label.setStyleSheet("color: red;")
+            self.result_label.setText("El ID del cliente debe ser un número válido.")
+            return
+
+        # Obtener datos del cliente usando el ID
+        client_data = self.client_service.get_client_by_id(client_id)
 
         if client_data:
             confirmation = QMessageBox.question(
@@ -161,7 +182,7 @@ class ClientOperations(QWidget):
             )
 
             if confirmation == QMessageBox.StandardButton.Yes:
-                if self.client_service.remove_client(client_data["id"]):
+                if self.client_service.remove_client(client_id):
                     self.result_label.setStyleSheet("color: green;")
                     self.result_label.setText("Cliente eliminado exitosamente.")
                     self.clear_form()  # Limpiar formulario después de eliminar
@@ -170,7 +191,7 @@ class ClientOperations(QWidget):
                     self.result_label.setText("Error al eliminar el cliente.")
                     self.clear_form()
             else:
-                self.result_label.setStyleSheet("color: red;")
+                self.result_label.setStyleSheet("color: orange;")
                 self.result_label.setText("Eliminación cancelada.")
                 self.clear_form()
         else:
