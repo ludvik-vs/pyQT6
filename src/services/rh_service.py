@@ -32,3 +32,15 @@ class ColaboratorService:
         success = self.db.update_colaborator_by_id(colaborator_id, **kwargs)
         print(f"Resultado de la actualización: {success}")  # Depuración
         return success
+
+    def create_colaborator_record(self, colaborador_id, fecha, descripcion):
+        """Crear un nuevo registro para un colaborador."""
+        self.db.create_colaborator_record(colaborador_id, fecha, descripcion)
+
+    def get_all_registers(self, colaborador_id):
+        """Obtener todos los registros de un colaborador."""
+        return self.db.get_all_registers(colaborador_id)
+
+    def remove_register(self, register_id):
+        """Eliminar un registro por su ID."""
+        return self.db.remove_register(register_id)

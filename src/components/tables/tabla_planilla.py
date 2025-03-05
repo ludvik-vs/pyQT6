@@ -102,7 +102,7 @@ class ColaboratorTableWidget(QWidget):
             self.table.setItem(row, 7, QTableWidgetItem(colaborator["telefono_emergencia"] or ""))
             self.table.setItem(row, 8, QTableWidgetItem(colaborator["fecha_baja"]))
             self.table.setItem(row, 9, QTableWidgetItem(str(colaborator["salario"])))
-            self.table.setItem(row, 10, QTableWidgetItem(colaborator["is_active"]))
+            self.table.setItem(row, 10, QTableWidgetItem(str(int(colaborator["is_active"]))))
             self.table.setItem(row, 11, QTableWidgetItem(colaborator["puesto"] or ""))
             self.table.setItem(row, 12, QTableWidgetItem(colaborator["fecha_nacimiento"] or ""))
             self.table.setItem(row, 13, QTableWidgetItem(colaborator["numero_seguro_social"] or ""))

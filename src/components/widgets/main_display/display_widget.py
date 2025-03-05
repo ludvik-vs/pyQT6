@@ -14,6 +14,7 @@ from src.services.rh_service import ColaboratorService
 from src.components.forms.user.create_colaborator import CreateColaborator
 from src.components.tables.tabla_planilla import ColaboratorTableWidget
 from src.components.forms.user.operaciones_colaborador import ColaboratorOperations
+from src.components.forms.user.regitro_colaborador import ColaboratorRegister
 
 
 # Orders
@@ -72,6 +73,9 @@ class DisplayWidget(QWidget):
             self.layout.addWidget(form, 0, 0)
         elif text == "Operaciones con Colaborador":
             form = ColaboratorOperations(self.colaborator_service)
+            self.layout.addWidget(form, 0, 0)
+        elif text == "Detalle por Colaborador":
+            form = ColaboratorRegister()
             self.layout.addWidget(form, 0, 0)
         elif text == "Tabla Planilla":
             form = ColaboratorTableWidget(self.colaborator_service)

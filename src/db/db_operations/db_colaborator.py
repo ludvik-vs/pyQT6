@@ -113,3 +113,29 @@ class DatabaseColaborators(DatabaseManager):
         except Exception as e:
             print(f"Error al actualizar colaborador: {e}")
             return False  # Indicar que hubo un error
+
+    def create_colaborator_record(self, colaborador_id, fecha, descripcion):
+        """Crear un nuevo registro para un colaborador."""
+        query = '''
+            INSERT INTO registros_colaborador (colaborador_id, fecha, descripcion)
+            VALUES (?, ?, ?)
+        '''
+        self.execute_query(query, (colaborador_id, fecha, descripcion))
+
+    def get_all_registers(self, colaborador_id):
+        """Obtener todos los registros de un colaborador."""
+        query = '''
+            SELECT * FROM registros_colaborador WHERE colaborador_id = ? ORDER BY fecha DESC
+        '''
+        return self.fetch_all(query, (colaborador_id,))
+
+    def remove_register(self, register_id):
+        """Eliminar un registro por su ID."""
+        query = '''DELETE FROM registros_colaborador WHERE id = ?'''
+        try:
+            self.execute_query(query, (register_id,))
+            print(f"Registro con ID {register_id} eliminado exitosamente.")  # Depuración
+            return True  # Indicar que la operación fue exitosa
+        except Exception as e:
+            print(f"Error al eliminar registro: {e}")
+            return False  # Indicar que hubo un error
