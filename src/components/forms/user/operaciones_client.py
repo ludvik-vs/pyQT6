@@ -143,13 +143,13 @@ class ClientOperations(QWidget):
         if confirmation == QMessageBox.StandardButton.Yes:
             # Usar client_id en lugar de email como identificador
             if self.client_service.update_client_by_id(client_id, name, contact_1, contact_2, email):
+                self.clear_form()
                 self.result_label.setStyleSheet("color: green;")
                 self.result_label.setText("Cliente actualizado exitosamente.")
-                self.clear_form()
             else:
+                self.clear_form()
                 self.result_label.setStyleSheet("color: red;")
                 self.result_label.setText("Error al actualizar el cliente.")
-                self.clear_form()
         else:
             self.clear_form()
             self.result_label.setStyleSheet("color: orange;")
@@ -183,18 +183,18 @@ class ClientOperations(QWidget):
 
             if confirmation == QMessageBox.StandardButton.Yes:
                 if self.client_service.remove_client(client_id):
+                    self.clear_form()  # Limpiar formulario después de eliminar
                     self.result_label.setStyleSheet("color: green;")
                     self.result_label.setText("Cliente eliminado exitosamente.")
-                    self.clear_form()  # Limpiar formulario después de eliminar
                 else:
+                    self.clear_form()
                     self.result_label.setStyleSheet("color: red;")
                     self.result_label.setText("Error al eliminar el cliente.")
-                    self.clear_form()
             else:
+                self.clear_form()
                 self.result_label.setStyleSheet("color: orange;")
                 self.result_label.setText("Eliminación cancelada.")
-                self.clear_form()
         else:
+            self.clear_form()
             self.result_label.setStyleSheet("color: red;")
             self.result_label.setText("Cliente no encontrado.")
-            self.clear_form()

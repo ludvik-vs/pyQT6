@@ -81,18 +81,24 @@ class DatabaseColaborators(DatabaseManager):
 
     def get_all_colaborators(self):
         """Obtener todos los colaboradores."""
-        query = 'SELECT * FROM colaboradores WHERE is_active = 1'
+        query = 'SELECT * FROM colaboradores'
         return self.fetch_all(query)
 
     def get_colaborator_by_id(self, colaborator_id):
         """Obtener un colaborador por su ID."""
-        query = 'SELECT * FROM colaboradores WHERE id = ? AND is_active = 1'
+        query = 'SELECT * FROM colaboradores WHERE id = ?'
         return self.fetch_one(query, (colaborator_id,))
 
     def remove_colaborator_by_id(self, colaborator_id):
         """Eliminar un colaborador por su ID."""
-        query = 'UPDATE colaboradores SET is_active = 0 WHERE id = ?'
-        self.execute_query(query, (colaborator_id,))
+        query = '''DELETE FROM colaboradores WHERE id = ?'''
+        try:
+            self.execute_query(query, (colaborator_id,))
+            print(f"Colaborador con ID {colaborator_id} eliminado exitosamente.")  # Depuración
+            return True  # Indicar que la operación fue exitosa
+        except Exception as e:
+            print(f"Error al eliminar colaborador: {e}")
+            return False  # Indicar que hubo un error
 
     def update_colaborator_by_id(self, colaborator_id, **kwargs):
         """Actualizar un colaborador por su ID."""
@@ -100,4 +106,10 @@ class DatabaseColaborators(DatabaseManager):
         values = list(kwargs.values())
         values.append(colaborator_id)
         query = f'UPDATE colaboradores SET {fields} WHERE id = ?'
-        self.execute_query(query, values)
+        try:
+            self.execute_query(query, values)
+            print(f"Consulta ejecutada: {query} con valores {values}")  # Depuración
+            return True  # Indicar que la operación fue exitosa
+        except Exception as e:
+            print(f"Error al actualizar colaborador: {e}")
+            return False  # Indicar que hubo un error

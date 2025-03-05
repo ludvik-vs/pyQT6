@@ -13,6 +13,8 @@ from src.components.tables.clients_table import ClientTableWidget
 from src.services.rh_service import ColaboratorService
 from src.components.forms.user.create_colaborator import CreateColaborator
 from src.components.tables.tabla_planilla import ColaboratorTableWidget
+from src.components.forms.user.operaciones_colaborador import ColaboratorOperations
+
 
 # Orders
 from src.components.forms.orders.create_orders import CrearOrdenForm
@@ -67,6 +69,9 @@ class DisplayWidget(QWidget):
             self.layout.addWidget(form, 0, 0)
         elif text == "Alta de Colaborador":
             form = CreateColaborator(self.colaborator_service)
+            self.layout.addWidget(form, 0, 0)
+        elif text == "Operaciones con Colaborador":
+            form = ColaboratorOperations(self.colaborator_service)
             self.layout.addWidget(form, 0, 0)
         elif text == "Tabla Planilla":
             form = ColaboratorTableWidget(self.colaborator_service)

@@ -24,8 +24,11 @@ class ColaboratorService:
 
     def remove_colaborator_by_id(self, colaborator_id):
         """Eliminar un colaborador por su ID."""
-        self.db.remove_colaborator_by_id(colaborator_id)
+        return self.db.remove_colaborator_by_id(colaborator_id)
 
     def update_colaborator_by_id(self, colaborator_id, **kwargs):
         """Actualizar un colaborador por su ID."""
-        self.db.update_colaborator_by_id(colaborator_id, **kwargs)
+        print(f"Actualizando colaborador con ID: {colaborator_id}")  # Depuración
+        success = self.db.update_colaborator_by_id(colaborator_id, **kwargs)
+        print(f"Resultado de la actualización: {success}")  # Depuración
+        return success
