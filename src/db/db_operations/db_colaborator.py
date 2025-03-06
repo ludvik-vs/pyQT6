@@ -1,13 +1,13 @@
-import sqlite3
 from src.db.database_manager import DatabaseManager
 
 class DatabaseColaborators(DatabaseManager):
+
     def __init__(self):
         super().__init__()
-        self.create_client_table()
+        self.create_colaborator_table()
         self.insert_default_colaborator()
 
-    def create_client_table(self):
+    def create_colaborator_table(self):
         """Crear la tabla de colaboradores."""
         query_1 = '''
             CREATE TABLE IF NOT EXISTS colaboradores (

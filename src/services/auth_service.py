@@ -22,7 +22,7 @@ class AuthService(QObject):
                 "role": user_data[2]
             }
             self.current_user = user_dict
-            self.user_authenticated.emit(user_dict) 
+            self.user_authenticated.emit(user_dict)
             return user_dict
         return None
 
@@ -45,3 +45,39 @@ class AuthService(QObject):
         Retorna True si el registro es exitoso, False si el usuario ya existe.
         """
         return self.db_manager.create_user(username, password, role)
+
+    def delete_user(self, user_id):
+        """
+        Elimina un usuario por su ID.
+        Retorna True si la eliminación es exitosa, False en caso contrario.
+        """
+        return self.db_manager.remove_user(user_id)
+
+    def update_user(self, user_id, new_username=None, new_password=None, new_role=None):
+        """
+        Actualiza los datos de un usuario.
+        Retorna True si la actualización es exitosa, False en caso contrario.
+        """
+        if not self.db_manager.conn:
+            self.db_manager.connect()
+        cursor = self.db_manager.conn.cursor()
+
+        # Construir la consulta SQL dinámicamente basada en los campos proporcionados
+        updates = []
+        params = []
+        if new_username:
+            updates.append("username = ?")
+            params.append(new_username)
+        if new_password:
+            updates.append("password_hash = ?")
+            params.append(self.db_manager.hash_password(new_password))
+        if new_role:
+            updates.append("role = ?")
+            params.append(new_role)
+
+        params.append(user_id)
+        query = f"UPDATE users SET {', '.join(updates)} WHERE id = ?"
+
+        with self.db_manager.conn:
+            cursor.execute(query, params)
+            return cursor.rowcount > 0

@@ -39,9 +39,9 @@ class DatabaseManager:
                     email TEXT NOT NULL
                 )
             ''')
-            
+
             #Tabla colaboradores
-            cursor.execute(''' 
+            cursor.execute('''
                 CREATE TABLE IF NOT EXISTS colaboradores (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     nombre TEXT NOT NULL,
@@ -55,7 +55,7 @@ class DatabaseManager:
                     salario REAL NOT NULL,
                     is_active BOOLEAN NOT NULL DEFAULT 1,
                     puesto TEXT,
-                    fecha_nacimiento DATE, 
+                    fecha_nacimiento DATE,
                     numero_seguro_social TEXT,
                     informacion_adicional TEXT
                 )
@@ -75,7 +75,7 @@ class DatabaseManager:
             cursor.execute("SELECT COUNT(*) FROM users")
             if cursor.fetchone()[0] == 0:
                 self._insert_default_users()
-            
+
             cursor.execute("SELECT COUNT(*) FROM clients")
             if cursor.fetchone()[0] == 0:
                 self._insert_default_clients()
@@ -133,7 +133,7 @@ class DatabaseManager:
         salt = 'your_secret_salt'  # Puedes cambiar esto por tu propia sal
         hashed_password = hashlib.sha256((password + salt).encode()).hexdigest()
         return hashed_password
-    
+
 
     ### CLIENTS METHODS ###
     def _insert_default_clients(self):
@@ -220,4 +220,3 @@ class DatabaseManager:
 
             cursor.execute(query, tuple(params))
             return cursor.rowcount > 0
-
