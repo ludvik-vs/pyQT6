@@ -81,3 +81,9 @@ class AuthService(QObject):
         with self.db_manager.conn:
             cursor.execute(query, params)
             return cursor.rowcount > 0
+
+    def get_all_users(self):
+        """
+        Obtener todos los usuarios desde la base de datos.
+        """
+        return self.db_manager.get_all_users()

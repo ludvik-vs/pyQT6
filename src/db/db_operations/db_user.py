@@ -63,6 +63,15 @@ class DatabaseUser(DatabaseManager):
         ''', (username, password_hash))
         return cursor.fetchone()
 
+    def get_all_users(self):
+        """Obtener todos los usuarios."""
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT id, username, role FROM users
+        ''')
+        users = cursor.fetchall()
+        return [{"id": row[0], "username": row[1], "role": row[2]} for row in users]
+
     def remove_user(self, id):
         """Eliminar user por id."""
         with self.conn:

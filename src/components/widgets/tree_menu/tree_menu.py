@@ -32,7 +32,9 @@ class TreeMenu(QTreeView):
             'Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
             'Operaciones con Ordenes': ['Crear Orden', 'Actualizar Orden', 'Cerrar Orden'],
             'Operaciones de Caja': ['Ingresos de Caja', 'Salidas de Caja', 'Arqueo de Caja'],
-            'Operaciones de Administración': ['Operaciones de Usuario', 'Aprobar Descuento', 'Eliminar Orden']
+            'Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
+            'Reportes Administrativos': ['RA 1', 'RA 2', 'RA 3'],
+            'Operaciones de Administración': ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario', 'Aprobar Descuento', 'Eliminar Orden']
         }
 
         # Crear y agregar ramas al modelo
@@ -53,14 +55,20 @@ class TreeMenu(QTreeView):
         """Oculta o muestra ramas según el rol del usuario."""
         root_node = self.model.invisibleRootItem()
 
-        if role == 'user' and 'Operaciones de Administración' in self.branches:
-            root_node.removeRow(self.branches['Operaciones de Administración'].row())
-            del self.branches['Operaciones de Administración']
+        if role == 'user':
+            # Ocultar ramas para el rol de usuario
+            for branch_title in ['Operaciones de Administración', 'Reportes Administrativos']:
+                if branch_title in self.branches:
+                    root_node.removeRow(self.branches[branch_title].row())
+                    del self.branches[branch_title]
 
-        elif role == 'admin' and 'Operaciones de Administración' not in self.branches:
-            admin_branch = self.create_branch(
-                'Operaciones de Administración',
-                ['Operaciones de Usuario', 'Aprobar Descuento', 'Eliminar Orden']
-            )
-            root_node.appendRow(admin_branch)
-            self.branches['Operaciones de Administración'] = admin_branch
+        elif role == 'admin':
+            # Mostrar ramas para el rol de administrador
+            for branch_title, sub_items in [
+                ('Operaciones de Administración', ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario', 'Aprobar Descuento', 'Eliminar Orden']),
+                ('Reportes Administrativos', ['RA 1', 'RA 2', 'RA 3'])
+            ]:
+                if branch_title not in self.branches:
+                    admin_branch = self.create_branch(branch_title, sub_items)
+                    root_node.appendRow(admin_branch)
+                    self.branches[branch_title] = admin_branch

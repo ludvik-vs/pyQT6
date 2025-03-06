@@ -15,7 +15,11 @@ from src.components.forms.user.create_colaborator import CreateColaborator
 from src.components.tables.tabla_planilla import ColaboratorTableWidget
 from src.components.forms.user.operaciones_colaborador import ColaboratorOperations
 from src.components.forms.user.regitro_colaborador import ColaboratorRegister
+from src.components.tables.user_table import UserTableWidget
 
+# User
+from src.db.db_operations.db_user import DatabaseUser
+from src.services.auth_service import AuthService
 
 # Orders
 from src.components.forms.orders.create_orders import CrearOrdenForm
@@ -30,6 +34,8 @@ class DisplayWidget(QWidget):
         #--------------------------------------------------------------
         self.colaborator_service = ColaboratorService()
         #--------------------------------------------------------------
+        self.user_db_manager = DatabaseUser()
+        self.user_services = AuthService(self.user_db_manager)
         self.init_ui()
 
     def init_ui(self):
@@ -82,6 +88,9 @@ class DisplayWidget(QWidget):
             self.layout.addWidget(form, 0, 0)
         elif text == "Crear Orden":
             form = CrearOrdenForm()
+            self.layout.addWidget(form, 0, 0)
+        elif text == "Tabla Usuario":
+            form = UserTableWidget(self.user_services)
             self.layout.addWidget(form, 0, 0)
         else:
             label = QLabel(f"Formulario para: {text}", self)
