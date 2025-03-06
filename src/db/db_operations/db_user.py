@@ -75,7 +75,7 @@ class DatabaseUser(DatabaseManager):
         user_role = cursor.fetchone()
         if user_role and user_role[0] == 'admin':
             all_branches = [
-                'Inicio',
+                '1 - Inicio',
                 'Clientes',
                 'Planilla',
                 'Operaciones con Ordenes',
@@ -86,7 +86,7 @@ class DatabaseUser(DatabaseManager):
                 'Operaciones de Administración'
             ]
             all_sub_branches = {
-                'Inicio': ['ACRIL CAR'],
+                '1 - Inicio': ['ACRIL CAR'],
                 'Clientes': ['Alta de Cliente', 'Operaciones con Cliente', 'Tabla de Clientes'],
                 'Operaciones con Ordenes': ['Crear Orden', 'Actualizar Orden', 'Cerrar Orden'],
                 'Operaciones de Caja': ['Ingresos de Caja', 'Salidas de Caja', 'Arqueo de Caja'],
