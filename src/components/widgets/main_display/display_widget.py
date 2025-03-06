@@ -20,6 +20,8 @@ from src.components.tables.user_table import UserTableWidget
 # User
 from src.db.db_operations.db_user import DatabaseUser
 from src.services.auth_service import AuthService
+from src.components.forms.user.create_user import CreateUserForm
+from src.components.forms.user.operaciones_user import UserOperatiosn
 
 # Orders
 from src.components.forms.orders.create_orders import CrearOrdenForm
@@ -88,6 +90,12 @@ class DisplayWidget(QWidget):
             self.layout.addWidget(form, 0, 0)
         elif text == "Crear Orden":
             form = CrearOrdenForm()
+            self.layout.addWidget(form, 0, 0)
+        elif text == "Crear Usuario":
+            form = CreateUserForm(self.user_services)
+            self.layout.addWidget(form, 0, 0)
+        elif text == "Operaciones de Usuario":
+            form = UserOperatiosn(self.user_services)
             self.layout.addWidget(form, 0, 0)
         elif text == "Tabla Usuario":
             form = UserTableWidget(self.user_services)

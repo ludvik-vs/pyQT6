@@ -21,7 +21,7 @@ class TreeMenu(QTreeView):
             'Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
             'Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
             'Reportes Administrativos': ['RA 1', 'RA 2', 'RA 3'],
-            'Administración de Usuarios': ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario', 'Permisos y Accesos'],
+            'Administración de Usuarios': ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario'],
             'Operaciones de Administración': ['Aprobar Descuento', 'Eliminar Orden']
         }
 
