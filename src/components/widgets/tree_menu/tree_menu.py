@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import QTreeView
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 
-
 class TreeMenu(QTreeView):
     item_selected = pyqtSignal(str)
 
@@ -14,61 +13,52 @@ class TreeMenu(QTreeView):
         self.init_ui()
         self.clicked.connect(self.on_item_selected)
         self.setEditTriggers(QTreeView.EditTrigger.NoEditTriggers)
+        self.tree_structure = {
+            'Inicio': ['ACRIL CAR'],
+            'Clientes': ['Alta de Cliente', 'Operaciones con Cliente', 'Tabla de Clientes'],
+            'Operaciones con Ordenes': ['Crear Orden', 'Actualizar Orden', 'Cerrar Orden'],
+            'Operaciones de Caja': ['Ingresos de Caja', 'Salidas de Caja', 'Arqueo de Caja'],
+            'Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
+            'Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
+            'Reportes Administrativos': ['RA 1', 'RA 2', 'RA 3'],
+            'Administración de Usuarios': ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario', 'Permisos y Accesos'],
+            'Operaciones de Administración': ['Aprobar Descuento', 'Eliminar Orden']
+        }
 
     def create_branch(self, title, sub_items):
-        """Crea una rama con sub-elementos."""
         branch = QStandardItem(title)
         for item in sub_items:
             branch.appendRow(QStandardItem(item))
         return branch
 
     def init_ui(self):
-        """Inicializa el menú con las ramas principales."""
-        root_node = self.model.invisibleRootItem()
-
-        # Definir estructura del árbol
-        tree_structure = {
-            'Inicio': ['ACRIL CAR', 'Alta de Cliente', 'Operaciones con Cliente', 'Tabla de Clientes'],
-            'Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
-            'Operaciones con Ordenes': ['Crear Orden', 'Actualizar Orden', 'Cerrar Orden'],
-            'Operaciones de Caja': ['Ingresos de Caja', 'Salidas de Caja', 'Arqueo de Caja'],
-            'Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
-            'Reportes Administrativos': ['RA 1', 'RA 2', 'RA 3'],
-            'Operaciones de Administración': ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario', 'Aprobar Descuento', 'Eliminar Orden']
-        }
-
-        # Crear y agregar ramas al modelo
-        self.branches = {}
-        for title, sub_items in tree_structure.items():
-            self.branches[title] = self.create_branch(title, sub_items)
-            root_node.appendRow(self.branches[title])
-
         self.expandAll()
 
     def on_item_selected(self, index):
-        """Emite el texto del ítem seleccionado."""
         item = self.model.itemFromIndex(index)
-        if item and item.parent():  # Solo emitir si es un sub-elemento
+        if item and item.parent():
             self.item_selected.emit(item.text())
 
-    def set_role_visibility(self, role):
-        """Oculta o muestra ramas según el rol del usuario."""
+    def set_user_access(self, user_access):
+        """Construye el árbol basado en los accesos del usuario."""
+        self.model.clear()
+        self.model.setHorizontalHeaderLabels(['Operaciones'])
         root_node = self.model.invisibleRootItem()
+        self.branches = {}
 
-        if role == 'user':
-            # Ocultar ramas para el rol de usuario
-            for branch_title in ['Operaciones de Administración', 'Reportes Administrativos']:
-                if branch_title in self.branches:
-                    root_node.removeRow(self.branches[branch_title].row())
-                    del self.branches[branch_title]
+        for branch_name, sub_branch_name in user_access:
+            if branch_name not in self.branches:
+                if branch_name in self.tree_structure:
+                    self.branches[branch_name] = self.create_branch(branch_name, [])
+                    root_node.appendRow(self.branches[branch_name])
+                else:
+                    continue # rama no existe en la estructura del arbol.
 
-        elif role == 'admin':
-            # Mostrar ramas para el rol de administrador
-            for branch_title, sub_items in [
-                ('Operaciones de Administración', ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario', 'Aprobar Descuento', 'Eliminar Orden']),
-                ('Reportes Administrativos', ['RA 1', 'RA 2', 'RA 3'])
-            ]:
-                if branch_title not in self.branches:
-                    admin_branch = self.create_branch(branch_title, sub_items)
-                    root_node.appendRow(admin_branch)
-                    self.branches[branch_title] = admin_branch
+            if sub_branch_name:
+                self.branches[branch_name].appendRow(QStandardItem(sub_branch_name))
+            else:
+                if branch_name in self.tree_structure:
+                    for sub_item in self.tree_structure[branch_name]:
+                        if sub_item not in [self.branches[branch_name].child(i).text() for i in range(self.branches[branch_name].rowCount())]:
+                            self.branches[branch_name].appendRow(QStandardItem(sub_item))
+        self.expandAll()

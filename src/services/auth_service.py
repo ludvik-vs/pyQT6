@@ -19,7 +19,8 @@ class AuthService(QObject):
             user_dict = {
                 "id": user_data[0],
                 "username": user_data[1],
-                "role": user_data[2]
+                "role": user_data[2],
+                "access": self.db_manager.get_user_access(user_data[0]) # Obtener accesos
             }
             self.current_user = user_dict
             self.user_authenticated.emit(user_dict)

@@ -31,7 +31,8 @@ class AsideWidget(QWidget):
         if user:
             username = user.get('username', 'Usuario Desconocido')
             self.username_label.setText(f"😀 Bienvenido: 🔹 {username} ")
-            role = user.get('role', 'user')  # Obtener el rol del usuario
-            self.tree_menu.set_role_visibility(role)
+            user_access = user.get('access', [])
+            self.tree_menu.set_user_access(user_access)
         else:
             self.username_label.setText("Usuario Desconocido")
+            self.tree_menu.set_user_access([])
