@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdi
                              QTextEdit, QPushButton, QMessageBox, QScrollArea, QFrame)
 from datetime import datetime
 from src.services.rh_service import ColaboratorService
-from datetime import datetime
 
 class ColaboratorRegister(QWidget):
     def __init__(self):

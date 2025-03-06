@@ -1,11 +1,11 @@
 from src.db.database_manager import DatabaseManager
 
 class DatabaseColaborators(DatabaseManager):
-
     def __init__(self):
         super().__init__()
-        self.create_colaborator_table()
-        self.insert_default_colaborator()
+        if not self.tables_exist_and_have_records():
+            self.create_colaborator_table()
+            self.insert_default_colaborator()
 
     def create_colaborator_table(self):
         """Crear la tabla de colaboradores."""
@@ -37,7 +37,10 @@ class DatabaseColaborators(DatabaseManager):
                 FOREIGN KEY (colaborador_id) REFERENCES colaboradores(id)
             )
         '''
-        self.create_tables([query_1, query_2])
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query_1)
+            cursor.execute(query_2)
 
     def insert_default_colaborator(self):
         """Insertar un colaborador por defecto."""
@@ -49,7 +52,7 @@ class DatabaseColaborators(DatabaseManager):
             "fecha_ingreso": "2023-01-01",
             "nombre_contacto_emergencia": "María Pérez",
             "telefono_emergencia": "098-765-4321",
-            "fecha_baja": "",
+            "fecha_baja": None,
             "salario": 3000.00,
             "is_active": 1,
             "puesto": "Desarrollador",
@@ -61,23 +64,25 @@ class DatabaseColaborators(DatabaseManager):
 
     def create_colaborator(self, nombre, apellido, telefono_personal, documento_identidad,
                            fecha_ingreso, nombre_contacto_emergencia, telefono_emergencia,
-                           fecha_baja,salario, is_active, puesto, fecha_nacimiento, numero_seguro_social,
+                           fecha_baja, salario, is_active, puesto, fecha_nacimiento, numero_seguro_social,
                            informacion_adicional=""):
         """Crear un nuevo colaborador."""
         query = '''
             INSERT INTO colaboradores (
                 nombre, apellido, telefono_personal, documento_identidad,
                 fecha_ingreso, nombre_contacto_emergencia, telefono_emergencia,
-                fecha_baja,salario, is_active, puesto, fecha_nacimiento, numero_seguro_social,
+                fecha_baja, salario, is_active, puesto, fecha_nacimiento, numero_seguro_social,
                 informacion_adicional
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         '''
-        self.execute_query(query, (
-            nombre, apellido, telefono_personal, documento_identidad,
-            fecha_ingreso, nombre_contacto_emergencia, telefono_emergencia,
-            fecha_baja,salario, is_active, puesto, fecha_nacimiento, numero_seguro_social,
-            informacion_adicional
-        ))
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query, (
+                nombre, apellido, telefono_personal, documento_identidad,
+                fecha_ingreso, nombre_contacto_emergencia, telefono_emergencia,
+                fecha_baja, salario, is_active, puesto, fecha_nacimiento, numero_seguro_social,
+                informacion_adicional
+            ))
 
     def get_all_colaborators(self):
         """Obtener todos los colaboradores."""
@@ -94,11 +99,11 @@ class DatabaseColaborators(DatabaseManager):
         query = '''DELETE FROM colaboradores WHERE id = ?'''
         try:
             self.execute_query(query, (colaborator_id,))
-            print(f"Colaborador con ID {colaborator_id} eliminado exitosamente.")  # Depuración
-            return True  # Indicar que la operación fue exitosa
+            print(f"Colaborador con ID {colaborator_id} eliminado exitosamente.")
+            return True
         except Exception as e:
             print(f"Error al eliminar colaborador: {e}")
-            return False  # Indicar que hubo un error
+            return False
 
     def update_colaborator_by_id(self, colaborator_id, **kwargs):
         """Actualizar un colaborador por su ID."""
@@ -108,11 +113,11 @@ class DatabaseColaborators(DatabaseManager):
         query = f'UPDATE colaboradores SET {fields} WHERE id = ?'
         try:
             self.execute_query(query, values)
-            print(f"Consulta ejecutada: {query} con valores {values}")  # Depuración
-            return True  # Indicar que la operación fue exitosa
+            print(f"Consulta ejecutada: {query} con valores {values}")
+            return True
         except Exception as e:
             print(f"Error al actualizar colaborador: {e}")
-            return False  # Indicar que hubo un error
+            return False
 
     def create_colaborator_record(self, colaborador_id, fecha, descripcion):
         """Crear un nuevo registro para un colaborador."""
@@ -134,8 +139,26 @@ class DatabaseColaborators(DatabaseManager):
         query = '''DELETE FROM registros_colaborador WHERE id = ?'''
         try:
             self.execute_query(query, (register_id,))
-            print(f"Registro con ID {register_id} eliminado exitosamente.")  # Depuración
-            return True  # Indicar que la operación fue exitosa
+            print(f"Registro con ID {register_id} eliminado exitosamente.")
+            return True
         except Exception as e:
             print(f"Error al eliminar registro: {e}")
-            return False  # Indicar que hubo un error
+            return False
+
+    def execute_query(self, query, params=()):
+        """Ejecutar una consulta SQL."""
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query, params)
+
+    def fetch_all(self, query, params=()):
+        """Obtener todos los resultados de una consulta SQL."""
+        cursor = self.conn.cursor()
+        cursor.execute(query, params)
+        return cursor.fetchall()
+
+    def fetch_one(self, query, params=()):
+        """Obtener un solo resultado de una consulta SQL."""
+        cursor = self.conn.cursor()
+        cursor.execute(query, params)
+        return cursor.fetchone()

@@ -1,12 +1,12 @@
-import hashlib
 import sqlite3
 from src.db.database_manager import DatabaseManager
 
 class DatabaseUser(DatabaseManager):
     def __init__(self):
         super().__init__()
-        self.create_user_table()
-        self.insert_default_users()
+        if not self.tables_exist_and_have_records():
+            self.create_user_table()
+            self.insert_default_users()
 
     def create_user_table(self):
         """Crear la tabla de usuarios."""
@@ -18,7 +18,9 @@ class DatabaseUser(DatabaseManager):
                 role TEXT NOT NULL
             )
         '''
-        self.create_tables([query])
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
 
     def insert_default_users(self):
         """Insertar usuarios predeterminados si la tabla está vacía."""
@@ -37,12 +39,6 @@ class DatabaseUser(DatabaseManager):
                                ("Francisco Castillo", admin_hash, "admin"))
                 cursor.execute("INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
                                ("user", user_hash, "user"))
-
-    def hash_password(self, password):
-        """Generar un hash de la contraseña."""
-        salt = 'your_secret_salt'
-        hashed_password = hashlib.sha256((password + salt).encode()).hexdigest()
-        return hashed_password
 
     def create_user(self, username, password, role):
         """Crear un nuevo usuario."""

@@ -239,7 +239,7 @@ class ColaboratorOperations(QWidget):
                 numero_seguro_social=numero_seguro_social,
                 informacion_adicional=informacion_adicional,
             )
-            print(f"Resultado de la actualización en el formulario: {success}")  # Depuración
+
             if success:
                 self.clear_form()
                 self.result_label.setStyleSheet("color: green;")
@@ -279,7 +279,7 @@ class ColaboratorOperations(QWidget):
 
             if confirmation == QMessageBox.StandardButton.Yes:
                 success = self.colaborator_services.remove_colaborator_by_id(colaborator_id)
-                print(f"Resultado de la eliminación en el formulario: {success}")  # Depuración
+
                 if success:
                     self.clear_form()
                     self.result_label.setStyleSheet("color: green;")

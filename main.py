@@ -1,7 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QMainWindow, QApplication, QStyleFactory, QWidget, QGridLayout, QDialog
 from PyQt6.QtGui import QScreen
-from PyQt6.QtCore import Qt
 from src.services.auth_service import AuthService
 from src.db.db_operations.db_user import DatabaseUser
 from src.components.widgets.aside_bar.aside_widget import AsideWidget
@@ -13,7 +12,7 @@ def load_styles():
         return file.read()
 
 class MainWindow(QMainWindow):
-    
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("ACRIL CAR NI")

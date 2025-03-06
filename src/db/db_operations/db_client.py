@@ -1,10 +1,12 @@
 import sqlite3
-from src.db.database_manager import DatabaseManager 
+from src.db.database_manager import DatabaseManager
+
 class DatabaseClient(DatabaseManager):
     def __init__(self):
         super().__init__()
-        self.create_client_table()
-        self.insert_default_clients()
+        if not self.tables_exist_and_have_records():
+            self.create_client_table()
+            self.insert_default_clients()
 
     def create_client_table(self):
         """Crear la tabla de clientes."""
@@ -17,14 +19,16 @@ class DatabaseClient(DatabaseManager):
                 email TEXT NOT NULL
             )
         '''
-        self.create_tables([query])
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
 
     def insert_default_clients(self):
         """Insertar clientes predeterminados."""
         with self.conn:
             cursor = self.conn.cursor()
             cursor.execute("INSERT INTO clients (name, contact_1, contact_2, email) VALUES (?, ?, ?, ?)",
-                        ("Cliente Ejemplo", "123-456-7890", "987-654-3210", "ejemplo@example.com"))
+                           ("Pedro Picapiedra", "123-456-7890", "987-654-3210", "peter_rok@example.com"))
 
     def create_client(self, name, contact_1, contact_2, email):
         """Crear un nuevo cliente."""
@@ -34,10 +38,9 @@ class DatabaseClient(DatabaseManager):
                 INSERT INTO clients (name, contact_1, contact_2, email)
                 VALUES (?, ?, ?, ?)
             ''', (name, contact_1, contact_2, email))
-            self.conn.commit()  # Asegúrate de hacer commit para guardar los cambios
+            self.conn.commit()
             return True
         except sqlite3.IntegrityError:
-            # El cliente ya existe o hay un error de integridad
             return False
 
     def get_client(self, email):
@@ -62,8 +65,8 @@ class DatabaseClient(DatabaseManager):
         """Obtener datos del cliente por ID desde la base de datos."""
         try:
             cursor = self.conn.cursor()
-            query = "SELECT id, name, contact_1, contact_2, email FROM clients WHERE id = ?" # Usando un marcador de posición
-            cursor.execute(query, (client_id,)) # Pasando client_id como una tupla
+            query = "SELECT id, name, contact_1, contact_2, email FROM clients WHERE id = ?"
+            cursor.execute(query, (client_id,))
             return cursor.fetchone()
         except Exception as e:
             print(f"Error al obtener cliente por ID: {e}")
@@ -98,8 +101,8 @@ class DatabaseClient(DatabaseManager):
                 updates.append("email = ?")
                 params.append(email)
 
-            params.append(client_id) # Agrega client_id al final de la lista de parámetros.
-            query = f"UPDATE clients SET {', '.join(updates)} WHERE id = ?" # Cláusula WHERE usa id
+            params.append(client_id)
+            query = f"UPDATE clients SET {', '.join(updates)} WHERE id = ?"
 
             cursor.execute(query, tuple(params))
             return cursor.rowcount > 0
