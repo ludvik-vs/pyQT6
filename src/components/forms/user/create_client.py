@@ -11,62 +11,45 @@ class CreateClient(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        # Establecer el fondo del formulario como gris claro
         self.setStyleSheet("background-color: #f4f4f4;")
-
-        # Campos del formulario
-        self.nombre_cliente = QLineEdit(self)
-        self.nombre_cliente.setMinimumWidth(600)
-        self.phone_contacto_1 = QLineEdit(self)
-        self.phone_contacto_2 = QLineEdit(self)
-        self.email = QLineEdit(self)
-
-        # Botones
-        self.limpiar_btn = QPushButton('Limpiar Formulario', self)
-        self.alta_cliente_btn = QPushButton('Alta de Cliente', self)
-
-        # Conectar botones a sus respectivas funciones
-        self.limpiar_btn.clicked.connect(self.clear_form)
-        self.alta_cliente_btn.clicked.connect(self.alta_cliente)
-
-        # Añadir campos al layout
         layout = QFormLayout()
-        layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.DontWrapRows)
         layout.setVerticalSpacing(18)
 
-        # Crear QLabels con fondo transparente
-        nombre_label = QLabel("Nombre Completo del Cliente:", self)
-        layout.addRow(nombre_label, self.nombre_cliente)
+        # Campos del formulario
+        self.nombre_cliente_label = QLabel("Nombre Completo del Cliente:")
+        self.nombre_cliente = QLineEdit(self)
+        layout.addRow(self.nombre_cliente_label, self.nombre_cliente)
 
-        phone_1_label = QLabel("Teléfono Contacto 1:", self)
-        layout.addRow(phone_1_label, self.phone_contacto_1)
+        self.phone_contacto_1_label = QLabel("Teléfono Contacto 1:")
+        self.phone_contacto_1 = QLineEdit(self)
+        layout.addRow(self.phone_contacto_1_label, self.phone_contacto_1)
 
-        phone2_label = QLabel("Teléfono Contacto 2:", self)
-        layout.addRow(phone2_label, self.phone_contacto_2)
+        self.phone_contacto_2_label = QLabel("Teléfono Contacto 2:")
+        self.phone_contacto_2 = QLineEdit(self)
+        layout.addRow(self.phone_contacto_2_label, self.phone_contacto_2)
 
-        correo_label = QLabel("Correo Electrónico:", self)
-        layout.addRow(correo_label, self.email)
+        self.email_label = QLabel("Correo Electrónico:")
+        self.email = QLineEdit(self)
+        layout.addRow(self.email_label, self.email)
 
+        # Botones
+        button_container = QHBoxLayout()
+        button_container.setSpacing(60)
 
-        # Crear un layout horizontal para los botones
-        button_layout = QHBoxLayout()
-        button_layout.setSpacing(60)
-        button_layout.addWidget(self.limpiar_btn)
-        button_layout.addWidget(self.alta_cliente_btn)
+        self.limpiar_btn = QPushButton('Limpiar Formulario', self)
+        self.limpiar_btn.clicked.connect(self.clear_form)
+        button_container.addWidget(self.limpiar_btn)
 
-        # Añadir el layout de botones al layout principal
-        layout.addRow(button_layout)
+        self.alta_cliente_btn = QPushButton('Alta de Cliente', self)
+        self.alta_cliente_btn.clicked.connect(self.alta_cliente)
+        button_container.addWidget(self.alta_cliente_btn)
+        layout.addRow(button_container)
+
+        self.result_label = QLabel(self)
+        layout.addRow(self.result_label)
 
         self.setLayout(layout)
-
-        # Label para mostrar el resultado de la operación
-        self.result_label = QLabel(self)
-        self.result_label.setStyleSheet("background-color: transparent;")
-        self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.result_label)
-
-        # Asegurarse de que el formulario ocupe todo el ancho del contenedor padre
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setWindowTitle('Alta de Cliente')
 
     def clear_form(self):
         """Limpiar todos los campos del formulario."""

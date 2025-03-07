@@ -49,8 +49,6 @@ class UserOperations(QWidget):
         for checkbox in self.access_checkboxes:
             access_layout.addWidget(checkbox)
         access_groupbox.setLayout(access_layout)
-
-        # Añadir accesos al layout principal
         layout.addRow(access_groupbox)
 
         # Añadir botones a un contenedor horizontal
@@ -58,7 +56,7 @@ class UserOperations(QWidget):
         button_container.addWidget(self.clear_button)
         button_container.addWidget(self.save_button)
         button_container.addWidget(self.delete_button)
-        button_container.setSpacing(10)
+        button_container.setSpacing(18)
         layout.addRow(button_container)
 
         self.setLayout(layout)

@@ -1,7 +1,6 @@
 from PyQt6.QtWidgets import (
-    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QMessageBox, QHBoxLayout, QVBoxLayout, QSizePolicy, QSpacerItem
+    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QMessageBox, QHBoxLayout
 )
-from PyQt6.QtCore import Qt
 from src.services.client_service import ClientService
 
 class ClientOperations(QWidget):
@@ -12,17 +11,35 @@ class ClientOperations(QWidget):
 
     def init_ui(self):
         self.setStyleSheet("background-color: #f4f4f4;")
+        layout = QFormLayout()
+        layout.setVerticalSpacing(18)
 
         # Campos del formulario
+        self.client_id_label = QLabel("ID del Cliente:")
         self.client_id = QLineEdit(self)
+        layout.addRow(self.client_id_label, self.client_id)
+
+        self.load_btn = QPushButton('Cargar datos del Cliente', self)
+        layout.addRow(self.load_btn)
+
+        self.nombre_cliente_label = QLabel("Nombre del Cliente:")
         self.nombre_cliente = QLineEdit(self)
-        self.nombre_cliente.setMinimumWidth(600)
+        layout.addRow(self.nombre_cliente_label, self.nombre_cliente)
+
+        self.phone_contact_1_label = QLabel("Teléfono de Contacto 1:")
         self.phone_contacto_1 = QLineEdit(self)
+        layout.addRow(self.phone_contact_1_label, self.phone_contacto_1)
+
+        self.phone_contact_2_label = QLabel("Teléfono de Contacto 2:")
         self.phone_contacto_2 = QLineEdit(self)
+        layout.addRow(self.phone_contact_2_label, self.phone_contacto_2)
+
+        self.email_label = QLabel("Correo Electrónico:")
         self.email = QLineEdit(self)
+        layout.addRow(self.email_label, self.email)
+
 
         # Botones
-        self.load_btn = QPushButton('Cargar datos del Cliente', self)
         self.limpiar_btn = QPushButton('Limpiar Formulario', self)
         self.actualizar_cliente_btn = QPushButton('Actualizar Cliente', self)
         self.eliminar_cliente_btn = QPushButton('Eliminar Cliente', self)
@@ -33,55 +50,21 @@ class ClientOperations(QWidget):
         self.actualizar_cliente_btn.clicked.connect(self.actualizar_cliente)
         self.eliminar_cliente_btn.clicked.connect(self.eliminar_cliente)
 
-        # Layout principal
-        form_layout = QFormLayout()
-        form_layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.DontWrapRows)
-        form_layout.setVerticalSpacing(18)
-
-        # Otros campos
-        client_id_label = QLabel("ID del Cliente:", self)
-        client_id_label.setStyleSheet("background-color: transparent;")
-        form_layout.addRow(client_id_label, self.client_id)
-        form_layout.addRow(self.load_btn)
-        nombre_label = QLabel("Nombre Completo del Cliente:", self)
-        nombre_label.setStyleSheet("background-color: transparent;")
-        form_layout.addRow(nombre_label, self.nombre_cliente)
-
-        phone_1_label = QLabel("Teléfono Contacto 1:", self)
-        phone_1_label.setStyleSheet("background-color: transparent;")
-        form_layout.addRow(phone_1_label, self.phone_contacto_1)
-
-        phone2_label = QLabel("Teléfono Contacto 2:", self)
-        phone2_label.setStyleSheet("background-color: transparent;")
-        form_layout.addRow(phone2_label, self.phone_contacto_2)
-
-        correo_label = QLabel("Correo Electrónico:", self)
-        correo_label.setStyleSheet("background-color: transparent;")
-        form_layout.addRow(correo_label, self.email)
 
         # Añadir botones a un contenedor horizontal
         button_container = QHBoxLayout()
         button_container.addWidget(self.limpiar_btn)
         button_container.addWidget(self.actualizar_cliente_btn)
         button_container.addWidget(self.eliminar_cliente_btn)
-
-        # Crear el layout principal
-        main_layout = QVBoxLayout()
-        main_layout.addLayout(form_layout)
-        spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        main_layout.addItem(spacer)
-        main_layout.addLayout(button_container)
-
-        # Establecer el layout principal en el widget
-        self.setLayout(main_layout)
+        button_container.setSpacing(18)
+        layout.addRow(button_container)
 
         # Label para resultados
         self.result_label = QLabel(self)
-        self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        main_layout.addWidget(self.result_label)
+        layout.addWidget(self.result_label)
 
-        # Asegurarse de que el formulario ocupe todo el ancho del contenedor padre
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setLayout(layout)
+
 
     def load_client(self):
         """Cargar datos del cliente desde la base de datos usando el ID."""

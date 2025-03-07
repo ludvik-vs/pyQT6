@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
 
     def on_login_success(self, user_data):
         """Manejar el éxito del login."""
-        print(f"Login exitoso: {user_data}")
+        print("Login exitoso")
 
     def center_login_form(self):
         """Centrar el diálogo de login en la pantalla."""
