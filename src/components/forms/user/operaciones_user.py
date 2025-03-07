@@ -1,10 +1,9 @@
 from PyQt6.QtWidgets import (
-    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QSpacerItem, QCheckBox, QGroupBox, QMessageBox
+    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QCheckBox, QGroupBox, QMessageBox
 )
-from PyQt6.QtCore import Qt
 from src.services.auth_service import AuthService
 
-class UserOperatiosn(QWidget):
+class UserOperations(QWidget):
     def __init__(self, auth_service: AuthService):
         super().__init__()
         self.auth_service = auth_service
@@ -12,16 +11,27 @@ class UserOperatiosn(QWidget):
 
     def init_ui(self):
         self.setStyleSheet("background-color: #f4f4f4;")
+        layout = QFormLayout()
+        layout.setVerticalSpacing(10)
 
         # Campos del formulario
+        self.user_id_label = QLabel("ID del Usuario:")
         self.user_id_input = QLineEdit(self)
+        layout.addRow(self.user_id_label, self.user_id_input)
+
+        self.load_button = QPushButton('Cargar Datos', self)
+        layout.addRow(self.load_button)
+
+        self.username_label = QLabel("Nombre de Usuario:")
         self.username_input = QLineEdit(self)
         self.username_input.setReadOnly(True)
+        layout.addRow(self.username_label, self.username_input)
+
+        self.role_label = QLabel("Rol:")
         self.role_input = QLineEdit(self)
         self.role_input.setReadOnly(True)
+        layout.addRow(self.role_label, self.role_input)
 
-        # Botones
-        self.load_button = QPushButton('Cargar Datos del Usuario', self)
         self.save_button = QPushButton('Guardar Accesos', self)
         self.clear_button = QPushButton('Limpiar Formulario', self)
         self.delete_button = QPushButton('Eliminar Usuario', self)
@@ -32,17 +42,6 @@ class UserOperatiosn(QWidget):
         self.clear_button.clicked.connect(self.clear_form)
         self.delete_button.clicked.connect(self.delete_user)
 
-        # Layout principal
-        form_layout = QFormLayout()
-        form_layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.DontWrapRows)
-        form_layout.setVerticalSpacing(18)
-
-        # Añadir campos al layout
-        form_layout.addRow(QLabel("ID del Usuario:", self), self.user_id_input)
-        form_layout.addRow(self.load_button)
-        form_layout.addRow(QLabel("Nombre de Usuario:", self), self.username_input)
-        form_layout.addRow(QLabel("Rol:", self), self.role_input)
-
         # Crear checkboxes para accesos
         self.access_checkboxes = self.create_access_checkboxes()
         access_groupbox = QGroupBox("Accesos", self)
@@ -52,36 +51,23 @@ class UserOperatiosn(QWidget):
         access_groupbox.setLayout(access_layout)
 
         # Añadir accesos al layout principal
-        form_layout.addRow(access_groupbox)
+        layout.addRow(access_groupbox)
 
         # Añadir botones a un contenedor horizontal
         button_container = QHBoxLayout()
         button_container.addWidget(self.clear_button)
         button_container.addWidget(self.save_button)
         button_container.addWidget(self.delete_button)
+        button_container.setSpacing(10)
+        layout.addRow(button_container)
 
-        # Crear el layout principal
-        main_layout = QVBoxLayout()
-        main_layout.addLayout(form_layout)
-        spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        main_layout.addItem(spacer)
-        main_layout.addLayout(button_container)
-
-        # Establecer el layout principal en el widget
-        self.setLayout(main_layout)
-
-        # Label para resultados
-        self.result_label = QLabel(self)
-        self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        main_layout.addWidget(self.result_label)
-
-        # Asegurarse de que el formulario ocupe todo el ancho del contenedor padre
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setLayout(layout)
+        self.setWindowTitle('Operaciones Con Usuarios')
 
     def create_access_checkboxes(self):
         """Crear checkboxes para los accesos."""
         access_list = [
-            'Inicio', 'Clientes', 'Planilla', 'Operaciones con Ordenes',
+            '1 - Inicio', 'Clientes', 'Planilla', 'Operaciones con Ordenes',
             'Operaciones de Caja', 'Reportes Operativos', 'Reportes Administrativos',
             'Administración de Usuarios', 'Operaciones de Administración'
         ]
@@ -158,7 +144,6 @@ class UserOperatiosn(QWidget):
         self.user_id_input.clear()
         self.username_input.clear()
         self.role_input.clear()
-        self.result_label.clear()
         for checkbox in self.access_checkboxes:
             checkbox.setChecked(False)
 

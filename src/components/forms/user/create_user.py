@@ -8,7 +8,9 @@ class CreateUserForm(QWidget):
         self.initUI()
 
     def initUI(self):
+        self.setStyleSheet("background-color: #f4f4f4;")
         layout = QFormLayout()  # Usar QFormLayout
+        layout.setVerticalSpacing(10)
 
         self.username_label = QLabel('Nombre de usuario:')
         self.username_input = QLineEdit()

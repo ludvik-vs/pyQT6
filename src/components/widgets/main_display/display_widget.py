@@ -21,7 +21,7 @@ from src.components.tables.user_table import UserTableWidget
 from src.db.db_operations.db_user import DatabaseUser
 from src.services.auth_service import AuthService
 from src.components.forms.user.create_user import CreateUserForm
-from src.components.forms.user.operaciones_user import UserOperatiosn
+from src.components.forms.user.operaciones_user import UserOperations
 
 # Orders
 from src.components.forms.orders.create_orders import CrearOrdenForm
@@ -95,7 +95,7 @@ class DisplayWidget(QWidget):
             form = CreateUserForm(self.user_services)
             self.layout.addWidget(form, 0, 0)
         elif text == "Operaciones de Usuario":
-            form = UserOperatiosn(self.user_services)
+            form = UserOperations(self.user_services)
             self.layout.addWidget(form, 0, 0)
         elif text == "Tabla Usuario":
             form = UserTableWidget(self.user_services)
