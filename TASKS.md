@@ -1,7 +1,8 @@
 
 ## Pendinentes:
 - [x] Modulo "Operaciones con Ordenes": Eliminar sub rama "Cerrar Orden".
-- [ ] Modulo "1 - Inicio": Agregar funcionalidad (Formulario) cambio password usuario actual.
+- [X] Modulo "1 - Inicio": Agregar funcionalidad (Formulario) cambio password usuario actual.
+
 - [ ] Modulo "Operaciones con Ordenes": Agrega funcionalidad "Crear Orden" (Formulario).
 - [ ] Modulo "Operaciones con Ordenes": Agrega funcionalidad "Actualziar orden" (Formulario).
 
