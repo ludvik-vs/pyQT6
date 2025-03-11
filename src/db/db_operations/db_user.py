@@ -78,7 +78,8 @@ class DatabaseUser(DatabaseManager):
                 '1 - Inicio',
                 'Clientes',
                 'Planilla',
-                'Operaciones con Ordenes',
+                'Ordenes de Trabajo',
+                'Ordenes de Prduccion',
                 'Operaciones de Caja',
                 'Reportes Operativos',
                 'Reportes Administrativos',
@@ -86,9 +87,10 @@ class DatabaseUser(DatabaseManager):
                 'Operaciones de Administración'
             ]
             all_sub_branches = {
-                '1 - Inicio': ['ACRIL CAR'],
+                '1 - Inicio': ['ACRIL CAR', 'Cambiar Contraseña'],
                 'Clientes': ['Alta de Cliente', 'Operaciones con Cliente', 'Tabla de Clientes'],
-                'Operaciones con Ordenes': ['Crear Orden', 'Actualizar Orden', 'Cerrar Orden'],
+                'Ordenes de Trabajo': ['Crear Orden', 'Actualizar Orden'],
+                'Ordenes de Prduccion': ['Crear Orden', 'Actualizar Orden'],
                 'Operaciones de Caja': ['Ingresos de Caja', 'Salidas de Caja', 'Arqueo de Caja'],
                 'Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
                 'Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
@@ -165,4 +167,23 @@ class DatabaseUser(DatabaseManager):
             cursor.execute('''
                 DELETE FROM users WHERE id = ?
             ''', (id,))
+            return cursor.rowcount > 0
+
+    def verify_password(self, user_id, password):
+        """Verificar la contraseña de un usuario."""
+        password_hash = self.hash_password(password)
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT id FROM users WHERE id = ? AND password_hash = ?
+        ''', (user_id, password_hash))
+        return cursor.fetchone() is not None
+
+    def change_password(self, user_id, new_password):
+        """Cambiar la contraseña de un usuario."""
+        password_hash = self.hash_password(new_password)
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute('''
+                UPDATE users SET password_hash = ? WHERE id = ?
+            ''', (password_hash, user_id))
             return cursor.rowcount > 0

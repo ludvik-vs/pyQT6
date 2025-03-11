@@ -1,9 +1,10 @@
 from PyQt6.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QMessageBox
 from PyQt6.QtCore import pyqtSignal
 from src.services.auth_service import AuthService
+from src.services.auth_service import UserData  # Importa UserData
 
 class LoginDialog(QDialog):
-    login_successful = pyqtSignal(dict)
+    login_successful = pyqtSignal(UserData)  # Cambia la señal para emitir UserData
 
     def __init__(self, auth_service: AuthService):
         super().__init__()
@@ -38,9 +39,13 @@ class LoginDialog(QDialog):
 
         if self.auth_service.authenticate(username, password):
             user_data = self.auth_service.get_current_user()
-            self.login_successful.emit(user_data)
-            print("Login ok")
-            self.accept()
+            if user_data:
+                self.login_successful.emit(user_data)  # Emite UserData directamente
+                print("Login ok")
+                self.accept()
+            else:
+                QMessageBox.warning(self, "Error", "Error al obtener datos del usuario.")
+                self.reject()
         else:
             print("Login Error")
             QMessageBox.warning(self, "Error", "Usuario o contraseña incorrectos.")

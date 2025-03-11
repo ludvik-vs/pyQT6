@@ -21,7 +21,10 @@ class MainWindow(QMainWindow):
         self.user_db_manager.connect()
         self.auth_service = AuthService(self.user_db_manager)
         self.aside_widget = AsideWidget(self.auth_service)
-        self.display_widget = DisplayWidget()
+        self.display_widget = DisplayWidget(
+            self.auth_service,
+            self.user_db_manager
+        )
         self.login_form = LoginDialog(self.auth_service)
         self.init_ui()
         self.aside_widget.tree_menu.item_selected.connect(self.update_display)

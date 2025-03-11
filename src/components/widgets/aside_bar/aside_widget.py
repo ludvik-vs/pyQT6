@@ -10,6 +10,7 @@ class AsideWidget(QWidget):
 
         # Conectar la señal de autenticación
         self.auth_service.user_authenticated.connect(self.update_user_interface)
+        self.update_user_interface(auth_service.get_current_user())
 
     def init_ui(self):
         layout = QVBoxLayout()
@@ -29,9 +30,9 @@ class AsideWidget(QWidget):
 
     def update_user_interface(self, user):
         if user:
-            username = user.get('username', 'Usuario Desconocido')
+            username = user.username if user.username else "Usuario Desconocido"
             self.username_label.setText(f"😀 Bienvenido: 🔹 {username} ")
-            user_access = user.get('access', [])
+            user_access = user.access if user.access else []
             self.tree_menu.set_user_access(user_access)
         else:
             self.username_label.setText("Usuario Desconocido")

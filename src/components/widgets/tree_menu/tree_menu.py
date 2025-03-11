@@ -14,9 +14,10 @@ class TreeMenu(QTreeView):
         self.clicked.connect(self.on_item_selected)
         self.setEditTriggers(QTreeView.EditTrigger.NoEditTriggers)
         self.tree_structure = {
-            '1 - Inicio': ['ACRIL CAR'],
+            '1 - Inicio': ['ACRIL CAR', 'Cambiar Contraseña'],
             'Clientes': ['Alta de Cliente', 'Operaciones con Cliente', 'Tabla de Clientes'],
-            'Operaciones con Ordenes': ['Crear Orden', 'Actualizar Orden', 'Cerrar Orden'],
+            'Ordenes de Trabajo': ['Crear Orden', 'Actualizar Orden'],
+            'Ordenes de Prduccion': ['Crear Orden', 'Actualizar Orden'],
             'Operaciones de Caja': ['Ingresos de Caja', 'Salidas de Caja', 'Arqueo de Caja'],
             'Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
             'Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
