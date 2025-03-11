@@ -1,4 +1,6 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QApplication
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import QSize
 from src.components.widgets.tree_menu.tree_menu import TreeMenu
 
 class AsideWidget(QWidget):
@@ -14,10 +16,29 @@ class AsideWidget(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout()
+        sec_layout = QHBoxLayout()
 
         # Crear un QLabel para mostrar el nombre del usuario
         self.username_label = QLabel("Cargando...")
-        layout.addWidget(self.username_label)
+        self.logout_button = QPushButton()
+        self.logout_button.setStyleSheet(
+            """
+                width: 45px;
+                height: 45px;
+            """
+        )
+        icon = QIcon.fromTheme("network-offline")
+        pixmap = icon.pixmap(QSize(60, 60))
+        self.logout_button.setIcon(QIcon(pixmap))
+        self.logout_button.setToolTip("Cerrar Sesión")
+        sec_layout.addWidget(self.logout_button)
+        sec_layout.addWidget(self.username_label)
+
+        # Conectar el botón de cerrar sesión
+        self.logout_button.clicked.connect(self.cerrar_sesion)
+
+        # Agregar el layout secundario al layout principal
+        layout.addLayout(sec_layout)
 
         # Crear una instancia de TreeMenu
         self.tree_menu = TreeMenu()
@@ -37,3 +58,7 @@ class AsideWidget(QWidget):
         else:
             self.username_label.setText("Usuario Desconocido")
             self.tree_menu.set_user_access([])
+
+    def cerrar_sesion(self):
+        self.auth_service.logout()
+        QApplication.quit()
