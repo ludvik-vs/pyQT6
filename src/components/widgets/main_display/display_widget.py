@@ -3,14 +3,11 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 
 # Client
-from src.db.db_operations.db_client import DatabaseClient
-from src.services.client_service import ClientService
 from src.components.forms.user.create_client import CreateClient
 from src.components.forms.user.operaciones_client import ClientOperations
 from src.components.tables.clients_table import ClientTableWidget
 
 # Colaborator
-from src.services.rh_service import ColaboratorService
 from src.components.forms.user.create_colaborator import CreateColaborator
 from src.components.tables.tabla_planilla import ColaboratorTableWidget
 from src.components.forms.user.operaciones_colaborador import ColaboratorOperations
@@ -18,7 +15,6 @@ from src.components.forms.user.regitro_colaborador import ColaboratorRegister
 from src.components.tables.user_table import UserTableWidget
 
 # User
-from src.db.db_operations.db_user import DatabaseUser
 from src.components.forms.user.create_user import CreateUserForm
 from src.components.forms.user.operaciones_user import UserOperations
 from src.components.forms.user.change_password import PasswordChangeForm
@@ -29,22 +25,18 @@ from src.components.forms.orders.create_orders import CrearOrdenForm
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
 
-    def __init__(self, auth_service, user_services):
+    def __init__(self, auth_service, client_service, colaborator_service):
         super().__init__()
         self.setStyleSheet("background-color: #fafafc;")
+        #--------------------------------------------------------------
         self.auth_service = auth_service
-        self.user_services = user_services
-        #--------------------------------------------------------------
-        self.client_db_manager = DatabaseClient()
-        self.client_service = ClientService(self.client_db_manager)
-        #--------------------------------------------------------------
-        self.colaborator_service = ColaboratorService()
-        #--------------------------------------------------------------
-        self.user_db_manager = DatabaseUser()
-        #--------------------------------------------------------------
         self.auth_service.user_authenticated.connect(self.update_current_user_data)
-        self.update_current_user_data(auth_service.get_current_user())
+        self.update_current_user_data(self.auth_service.get_current_user())
         self.current_user_data = None
+        #--------------------------------------------------------------
+        self.client_service = client_service
+        #--------------------------------------------------------------
+        self.colaborator_service = colaborator_service
         #--------------------------------------------------------------
         self.init_ui()
 
@@ -101,13 +93,13 @@ class DisplayWidget(QWidget):
             form = ColaboratorOperations(self.colaborator_service)
             self.grid_layout.addWidget(form, 0, 0)
         elif text == "Detalle por Colaborador":
-            form = ColaboratorRegister()
+            form = ColaboratorRegister(self.colaborator_service)
             self.grid_layout.addWidget(form, 0, 0)
         elif text == "Tabla Planilla":
             form = ColaboratorTableWidget(self.colaborator_service)
             self.grid_layout.addWidget(form, 0, 0)
         elif text == "Crear Orden":
-            form = CrearOrdenForm()
+            form = CrearOrdenForm(self.current_user_data, self.auth_service, self.client_service, self.colaborator_service)
             self.grid_layout.addWidget(form, 0, 0)
         elif text == "Crear Usuario":
             form = CreateUserForm(self.auth_service)
@@ -116,7 +108,7 @@ class DisplayWidget(QWidget):
             form = UserOperations(self.auth_service)
             self.grid_layout.addWidget(form, 0, 0)
         elif text == "Tabla Usuario":
-            form = UserTableWidget(self.user_db_manager)
+            form = UserTableWidget(self.auth_service)
             self.grid_layout.addWidget(form, 0, 0)
         else:
             label = QLabel(f"Formulario para: {text}", self)

@@ -5,13 +5,12 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QIcon
-from src.db.db_operations.db_user import DatabaseUser
 import openpyxl
 
 class UserTableWidget(QWidget):
-    def __init__(self, db_manager: DatabaseUser):
+    def __init__(self, auth_services):
         super().__init__()
-        self.db_manager = db_manager
+        self.auth_services = auth_services
         self.init_ui()
 
     def init_ui(self):
@@ -88,7 +87,7 @@ class UserTableWidget(QWidget):
 
     def load_users(self):
         """Cargar todos los usuarios en la tabla."""
-        users = self.db_manager.get_all_users()
+        users = self.auth_services.get_all_users()
         self.table.setRowCount(0)
 
         for row, user in enumerate(users):
@@ -103,7 +102,7 @@ class UserTableWidget(QWidget):
     def filter_table(self):
         """Filtrar la tabla basado en el texto del filtro."""
         filter_text = self.filter_input.text().lower()
-        all_users = self.db_manager.get_all_users()
+        all_users = self.auth_services.get_all_users()
 
         filtered_users = [
             user for user in all_users

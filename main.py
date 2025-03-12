@@ -1,11 +1,25 @@
 import sys
 from PyQt6.QtWidgets import QMainWindow, QApplication, QStyleFactory, QWidget, QGridLayout, QDialog
 from PyQt6.QtGui import QScreen
-from src.services.auth_service import AuthService
+
+# USER
 from src.db.db_operations.db_user import DatabaseUser
+from src.services.auth_service import AuthService
+
+# COLABORATOR
+from src.db.db_operations.db_colaborator import DatabaseColaborators
+from src.services.rh_service import ColaboratorService
+
+# CLIENT
+from src.db.db_operations.db_client import DatabaseClient
+from src.services.client_service import ClientService
+
+# COMPONENTS
 from src.components.widgets.aside_bar.aside_widget import AsideWidget
 from src.components.widgets.main_display.display_widget import DisplayWidget
 from src.components.login.login_dialog import LoginDialog
+
+
 
 def load_styles():
     with open("main.css", "r") as file:
@@ -17,19 +31,23 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("ACRIL CAR NI")
         self.setStyleSheet(load_styles())
+        #--------------------------------------------------------------
         self.user_db_manager = DatabaseUser()
         self.user_db_manager.connect()
         self.auth_service = AuthService(self.user_db_manager)
+        #--------------------------------------------------------------
+        self.db_client = DatabaseClient()
+        self.client_service = ClientService(self.db_client)
+        #--------------------------------------------------------------
+        self.db_colaborator = DatabaseColaborators()
+        self.colaborator_service = ColaboratorService(self.db_colaborator)
+        #--------------------------------------------------------------
         self.aside_widget = AsideWidget(self.auth_service)
-        self.display_widget = DisplayWidget(
-            self.auth_service,
-            self.user_db_manager
-        )
+        self.display_widget = DisplayWidget(self.auth_service, self.client_service, self.colaborator_service)
         self.login_form = LoginDialog(self.auth_service)
         self.init_ui()
         self.aside_widget.tree_menu.item_selected.connect(self.update_display)
         self.login_form.login_successful.connect(self.on_login_success)
-
         self.setStyle(QApplication.style())
         self.aside_widget.setStyle(QApplication.style())
         self.display_widget.setStyle(QApplication.style())

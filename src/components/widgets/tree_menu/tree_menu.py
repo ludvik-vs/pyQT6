@@ -62,4 +62,4 @@ class TreeMenu(QTreeView):
                     for sub_item in self.tree_structure[branch_name]:
                         if sub_item not in [self.branches[branch_name].child(i).text() for i in range(self.branches[branch_name].rowCount())]:
                             self.branches[branch_name].appendRow(QStandardItem(sub_item))
-        self.expandAll()
+        #self.expandAll()

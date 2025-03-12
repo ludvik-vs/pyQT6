@@ -1,10 +1,20 @@
 from PyQt6.QtWidgets import (
-    QWidget, QLineEdit, QFormLayout, QTextEdit, QComboBox, QPushButton, QDoubleSpinBox, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QSpacerItem
+    QWidget, QLineEdit, QFormLayout, QTextEdit, QComboBox, QPushButton, QDoubleSpinBox, QLabel, QHBoxLayout, QFrame
 )
 
+def crear_divisor():
+    """Crea y configura un QFrame como divisor horizontal."""
+    divisor = QFrame()
+    divisor.setFrameShape(QFrame.Shape.HLine)
+    divisor.setFrameShadow(QFrame.Shadow.Sunken)
+    return divisor
+
 class CrearOrdenForm(QWidget):
-    def __init__(self):
+
+    def __init__(self, current_user_data, aunth_service, client_service, colaborator_service):
         super().__init__()
+        self.aunth_service = aunth_service
+        self.current_user_data = current_user_data
         self.init_ui()
 
     def init_ui(self):
@@ -14,6 +24,46 @@ class CrearOrdenForm(QWidget):
         # Añadir campos al layout
         layout = QFormLayout()
         layout.setVerticalSpacing(18)
+
+        # Form Header
+        self.header = QLabel("Crear Orden de Servicio", self)
+        self.header.setStyleSheet("font-size: 24px; font-weight: bold;")
+        layout.addRow(self.header)
+        layout.addRow(crear_divisor())
+
+        # Cliente
+        self.client_imput_frame = QHBoxLayout()
+        self.client_imput_frame.setSpacing(10)
+        self.client_id_input = QLineEdit(self)
+        self.client_id_input.setPlaceholderText("Ingrese el numero ID del cliente")
+        self.cargarcliente_btn = QPushButton('Enlazar', self)
+        self.cargarcliente_btn.clicked.connect(self.cargar_cliente)
+        self.client_imput_frame.addWidget(self.client_id_input)
+        self.client_imput_frame.addWidget(self.cargarcliente_btn)
+        layout.addRow(self.client_imput_frame)
+        self.datos_cliente = QLabel("No hay cliente asignado 🔴")
+        self.datos_cliente.setStyleSheet("font-size: 12px; color: orange;")
+        layout.addRow(self.datos_cliente)
+
+        # Atendido por
+        self.colaborador_imput_frame = QHBoxLayout()
+        self.colaborador_imput_frame.setSpacing(10)
+        self.colaborador_id_input = QLineEdit(self)
+        self.colaborador_id_input.setPlaceholderText("Ingrese el numero ID del trabajador")
+        self.cargarcolaborador_btn = QPushButton('Enlazar', self)
+        self.cargarcolaborador_btn.clicked.connect(self.cargar_colaborador)
+        self.colaborador_imput_frame.addWidget(self.colaborador_id_input)
+        self.colaborador_imput_frame.addWidget(self.cargarcolaborador_btn)
+        layout.addRow(self.colaborador_imput_frame)
+        self.datos_colaborador = QLabel("No hay trabajador asignado 🔴")
+        self.datos_colaborador.setStyleSheet("font-size: 12px; color: orange;")
+        layout.addRow(self.datos_colaborador)
+
+        # Elaborado por
+        nombre_usuario = self.current_user_data.username
+        self.usuario_id_label = QLabel(F"Registrado por: {nombre_usuario}  ✅", self)
+        layout.addRow(self.usuario_id_label)
+        layout.addRow(crear_divisor())
 
         # Campos del formulario
         self.orden_input = QLineEdit(self)
@@ -84,3 +134,11 @@ class CrearOrdenForm(QWidget):
         self.operarios_combo.setCurrentIndex(0)
         self.estatus_combo.setCurrentIndex(0)
         self.tipo_pago_combo.setCurrentIndex(0)
+
+    def cargar_cliente(self):
+        """Cargar los datos del cliente en el formulario."""
+        print("Cargando datos de cliente...")
+
+    def cargar_colaborador(self):
+        """Cargar los datos del colaborador en el formulario."""
+        print("Cargando datos de colaborador...")
