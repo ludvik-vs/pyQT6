@@ -98,7 +98,7 @@ class DisplayWidget(QWidget):
         elif text == "Tabla Planilla":
             form = ColaboratorTableWidget(self.colaborator_service)
             self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Crear Orden":
+        elif text == "Crear Orden T":
             form = CrearOrdenForm(self.current_user_data, self.auth_service, self.client_service, self.colaborator_service)
             self.grid_layout.addWidget(form, 0, 0)
         elif text == "Crear Usuario":

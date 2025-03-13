@@ -76,27 +76,27 @@ class DatabaseUser(DatabaseManager):
         if user_role and user_role[0] == 'admin':
             all_branches = [
                 '1 - Inicio',
-                'Clientes',
-                'Planilla',
-                'Ordenes de Trabajo',
-                'Ordenes de Prduccion',
-                'Operaciones de Caja',
-                'Reportes Operativos',
-                'Reportes Administrativos',
-                'Administración de Usuarios',
-                'Operaciones de Administración'
+                '2 - Administración de Usuarios',
+                '3 - Clientes',
+                '4 - Órdenes de Trabajo',
+                '5 - Órdenes de Producción',
+                '6 - Operaciones de Caja',
+                '7 - Reportes Operativos',
+                '8 - Planilla',
+                '9 - Operaciones de Administración',
+                '10 - Reportes Administrativos'
             ]
             all_sub_branches = {
                 '1 - Inicio': ['ACRIL CAR', 'Cambiar Contraseña'],
-                'Clientes': ['Alta de Cliente', 'Operaciones con Cliente', 'Tabla de Clientes'],
-                'Ordenes de Trabajo': ['Crear Orden', 'Actualizar Orden'],
-                'Ordenes de Prduccion': ['Crear Orden', 'Actualizar Orden'],
-                'Operaciones de Caja': ['Ingresos de Caja', 'Salidas de Caja', 'Arqueo de Caja'],
-                'Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
-                'Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
-                'Reportes Administrativos': ['RA 1', 'RA 2', 'RA 3'],
-                'Administración de Usuarios': ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario'],
-                'Operaciones de Administración': ['Aprobar Descuento', 'Eliminar Orden']
+                '2 - Administración de Usuarios': ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario'],
+                '3 - Clientes': ['Alta de Cliente', 'Operaciones con Cliente', 'Tabla de Clientes'],
+                '4 - Órdenes de Trabajo': ['Crear Orden T', 'Actualizar Orden T'],
+                '5 - Órdenes de Producción': ['Crear Orden P', 'Actualizar Orden P'],
+                '6 - Operaciones de Caja': ['Ingresos de Caja', 'Egresos de Caja', 'Arqueo de Caja'],
+                '7 - Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
+                '8 - Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
+                '9 - Operaciones de Administración': ['Aprobar Descuento', 'Eliminar Orden'],
+                '10 - Reportes Administrativos': ['RA 1', 'RA 2', 'RA 3']
             }
             with self.conn:
                 for branch in all_branches:

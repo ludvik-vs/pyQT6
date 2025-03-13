@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import (
     QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QMessageBox, QHBoxLayout, QDateEdit, QCheckBox
 )
-from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtCore import Qt, QDateTime
 from src.services.rh_service import ColaboratorService
 
 class CreateColaborator(QWidget):
@@ -20,18 +20,23 @@ class CreateColaborator(QWidget):
         self.telefono_personal = QLineEdit(self)
         self.documento_identidad = QLineEdit(self)
         self.fecha_ingreso = QDateEdit(self)
+        self.fecha_ingreso.setDisplayFormat("dd/MM/yyyy HH:mm:ss AP")
         self.fecha_ingreso.setCalendarPopup(True)
-        self.fecha_ingreso.setDate(QDate.currentDate())
+        self.fecha_ingreso.setDateTime(QDateTime.currentDateTime())
         self.nombre_contacto_emergencia = QLineEdit(self)
         self.telefono_emergencia = QLineEdit(self)
-        self.fecha_baja = QLineEdit(self)  # Cambiado a QLineEdit para permitir valores vacíos
-        self.fecha_baja.setPlaceholderText("Opcional")
+        self.fecha_baja = QDateEdit(self)
+        self.fecha_baja.setDisplayFormat("dd/MM/yyyy HH:mm:ss AP")
+        self.fecha_baja.setCalendarPopup(True)
+        self.fecha_baja.setDateTime(QDateTime.currentDateTime())
         self.salario = QLineEdit(self)
         self.is_active = QCheckBox("Activo", self)
         self.is_active.setChecked(True)
         self.puesto = QLineEdit(self)
         self.fecha_nacimiento = QDateEdit(self)
+        self.fecha_nacimiento.setDisplayFormat("dd/MM/yyyy HH:mm:ss AP")
         self.fecha_nacimiento.setCalendarPopup(True)
+        self.fecha_nacimiento.setDateTime(QDateTime.currentDateTime())
         self.numero_seguro_social = QLineEdit(self)
         self.informacion_adicional = QLineEdit(self)
 
@@ -114,14 +119,14 @@ class CreateColaborator(QWidget):
         self.apellido.clear()
         self.telefono_personal.clear()
         self.documento_identidad.clear()
-        self.fecha_ingreso.setDate(QDate.currentDate())
+        self.fecha_ingreso.setDateTime(QDateTime.currentDateTime())
         self.nombre_contacto_emergencia.clear()
         self.telefono_emergencia.clear()
-        self.fecha_baja.clear()
+        self.fecha_baja.setDateTime(QDateTime.currentDateTime())
         self.salario.clear()
         self.is_active.setChecked(True)
         self.puesto.clear()
-        self.fecha_nacimiento.setDate(QDate.currentDate())
+        self.fecha_nacimiento.setDateTime(QDateTime.currentDateTime())
         self.numero_seguro_social.clear()
         self.informacion_adicional.clear()
         self.result_label.clear()

@@ -65,9 +65,16 @@ class UserOperations(QWidget):
     def create_access_checkboxes(self):
         """Crear checkboxes para los accesos."""
         access_list = [
-            '1 - Inicio', 'Clientes', 'Planilla', 'Operaciones con Ordenes',
-            'Operaciones de Caja', 'Reportes Operativos', 'Reportes Administrativos',
-            'Administración de Usuarios', 'Operaciones de Administración'
+            '1 - Inicio',
+            '2 - Administración de Usuarios',
+            '3 - Clientes',
+            '4 - Órdenes de Trabajo',
+            '5 - Órdenes de Producción',
+            '6 - Operaciones de Caja',
+            '7 - Reportes Operativos',
+            '8 - Planilla',
+            '9 - Operaciones de Administración',
+            '10 - Reportes Administrativos'
         ]
         checkboxes = []
         for access in access_list:
