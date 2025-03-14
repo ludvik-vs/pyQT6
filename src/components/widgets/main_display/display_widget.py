@@ -22,6 +22,7 @@ from src.components.forms.user.change_password import PasswordChangeForm
 # Orders
 from src.components.forms.orders.create_orders import CrearOrdenForm
 from src.components.tables.wo_table import WorkOrderTable
+from src.components.forms.orders.wo_details import WorkOrderDetails
 
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
@@ -108,6 +109,14 @@ class DisplayWidget(QWidget):
                 self.client_service,
                 self.colaborator_service,
                 self.work_order_service
+            )
+            self.grid_layout.addWidget(form, 0, 0)
+        elif text == "Detalle Orden T":
+            form = WorkOrderDetails(
+                self.work_order_service,
+                self.client_service,
+                self.colaborator_service,
+                self.auth_service,
             )
             self.grid_layout.addWidget(form, 0, 0)
         elif text == "Tabla Orden T":

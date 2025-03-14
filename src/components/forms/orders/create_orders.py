@@ -5,43 +5,6 @@ from PyQt6.QtCore import QDateTime
 from src.components.custom.cq_divisor import CQDivisor
 from src.components.custom.cq_services_list import CQServicesList
 
-class Order:
-    _instance = None
-
-    def __new__(cls, order_id=None, client_id=None, colaborator_id=None, user_id=None, services=None, start_date=None, end_date=None, status=None, total_cost=None):
-        if cls._instance is None:
-            cls._instance = super(Order, cls).__new__(cls)
-            cls._instance.order_id = order_id
-            cls._instance.client_id = client_id
-            cls._instance.colaborator_id = colaborator_id
-            cls._instance.user_id = user_id
-            cls._instance.services = services
-            cls._instance.start_date = start_date
-            cls._instance.end_date = end_date
-            cls._instance.status = status
-            cls._instance.total_cost = total_cost
-        return cls._instance
-
-    def __init__(self, order_id=None, client_id=None, colaborator_id=None, user_id=None, services=None, start_date=None, end_date=None, status=None, total_cost=None):
-        if not hasattr(self, 'initialized'):
-            self.initialized = True
-            self.order_id = order_id
-            self.client_id = client_id
-            self.colaborator_id = colaborator_id
-            self.user_id = user_id
-            self.services = services
-            self.start_date = start_date
-            self.end_date = end_date
-            self.status = status
-            self.total_cost = total_cost
-
-    def __str__(self):
-        return (f"Orden {self.order_id} - Cliente {self.client_id} - Colaborador {self.colaborator_id} - "
-                f"Usuario {self.user_id} - Servicios {self.services} - Inicio {self.start_date} - "
-                f"Fin {self.end_date} - Estatus {self.status} - Costo Total {self.total_cost}")
-
-order_instance = Order()
-
 class CrearOrdenForm(QWidget):
 
     def __init__(self, current_user_data, aunth_service, client_service, colaborator_service, work_order_service):
@@ -103,8 +66,6 @@ class CrearOrdenForm(QWidget):
 
         # Elaborado por
         nombre_usuario = self.current_user_data.username
-        id_usuario = self.current_user_data.user_id
-        order_instance.user_id = id_usuario
         self.usuario_id_label = QLabel(f"Registrado por: {nombre_usuario}  ✅", self)
         layout.addRow(self.usuario_id_label)
         layout.addRow(CQDivisor())
@@ -188,8 +149,6 @@ class CrearOrdenForm(QWidget):
                 f"Contacto 1: {cliente_data['contact_1']}\n"
                 f"Email: {cliente_data['email']}"
             )
-            # Inyectar client_id en order_intance
-            order_instance.client_id = cliente_data['id']
             # Inyectar en el campo self.datos_cliente
             self.datos_cliente.setText(datos_formateados)
             # Cambiar estilo a exitoso
@@ -209,8 +168,6 @@ class CrearOrdenForm(QWidget):
                 f"Nombre: {colaborador_data[1]} {colaborador_data[2]}\n"
                 f"Identificación: {colaborador_data[4]}\n"
             )
-            # Inyectar colaborador_id en order_intance
-            order_instance.colaborator_id = colaborador_data[0]
             # Inyectar en el campo self.datos_colaborador
             self.datos_colaborador.setText(datos_formateados)
             self.datos_colaborador.setStyleSheet("font-size: 12px; color: #4BB543;")
@@ -220,8 +177,8 @@ class CrearOrdenForm(QWidget):
         print("Cargando datos de colaborador...")
 
     def update_services(self, services):
-            """Actualizar la lista de servicios en el formulario."""
-            order_instance.services = eval(services)
+        """Actualizar la lista de servicios en el formulario."""
+        self.services = eval(services)
 
     def procesar_orden(self):
 
@@ -245,28 +202,28 @@ class CrearOrdenForm(QWidget):
             QMessageBox.critical(self, "Error", "No hay servicios seleccionados.")
             return
 
-        # Update the instance of Order with the form data
-        order_instance.start_date = self.fecha_recepcion_input.dateTime().toString("yyyy-MM-dd HH:mm")
-        order_instance.end_date = self.fecha_entrega_input.dateTime().toString("yyyy-MM-dd HH:mm")
-        order_instance.total_cost = self.costo_total_servicios_input.value()
-        order_instance.status = self.order_status.text()
-        order_instance.services = self.services_list.get_services()  # Obtain services
+        # Gather form data
+        start_date = self.fecha_recepcion_input.dateTime().toString("yyyy-MM-dd HH:mm")
+        end_date = self.fecha_entrega_input.dateTime().toString("yyyy-MM-dd HH:mm")
+        total_cost = self.costo_total_servicios_input.value()
+        status = self.order_status.text()
+        services = self.services_list.get_services()  # Obtain services
 
         try:
-            # Create the work order using the data from order_instance
+            # Create the work order using the form data
             self.work_order_service.create_work_order(
                 numero_de_orden,
-                order_instance.start_date,
-                order_instance.end_date,
-                order_instance.user_id,
-                order_instance.client_id,
-                order_instance.colaborator_id,
-                order_instance.total_cost,
-                order_instance.status
+                start_date,
+                end_date,
+                self.current_user_data.user_id,
+                self.client_id_input.text(),
+                self.colaborador_id_input.text(),
+                total_cost,
+                status
             )
             # Add items to the work order
             try:
-                self.work_order_service.add_work_order_item(numero_de_orden, id_colaborator, str(order_instance.services))
+                self.work_order_service.add_work_order_item(numero_de_orden, id_colaborator, str(services))
                 QMessageBox.information(self, "Éxito", f"Orden de trabajo {numero_de_orden} creada exitosamente.")
                 self.clear_form()
             except Exception as e:

@@ -10,6 +10,7 @@ class DatabaseWorkOrder(DatabaseManager):
         """Inicializa todas las tablas necesarias."""
         self.create_work_orders_table()
         self.create_work_order_items_table()
+        self.create_work_order_payments_table()
 
     def create_work_orders_table(self):
         """Crea la tabla de órdenes de trabajo."""
@@ -30,7 +31,7 @@ class DatabaseWorkOrder(DatabaseManager):
             )
         '''
         self._execute_query(query)
-        self._insert_work_order('777', '2021-01-01', '2021-01-02', 1, 1, 1, 600, 'Abierta')
+        #self._insert_work_order('777', '2021-01-01', '2021-01-02', 1, 1, 1, 600, 'Abierta')
 
     def create_work_order_items_table(self):
         """Crea la tabla de ítems de órdenes de trabajo."""
@@ -46,6 +47,23 @@ class DatabaseWorkOrder(DatabaseManager):
         '''
         self._execute_query(query)
 
+    def create_work_order_payments_table(self):
+        """Crea la tabla de pagos de órdenes de trabajo."""
+        query = '''
+            CREATE TABLE IF NOT EXISTS work_order_payments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                work_order_id INTEGER NOT NULL,
+                payment_date TEXT NOT NULL,
+                payment_method TEXT NOT NULL,
+                note TEXT,
+                payment REAL NOT NULL,
+                FOREIGN KEY (work_order_id) REFERENCES work_orders(id)
+            )
+        '''
+        self._execute_query(query)
+        # Valida si existe registro en la tabal work_order_payments
+        #self._insert_payments("777", "payment_date",  "payment_method", "note",  1000.00 )
+
     def get_all_orders(self):
         """Devuelve todas las órdenes de trabajo."""
         query = '''
@@ -53,6 +71,26 @@ class DatabaseWorkOrder(DatabaseManager):
         '''
         cursor = self._execute_query(query)
         return cursor.fetchall()
+
+    def get_work_order_id(self, id):
+        """Obtiene una orden de trabajo por su ID."""
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute('''SELECT * FROM work_orders WHERE work_order_id = ?''', (id,))
+            return cursor.fetchone()
+        except Exception as e:
+            print(f"Error al obtener la orden de trabajo: {e}")
+            raise
+
+    def get_work_order_payments(self, id):
+        """Obtiene los pagos asociados a una orden de trabajo."""
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute('''SELECT * FROM work_order_payments WHERE work_order_id = ?''', (id,))
+            return cursor.fetchall()
+        except Exception as e:
+            print(f"Error al obtener los pagos de la orden de trabajo: {e}")
+            raise
 
     def close(self):
         self.conn.close()
@@ -89,3 +127,14 @@ class DatabaseWorkOrder(DatabaseManager):
             VALUES (?, ?, ?)
         '''
         self._execute_query(query, (work_order_id, colaborator_id, services))
+
+    def _insert_payments(self, work_order_id, payment_date, payment_method, note,  payment):
+        """Registra los pagos de una orden de trabajo."""
+        if work_order_id is None:
+            raise ValueError("work_order_id cannot be None")
+
+        query = '''
+            INSERT INTO work_order_payments (work_order_id, payment_date, payment_method, note,  payment)
+            VALUES (?, ?, ?, ?, ?)
+        '''
+        self._execute_query(query, (work_order_id, payment_date, payment_method, note,  payment))

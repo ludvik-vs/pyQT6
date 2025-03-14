@@ -17,8 +17,7 @@ class WorkOrderService:
 
     def get_work_order(self, work_order_id):
         """Obtiene una orden de trabajo por su ID."""
-        query = 'SELECT * FROM work_orders WHERE id = ?'
-        return self.db._fetch_one(query, (work_order_id,))
+        return self.db.get_work_order_id(work_order_id)
 
     def update_work_order(self, work_order_id, **kwargs):
         """Actualiza una orden de trabajo."""
@@ -45,6 +44,27 @@ class WorkOrderService:
         """Obtiene los ítems de una orden de trabajo."""
         query = 'SELECT * FROM work_order_items WHERE work_order_id = ?'
         return self.db._fetch_all(query, (work_order_id,))
+
+    # work orders paymet operations
+    def add_work_order_payment(self, work_order_id, payment_date, payment_method, amount):
+        """Agrega un pago a una orden de trabajo."""
+        query = '''
+            INSERT INTO work_order_payments (work_order_id, payment_date, payment_method, amount)
+            VALUES (?, ?, ?, ?)
+        '''
+        self.db._execute_query(query, (work_order_id, payment_date, payment_method, amount))
+
+    def get_all_paymets_for_order(self, id):
+        return self.db.get_work_order_payments(id)
+
+    # calculate mont iference total mont minus pyments sumatory
+    def work_order_balance(self, work_order_id):
+        """Calcula el saldo de una orden de trabajo."""
+        order = self.get_work_order(work_order_id)
+        payments = self.db.get_work_order_payments(work_order_id)
+        total = order[7]
+        paid = sum(payment[5] for payment in payments)
+        return str(paid - total)
 
     def close(self):
         """Cierra la conexión a la base de datos."""
