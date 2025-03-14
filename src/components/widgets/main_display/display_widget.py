@@ -21,11 +21,12 @@ from src.components.forms.user.change_password import PasswordChangeForm
 
 # Orders
 from src.components.forms.orders.create_orders import CrearOrdenForm
+from src.components.tables.wo_table import WorkOrderTable
 
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
 
-    def __init__(self, auth_service, client_service, colaborator_service):
+    def __init__(self, auth_service, client_service, colaborator_service, work_order_service):
         super().__init__()
         self.setStyleSheet("background-color: #fafafc;")
         #--------------------------------------------------------------
@@ -37,6 +38,8 @@ class DisplayWidget(QWidget):
         self.client_service = client_service
         #--------------------------------------------------------------
         self.colaborator_service = colaborator_service
+        #--------------------------------------------------------------
+        self.work_order_service = work_order_service
         #--------------------------------------------------------------
         self.init_ui()
 
@@ -99,7 +102,16 @@ class DisplayWidget(QWidget):
             form = ColaboratorTableWidget(self.colaborator_service)
             self.grid_layout.addWidget(form, 0, 0)
         elif text == "Crear Orden T":
-            form = CrearOrdenForm(self.current_user_data, self.auth_service, self.client_service, self.colaborator_service)
+            form = CrearOrdenForm(
+                self.current_user_data,
+                self.auth_service,
+                self.client_service,
+                self.colaborator_service,
+                self.work_order_service
+            )
+            self.grid_layout.addWidget(form, 0, 0)
+        elif text == "Tabla Orden T":
+            form = WorkOrderTable(self.work_order_service)
             self.grid_layout.addWidget(form, 0, 0)
         elif text == "Crear Usuario":
             form = CreateUserForm(self.auth_service)

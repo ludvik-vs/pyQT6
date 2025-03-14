@@ -19,7 +19,9 @@ from src.components.widgets.aside_bar.aside_widget import AsideWidget
 from src.components.widgets.main_display.display_widget import DisplayWidget
 from src.components.login.login_dialog import LoginDialog
 
-
+# WORK ORDERS
+from src.db.db_operations.db_work_order import DatabaseWorkOrder
+from src.services.work_order_service import WorkOrderService
 
 def load_styles():
     with open("main.css", "r") as file:
@@ -42,8 +44,11 @@ class MainWindow(QMainWindow):
         self.db_colaborator = DatabaseColaborators()
         self.colaborator_service = ColaboratorService(self.db_colaborator)
         #--------------------------------------------------------------
+        self.db_work_order = DatabaseWorkOrder()
+        self.work_order_service = WorkOrderService(self.db_work_order)
+        #--------------------------------------------------------------
         self.aside_widget = AsideWidget(self.auth_service)
-        self.display_widget = DisplayWidget(self.auth_service, self.client_service, self.colaborator_service)
+        self.display_widget = DisplayWidget(self.auth_service, self.client_service, self.colaborator_service, self.work_order_service)
         self.login_form = LoginDialog(self.auth_service)
         self.init_ui()
         self.aside_widget.tree_menu.item_selected.connect(self.update_display)
