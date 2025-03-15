@@ -48,7 +48,7 @@ class FormularioIngresoCaja(QWidget):
         self.layout_horizontal.addWidget(self.orden_btn)
         layout.addRow(self.layout_horizontal)
         layout.addRow(CQDivisor())
-        # ---------------------------------------------------------------------
+        # ------------------------------------------------------
         self.order_data_label = QLabel("")
         layout.addRow(self.order_data_label)
         self.setLayout(layout)
@@ -65,9 +65,11 @@ class FormularioIngresoCaja(QWidget):
         self.payment_type_input.addItems(["Efectivo", "Tarjeta", "Transferencia", "Cheque", "Deposito Bancario", "Otro"])
         layout.addRow(self.payment_type_label, self.payment_type_input)
 
-        self.reference_label = QLabel("Referencia:")
-        self.reference_input = QLineEdit()
-        layout.addRow(self.reference_label, self.reference_input)
+        self.reference_label = QLabel("Registrado por:")
+        nombre_usuario = self.auth_service.get_current_user()
+        self.user_log_register_input = QLineEdit(f"{nombre_usuario.username}")
+        self.user_log_register_input.setReadOnly(True)
+        layout.addRow(self.reference_label, self.user_log_register_input)
 
         self.paymetn_mount_label = QLabel("Monto | Cantidad (C$):")
         # Monto input
@@ -93,6 +95,11 @@ class FormularioIngresoCaja(QWidget):
         # ---------------------------------------------------------------------
         layout.addRow(self.h_btns_layout)
 
+    def get_curret_user(self):
+        current_user = self.auth_service.get_current_user()
+        prin(current_user)
+        return current_user
+
     def cargar_orden(self):
         numero_orden = self.orden_input.text()
         if numero_orden:
@@ -115,19 +122,20 @@ class FormularioIngresoCaja(QWidget):
         order_data = self.order_data_label.text()
         paymet_date = self.fecha_payment_input.text()
         paymet_type = self.payment_type_input.currentText()
-        paymet_reference = self.reference_input.text()
+        user_log_register_input = self.user_log_register_input.text()
         monto = self.payment_mount_input.value()
         comentario = self.comentario_input.toPlainText()
         if numero_orden:
             orden = self.work_order_service.get_work_order(numero_orden)
             if orden:
-                #work_order_id, payment_date, payment_method, note, payment
-                self.work_order_service.add_work_order_payment(
+                #work_order_id, payment_date, payment_method, payment, user_log_registration, note
+                self.work_order_service.set_work_order_payment(
                     numero_orden,
                     paymet_date,
                     paymet_type,
+                    user_log_register_input,
+                    monto,
                     comentario,
-                    monto
                 )
                 QMessageBox().information(self, "Éxito", "Ingreso de caja registrado correctamente")
                 self.limpiar_formulario()
@@ -141,7 +149,6 @@ class FormularioIngresoCaja(QWidget):
         self.orden_input.clear()
         self.payment_mount_input.setValue(0)
         self.comentario_input.clear()
-        self.reference_input.clear()
 
     def cancelar_ingreso(self):
         self.close()

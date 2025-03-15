@@ -45,19 +45,18 @@ class WorkOrderService:
         query = 'SELECT * FROM work_order_items WHERE work_order_id = ?'
         return self.db._fetch_all(query, (work_order_id,))
 
-    # work orders paymet operations
-    def add_work_order_payment(self, work_order_id, payment_date, payment_method, note, payment):
+    def set_work_order_payment(self, work_order_id, payment_date, payment_method, payment, user_log_registration, note):
         """Agrega un pago a una orden de trabajo."""
+        # _insert_payments
         query = '''
-            INSERT INTO work_order_payments (work_order_id, payment_date, payment_method, note, payment)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO work_order_payments (work_order_id, payment_date, payment_method, payment, user_log_registration, note)
+            VALUES (?, ?, ?, ?, ?, ?)
         '''
-        self.db._execute_query(query, (work_order_id, payment_date, payment_method, note, payment))
+        self.db._execute_query(query, (work_order_id, payment_date, payment_method, payment, user_log_registration, note))
 
     def get_all_paymets_for_order(self, id):
         return self.db.get_work_order_payments(id)
 
-    # calculate mont iference total mont minus pyments sumatory
     def work_order_balance(self, work_order_id):
         """Calcula el saldo de una orden de trabajo."""
         order = self.get_work_order(work_order_id)

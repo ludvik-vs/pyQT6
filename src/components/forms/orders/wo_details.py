@@ -131,9 +131,10 @@ class WorkOrderDetails(QWidget):
 
         # Tabla detalle de pagos
         self.table = QTableWidget(self)
-        self.table.setColumnCount(6)
+        self.table.setColumnCount(7)
+        # work_order_id, payment_date, payment_method, payment, user_log_registration, note
         self.table.setHorizontalHeaderLabels([
-            "ID", "No Orden", "Fecha Pagos", "Tipo de Pago", "Comentario", "Monto"
+            "ID", "No Orden", "Fecha Pagos", "Tipo de Pago", "Registrado por", "Monto (C$)", "Comentario", 
         ])
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)

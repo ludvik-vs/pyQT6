@@ -55,8 +55,10 @@ class DatabaseWorkOrder(DatabaseManager):
                 work_order_id INTEGER NOT NULL,
                 payment_date TEXT NOT NULL,
                 payment_method TEXT NOT NULL,
-                note TEXT,
                 payment REAL NOT NULL,
+                user_log_registration INTEGER NOT NULL,
+                note TEXT,
+                FOREIGN KEY (user_log_registration) REFERENCES users(id),
                 FOREIGN KEY (work_order_id) REFERENCES work_orders(id)
             )
         '''
@@ -95,16 +97,6 @@ class DatabaseWorkOrder(DatabaseManager):
     def close(self):
         self.conn.close()
 
-    #def _execute_query(self, query, params=None):
-    #    """Ejecuta una consulta SQL con parámetros opcionales."""
-    #    with self.conn:
-    #        cursor = self.conn.cursor()
-    #        if params:
-    #            cursor.execute(query, params)
-    #        else:
-    #            cursor.execute(query)
-    #        return cursor
-
     def _insert_work_order(self, work_order_id, start_date, end_date, user_id, client_id, colaborador_id, total_cost, order_status):
         """Registra los datos de una orden de trabajo y devuelve el ID de la orden."""
         query = '''
@@ -128,13 +120,13 @@ class DatabaseWorkOrder(DatabaseManager):
         '''
         self._execute_query(query, (work_order_id, colaborator_id, services))
 
-    def _insert_payments(self, work_order_id, payment_date, payment_method, note,  payment):
+    def _insert_payments(self, work_order_id, payment_date, payment_method, payment, user_log_registration, note):
         """Registra los pagos de una orden de trabajo."""
         if work_order_id is None:
             raise ValueError("work_order_id cannot be None")
 
         query = '''
-            INSERT INTO work_order_payments (work_order_id, payment_date, payment_method, note,  payment)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO work_order_payments (work_order_id, payment_date, payment_method, payment, user_log_registration, note)
+            VALUES (?, ?, ?, ?, ?, ?)
         '''
-        self._execute_query(query, (work_order_id, payment_date, payment_method, note,  payment))
+        self._execute_query(query, (work_order_id, payment_date, payment_method, payment, user_log_registration, note))
