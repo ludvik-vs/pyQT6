@@ -1,4 +1,12 @@
-from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QApplication
+from PyQt6.QtWidgets import (
+    QWidget, 
+    QLabel, 
+    QVBoxLayout, 
+    QHBoxLayout, 
+    QPushButton, 
+    QApplication,
+    QStyle
+    )
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import QSize
 from src.components.widgets.tree_menu.tree_menu import TreeMenu
@@ -15,23 +23,24 @@ class AsideWidget(QWidget):
         self.update_user_interface(auth_service.get_current_user())
 
     def init_ui(self):
-        layout = QVBoxLayout()
-        self.sec_layout = QHBoxLayout()
-        self.sec_layout.setContentsMargins(0, 0, 0, 0)
-        self.sec_layout.setSpacing(0)
 
-        # Crear un QLabel para mostrar el nombre del usuario
+        self.main_layout = QVBoxLayout()
+        self.sec_layout = QHBoxLayout()
+
         self.username_label = QLabel("Cargando...")
-        self.logout_button = QPushButton("🚫")
+        close_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarCloseButton )
+        self.logout_button = QPushButton()
+        self.logout_button.setIcon(close_icon)
+        self.logout_button.setIconSize(QSize(20, 20))
         self.logout_button.setStyleSheet(
             """
                 padding: 0px;
                 margin: 0px;
-                width: 50px;
-                height: 50px;
+                max-width: 40px;
+                min-height: 20px;
             """
         )
-        self.logout_button.setToolTip("Cerrar Sesión")
+        self.logout_button.setToolTip("Salir")
         self.sec_layout.addWidget(self.logout_button)
         self.sec_layout.addWidget(self.username_label)
 
@@ -39,16 +48,16 @@ class AsideWidget(QWidget):
         self.logout_button.clicked.connect(self.cerrar_sesion)
 
         # Agregar el layout secundario al layout principal
-        layout.addLayout(self.sec_layout)
+        self.main_layout.addLayout(self.sec_layout)
 
         # Crear una instancia de TreeMenu
         self.tree_menu = TreeMenu()
-        layout.addWidget(self.tree_menu)
+        self.main_layout.addWidget(self.tree_menu)
 
         # Asegurarse de que el QTreeView ocupe todo el espacio disponible
-        layout.setStretchFactor(self.tree_menu, 1)
+        self.main_layout.setStretchFactor(self.tree_menu, 1)
 
-        self.setLayout(layout)
+        self.setLayout(self.main_layout)
 
     def update_user_interface(self, user):
         if user:

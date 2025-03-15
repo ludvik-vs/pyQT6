@@ -19,7 +19,7 @@ class ClientOperations(QWidget):
         self.client_id = QLineEdit(self)
         layout.addRow(self.client_id_label, self.client_id)
 
-        self.load_btn = QPushButton('Cargar datos del Cliente', self)
+        self.load_btn = QPushButton('Cargar Cliente', self)
         layout.addRow(self.load_btn)
 
         self.nombre_cliente_label = QLabel("Nombre del Cliente:")
@@ -64,7 +64,6 @@ class ClientOperations(QWidget):
         layout.addWidget(self.result_label)
 
         self.setLayout(layout)
-
 
     def load_client(self):
         """Cargar datos del cliente desde la base de datos usando el ID."""

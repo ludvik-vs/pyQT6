@@ -145,7 +145,7 @@ class CrearOrdenForm(QWidget):
         # Establecer el layout principal
         main_layout.addWidget(scroll)
         self.setLayout(main_layout)
-
+    
     def clear_form(self):
         """Limpiar todos los campos del formulario."""
         self.orden_input.clear()

@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QTreeView
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
+
 
 class TreeMenu(QTreeView):
     item_selected = pyqtSignal(str)
@@ -26,11 +27,22 @@ class TreeMenu(QTreeView):
         self.clicked.connect(self.on_item_selected)
         self.setEditTriggers(QTreeView.EditTrigger.NoEditTriggers)
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Return or event.key() == Qt.Key.Key_Enter:
+            current_index = self.currentIndex()
+            self.on_item_selected(current_index)
+        super().keyPressEvent(event)
+
     def create_branch(self, title, sub_items):
         branch = QStandardItem(title)
         for item in sub_items:
             branch.appendRow(QStandardItem(item))
         return branch
+
+    def on_item_selected(self, index):
+        item = self.model.itemFromIndex(index)
+        if item and item.parent():
+            self.item_selected.emit(item.text())
 
     def init_ui(self):
         root_node = self.model.invisibleRootItem()
@@ -40,11 +52,6 @@ class TreeMenu(QTreeView):
             branch = self.create_branch(title, sub_items)
             root_node.appendRow(branch)
         self.expandAll()
-
-    def on_item_selected(self, index):
-        item = self.model.itemFromIndex(index)
-        if item and item.parent():
-            self.item_selected.emit(item.text())
 
     def set_user_access(self, user_access):
         """Construye el árbol basado en los accesos del usuario."""
