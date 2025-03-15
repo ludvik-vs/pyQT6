@@ -141,16 +141,23 @@ class WorkOrderDetails(QWidget):
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.details_layout.addRow(self.table)
+
+        # Close order red Btn
+        self.close_order_button = QPushButton("Cerrar Orden")
+        # disable Btn
+        self.close_order_button.setVisible(False)
+        self.close_order_button.clicked.connect(self.close_order)
+
         # Add container to scroll area
         container.setLayout(self.details_layout)
         # Set container as the scroll area widget
         scroll.setWidget(container)
         # Add scroll area to the main layout
         main_layout.addWidget(scroll)
+        # Add close order button to the main layout
+        main_layout.addWidget(self.close_order_button)
         # Add the main layout to the widget
         self.setLayout(main_layout)
-
-        #self.setLayout(self.details_layout)
 
     def adjust_column_widths(self):
         table_width = self.table.viewport().width()
@@ -180,7 +187,7 @@ class WorkOrderDetails(QWidget):
             self.load_payment_details(order[1])
 
         except Exception as e:
-            self.show_error(f"Error fetching order details: {e}")
+            self.show_error(f"Error al buscar la orden, verifique el numero de orden ingresado:  <<{e}>>")
             return
 
     def load_client_details(self, client_id):
@@ -214,6 +221,9 @@ class WorkOrderDetails(QWidget):
                     self.order_balance_input.setStyleSheet("color: red;")
                 else:
                     self.order_balance_input.setStyleSheet("color: green;")
+                    # Enable close order Btn
+                    self.close_order_button.setStyleSheet("color: green;")
+                    self.close_order_button.setVisible(True)
                 self.order_balance_input.setText(str(order_balance))
             else:
                 self.order_balance_input.setText("Balance no disponible")
@@ -237,6 +247,18 @@ class WorkOrderDetails(QWidget):
             self.adjust_column_widths()
         except Exception as e:
             self.show_error(f"Error fetching all payments order: {e}")
+
+    def close_order(self):
+        order_id = self.order_id_input.text()
+        if not order_id:
+            self.show_error("Ingrese un número de orden válido")
+            return
+
+        try:
+            self.wo_service.close_work_order(order_id)
+            self.show_error("Orden cerrada correctamente")
+        except Exception as e:
+            self.show_error(f"Error al cerrar la orden: {e}")
 
     def show_error(self, message):
         QMessageBox.critical(self, "Error", message)

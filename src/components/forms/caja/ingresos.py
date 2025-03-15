@@ -56,7 +56,7 @@ class FormularioIngresoCaja(QWidget):
         self.fecha_payment_label = QLabel("Fecha del Pago:")
         self.fecha_payment_input = QLineEdit()
         date_now = datetime.now()
-        self.fecha_payment_input.setPlaceholderText(date_now.strftime("%d-%m-%Y %I:%M:%S %p"))
+        self.fecha_payment_input.setText(date_now.strftime("%d-%m-%Y %I:%M:%S %p"))
         self.fecha_payment_input.setReadOnly(True)
         layout.addRow(self.fecha_payment_label, self.fecha_payment_input)
 
@@ -88,8 +88,8 @@ class FormularioIngresoCaja(QWidget):
         self.clean_button = QPushButton("Limpiar")
         self.clean_button.clicked.connect(self.limpiar_formulario)
         self.h_btns_layout.setSpacing(60)
-        self.h_btns_layout.addWidget(self.save_button)
         self.h_btns_layout.addWidget(self.clean_button)
+        self.h_btns_layout.addWidget(self.save_button)
         # ---------------------------------------------------------------------
         layout.addRow(self.h_btns_layout)
 
@@ -99,11 +99,11 @@ class FormularioIngresoCaja(QWidget):
             orden = self.work_order_service.get_work_order(numero_orden)
             if orden:
                 self.order_data_label.setText(f'''
-                    Número de Orden: {orden[1]}
-                    Fecha: {orden[2]}
-                    ID Cliente: {orden[4]}
-                    Monto Facturado: {orden[7]}
-                    Estado: {"Abierta" if orden[6] == 1 else "Cerrada"}
+                Número de Orden: {orden[1]}
+                Fecha: {orden[2]}
+                ID Cliente: {orden[4]}
+                Monto Facturado: {orden[7]}
+                Estado: {"Abierta" if orden[6] == 1 else "Cerrada"}
                 ''')
             else:
                 QMessageBox().warning(self, "Error", "Orden no encontrada")
@@ -112,13 +112,25 @@ class FormularioIngresoCaja(QWidget):
 
     def guardar_pago(self):
         numero_orden = self.orden_input.text()
+        order_data = self.order_data_label.text()
+        paymet_date = self.fecha_payment_input.text()
+        paymet_type = self.payment_type_input.currentText()
+        paymet_reference = self.reference_input.text()
         monto = self.payment_mount_input.value()
         comentario = self.comentario_input.toPlainText()
         if numero_orden:
             orden = self.work_order_service.get_work_order(numero_orden)
             if orden:
-                self.work_order_service.update_work_order(numero_orden, monto, comentario)
-                QMessageBox().information(self, "Éxito", "Ingreso guardado")
+                #work_order_id, payment_date, payment_method, note, payment
+                self.work_order_service.add_work_order_payment(
+                    numero_orden,
+                    paymet_date,
+                    paymet_type,
+                    comentario,
+                    monto
+                )
+                QMessageBox().information(self, "Éxito", "Ingreso de caja registrado correctamente")
+                self.limpiar_formulario()
             else:
                 QMessageBox().warning(self, "Error", "Orden no encontrada")
         else:
@@ -129,6 +141,7 @@ class FormularioIngresoCaja(QWidget):
         self.orden_input.clear()
         self.payment_mount_input.setValue(0)
         self.comentario_input.clear()
+        self.reference_input.clear()
 
     def cancelar_ingreso(self):
         self.close()

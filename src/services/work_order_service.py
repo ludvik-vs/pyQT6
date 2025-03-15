@@ -46,13 +46,13 @@ class WorkOrderService:
         return self.db._fetch_all(query, (work_order_id,))
 
     # work orders paymet operations
-    def add_work_order_payment(self, work_order_id, payment_date, payment_method, amount):
+    def add_work_order_payment(self, work_order_id, payment_date, payment_method, note, payment):
         """Agrega un pago a una orden de trabajo."""
         query = '''
-            INSERT INTO work_order_payments (work_order_id, payment_date, payment_method, amount)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO work_order_payments (work_order_id, payment_date, payment_method, note, payment)
+            VALUES (?, ?, ?, ?, ?)
         '''
-        self.db._execute_query(query, (work_order_id, payment_date, payment_method, amount))
+        self.db._execute_query(query, (work_order_id, payment_date, payment_method, note, payment))
 
     def get_all_paymets_for_order(self, id):
         return self.db.get_work_order_payments(id)
