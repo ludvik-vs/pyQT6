@@ -9,7 +9,9 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QHeaderView,
     QSizePolicy,
-    QHBoxLayout
+    QHBoxLayout,
+    QVBoxLayout,
+    QScrollArea
 )
 from src.components.custom.cq_divisor import CQDivisor
 
@@ -39,6 +41,15 @@ class WorkOrderDetails(QWidget):
 
     def init_ui(self):
         # Implement UI setup here
+        # Create main layout
+        main_layout = QVBoxLayout()
+        
+        # Create scroll area
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        
+        # Create container widget for the form
+        container = QWidget()
         self.details_layout = QFormLayout()
 
         # Form Header
@@ -130,7 +141,16 @@ class WorkOrderDetails(QWidget):
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.details_layout.addRow(self.table)
-        self.setLayout(self.details_layout)
+        # Add container to scroll area
+        container.setLayout(self.details_layout)
+        # Set container as the scroll area widget
+        scroll.setWidget(container)
+        # Add scroll area to the main layout
+        main_layout.addWidget(scroll)
+        # Add the main layout to the widget
+        self.setLayout(main_layout)
+
+        #self.setLayout(self.details_layout)
 
     def adjust_column_widths(self):
         table_width = self.table.viewport().width()

@@ -1,5 +1,15 @@
 from PyQt6.QtWidgets import (
-    QWidget, QLineEdit, QFormLayout, QPushButton, QDoubleSpinBox, QLabel, QHBoxLayout, QDateTimeEdit, QMessageBox
+    QWidget, 
+    QLineEdit, 
+    QFormLayout, 
+    QPushButton, 
+    QDoubleSpinBox, 
+    QLabel, 
+    QHBoxLayout, 
+    QDateTimeEdit, 
+    QMessageBox,
+    QVBoxLayout,
+    QScrollArea
 )
 from PyQt6.QtCore import QDateTime
 from src.components.custom.cq_divisor import CQDivisor
@@ -19,16 +29,26 @@ class CrearOrdenForm(QWidget):
     def init_ui(self):
         # Establecer el fondo del formulario como transparente
         self.setStyleSheet("background-color: white;")
+        
+        # Create main layout
+        main_layout = QVBoxLayout()
+        
+        # Create scroll area
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        
+        # Create container widget for the form
+        container = QWidget()
 
         # Añadir campos al layout
-        layout = QFormLayout()
-        layout.setVerticalSpacing(18)
+        self.details_layout = QFormLayout()
+        self.details_layout.setVerticalSpacing(18)
 
         # Form Header
         self.fm_header = QLabel("Crear Orden de Servicio", self)
         self.fm_header.setStyleSheet("font-size: 24px; font-weight: bold;")
-        layout.addRow(self.fm_header)
-        layout.addRow(CQDivisor())
+        self.details_layout.addRow(self.fm_header)
+        self.details_layout.addRow(CQDivisor())
 
         # Cliente
         self.client_imput_frame = QHBoxLayout()
@@ -37,7 +57,7 @@ class CrearOrdenForm(QWidget):
         self.orden_input = QLineEdit(self)
         self.orden_input.setPlaceholderText("Ingrese el número de orden")
         #self.orden_label = QLabel("Número de Orden:", self)
-        layout.addRow(self.orden_input)
+        self.details_layout.addRow(self.orden_input)
 
         self.client_id_input = QLineEdit(self)
         self.client_id_input.setPlaceholderText("Ingrese el numero ID del cliente")
@@ -45,10 +65,10 @@ class CrearOrdenForm(QWidget):
         self.cargarcliente_btn.clicked.connect(self.cargar_cliente)
         self.client_imput_frame.addWidget(self.client_id_input)
         self.client_imput_frame.addWidget(self.cargarcliente_btn)
-        layout.addRow(self.client_imput_frame)
+        self.details_layout.addRow(self.client_imput_frame)
         self.datos_cliente = QLabel("No hay cliente asignado 🔴")
         self.datos_cliente.setStyleSheet("font-size: 12px; color: orange;")
-        layout.addRow(self.datos_cliente)
+        self.details_layout.addRow(self.datos_cliente)
 
         # Atendido por
         self.colaborador_imput_frame = QHBoxLayout()
@@ -59,22 +79,22 @@ class CrearOrdenForm(QWidget):
         self.cargarcolaborador_btn.clicked.connect(self.cargar_colaborador)
         self.colaborador_imput_frame.addWidget(self.colaborador_id_input)
         self.colaborador_imput_frame.addWidget(self.cargarcolaborador_btn)
-        layout.addRow(self.colaborador_imput_frame)
+        self.details_layout.addRow(self.colaborador_imput_frame)
         self.datos_colaborador = QLabel("No hay trabajador asignado 🔴")
         self.datos_colaborador.setStyleSheet("font-size: 12px; color: orange;")
-        layout.addRow(self.datos_colaborador)
+        self.details_layout.addRow(self.datos_colaborador)
 
         # Elaborado por
         nombre_usuario = self.current_user_data.username
         self.usuario_id_label = QLabel(f"Orden creada por: {nombre_usuario}  ✅", self)
         self.usuario_id_label.setStyleSheet("font-size: 12px; color: #4BB543;;")
-        layout.addRow(self.usuario_id_label)
-        layout.addRow(CQDivisor())
+        self.details_layout.addRow(self.usuario_id_label)
+        self.details_layout.addRow(CQDivisor())
 
         # Servicios
         self.services_list = CQServicesList([])
         self.services_list.services_updated.connect(self.update_services)
-        layout.addRow(self.services_list)
+        self.details_layout.addRow(self.services_list)
 
         # Fecha y hora de recepción
         self.fecha_recepcion_input = QDateTimeEdit(self)
@@ -82,7 +102,7 @@ class CrearOrdenForm(QWidget):
         self.fecha_recepcion_input.setDateTime(QDateTime.currentDateTime())
         self.fecha_recepcion_input.setDisplayFormat("MM/dd/yyyy hh:mm AP")
         self.fecha_recepcion_label = QLabel("Fecha y Hora de Recepción:", self)
-        layout.addRow(self.fecha_recepcion_label, self.fecha_recepcion_input)
+        self.details_layout.addRow(self.fecha_recepcion_label, self.fecha_recepcion_input)
 
         # Fecha y hora de entrega
         self.fecha_entrega_input = QDateTimeEdit(self)
@@ -90,20 +110,20 @@ class CrearOrdenForm(QWidget):
         self.fecha_entrega_input.setDateTime(QDateTime.currentDateTime())
         self.fecha_entrega_input.setDisplayFormat("MM/dd/yyyy hh:mm AP")
         self.fecha_entrega_label = QLabel("Fecha y Hora Estaimada de Entrega:", self)
-        layout.addRow(self.fecha_entrega_label, self.fecha_entrega_input)
+        self.details_layout.addRow(self.fecha_entrega_label, self.fecha_entrega_input)
 
         # Lista desplegable para seleccionar estatus de la orden
         self.estatus_label = QLabel("Estatus de la Orden:", self)
         self.order_status = QLabel("Abierta")
         self.order_status.setStyleSheet("font-size: 12px; color: #4BB543;")
-        layout.addRow(self.estatus_label, self.order_status)
+        self.details_layout.addRow(self.estatus_label, self.order_status)
 
         self.costo_total_servicios_input = QDoubleSpinBox(self)
         self.costo_total_servicios_input.setMaximum(9999999.99)
         self.costo_total_servicios_input.setMinimum(0.00)
         self.costo_total_servicios_input.setDecimals(2)
         self.costo_label = QLabel("Costo Total de Servicios (C$):", self)
-        layout.addRow(self.costo_label, self.costo_total_servicios_input)
+        self.details_layout.addRow(self.costo_label, self.costo_total_servicios_input)
 
         # Botones Procesar Orden y Limpiar Formulario
         self.limpiar_btn = QPushButton('Limpiar Formulario', self)
@@ -114,14 +134,17 @@ class CrearOrdenForm(QWidget):
         button_container = QHBoxLayout()
         button_container.setSpacing(60)
         button_container.addWidget(self.limpiar_btn)
+        self.limpiar_btn.clicked.connect(self.clear_form)
         button_container.addWidget(self.procesar_btn)
-        layout.addRow(button_container)
+        self.details_layout.addRow(button_container)
 
         # Establecer el layout principal en el widget
-        self.setLayout(layout)
-
-        # Conectar el botón de limpiar al método de limpieza
-        self.limpiar_btn.clicked.connect(self.clear_form)
+        container.setLayout(self.details_layout)
+        # Establecer el widget como contenido del scroll area
+        scroll.setWidget(container)
+        # Establecer el layout principal
+        main_layout.addWidget(scroll)
+        self.setLayout(main_layout)
 
     def clear_form(self):
         """Limpiar todos los campos del formulario."""

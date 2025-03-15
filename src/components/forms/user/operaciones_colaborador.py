@@ -1,8 +1,20 @@
 from PyQt6.QtWidgets import (
-    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QMessageBox, QHBoxLayout, QVBoxLayout, QSizePolicy, QSpacerItem, QDateEdit,
-    QCheckBox
+    QWidget, 
+    QLineEdit, 
+    QFormLayout, 
+    QPushButton, 
+    QLabel, 
+    QMessageBox, 
+    QHBoxLayout, 
+    QVBoxLayout, 
+    QSizePolicy, 
+    QSpacerItem, 
+    QDateTimeEdit,
+    QCheckBox, 
+    QVBoxLayout, 
+    QScrollArea
 )
-from PyQt6.QtCore import Qt, QDate
+from PyQt6.QtCore import Qt, QDateTime
 from src.services.rh_service import ColaboratorService
 
 class ColaboratorOperations(QWidget):
@@ -21,22 +33,34 @@ class ColaboratorOperations(QWidget):
         self.apellido_colaborador = QLineEdit(self)
         self.telefono_personal = QLineEdit(self)
         self.documento_identidad = QLineEdit(self)
-        self.fecha_ingreso = QDateEdit(self)
+        self.fecha_ingreso = QDateTimeEdit(self)
+        self.fecha_ingreso.setDisplayFormat("dd/MM/yyyy hh:mm AP")
+        self.fecha_ingreso.setDateTime(QDateTime.currentDateTime())
+        self.fecha_ingreso.setCalendarPopup(True)
+
         self.nombre_contacto_emergencia = QLineEdit(self)
         self.telefono_emergencia = QLineEdit(self)
-        self.fecha_baja = QDateEdit(self)
+        self.fecha_baja = QDateTimeEdit(self)
+        self.fecha_baja.setDisplayFormat("dd/MM/yyyy hh:mm AP")
+        self.fecha_baja.setDateTime(QDateTime.currentDateTime())
+        self.fecha_baja.setCalendarPopup(True)
+
         self.salario = QLineEdit(self)
         self.is_active = QCheckBox(self)
         self.puesto = QLineEdit(self)
-        self.fecha_nacimiento = QDateEdit(self)
+        self.fecha_nacimiento = QDateTimeEdit(self)
+        self.fecha_nacimiento.setDisplayFormat("dd/MM/yyyy hh:mm AP")
+        self.fecha_nacimiento.setDateTime(QDateTime.currentDateTime())
+        self.fecha_nacimiento.setCalendarPopup(True)
+
         self.numero_seguro_social = QLineEdit(self)
         self.informacion_adicional = QLineEdit(self)
 
         # Botones
         self.load_btn = QPushButton('Cargar Datos', self)
-        self.limpiar_btn = QPushButton('Limpiar Formulario', self)
-        self.actualizar_colaborador_btn = QPushButton('Actualizar Colaborador', self)
-        self.eliminar_colaborador_btn = QPushButton('Eliminar Colaborador', self)
+        self.limpiar_btn = QPushButton('Limpiar Datos', self)
+        self.actualizar_colaborador_btn = QPushButton('Actualizar', self)
+        self.eliminar_colaborador_btn = QPushButton('Eliminar', self)
 
         # Conectar botones a sus funciones
         self.load_btn.clicked.connect(self.load_colaborator)
@@ -44,6 +68,15 @@ class ColaboratorOperations(QWidget):
         self.actualizar_colaborador_btn.clicked.connect(self.actualizar_colaborador)
         self.eliminar_colaborador_btn.clicked.connect(self.eliminar_colaborador)
 
+        # Create main layout
+        main_layout = QVBoxLayout()
+        
+        # Create scroll area
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        
+        # Create container widget for the form
+        container = QWidget()
         # Layout principal
         form_layout = QFormLayout()
         form_layout.setRowWrapPolicy(QFormLayout.RowWrapPolicy.DontWrapRows)
@@ -116,23 +149,23 @@ class ColaboratorOperations(QWidget):
         button_container.addWidget(self.actualizar_colaborador_btn)
         button_container.addWidget(self.eliminar_colaborador_btn)
 
-        # Crear el layout principal
-        main_layout = QVBoxLayout()
-        main_layout.addLayout(form_layout)
-        spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        main_layout.addItem(spacer)
+        self.result_label = QLabel(self)
+
+        # Añadir el formulario y los botones al contenedor principal
+        form_layout.addRow(self.result_label)     
+        # Establecer el layout del contenedor en el scroll area
+        container.setLayout(form_layout)
+        # Establecer el layout del scroll area en el layout principal
+        scroll.setWidget(container)
+        # Añadir el scroll area al layout principal
+        main_layout.addWidget(scroll)
         main_layout.addLayout(button_container)
 
-        # Establecer el layout principal en el widget
+        # Añadir el layout principal al widget principal
         self.setLayout(main_layout)
 
-        # Label para resultados
-        self.result_label = QLabel(self)
-        self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        main_layout.addWidget(self.result_label)
+        self.setWindowTitle('Operaciones de Colaborador')
 
-        # Asegurarse de que el formulario ocupe todo el ancho del contenedor padre
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
     def load_colaborator(self):
         """Cargar datos del colaborador desde la base de datos usando el ID."""
@@ -149,15 +182,17 @@ class ColaboratorOperations(QWidget):
             self.apellido_colaborador.setText(colaborator[2])
             self.telefono_personal.setText(colaborator[3])
             self.documento_identidad.setText(colaborator[4])
-            self.fecha_ingreso.setDate(QDate.fromString(colaborator[5], Qt.DateFormat.ISODate))
+            self.fecha_ingreso.setDateTime(QDateTime.fromString(colaborator[5], Qt.DateFormat.ISODate))
             self.nombre_contacto_emergencia.setText(colaborator[6])
             self.telefono_emergencia.setText(colaborator[7])
             if colaborator[8]:
-                self.fecha_baja.setDate(QDate.fromString(colaborator[8], Qt.DateFormat.ISODate))
+                self.fecha_baja.setDateTime(QDateTime.fromString(colaborator[8], Qt.DateFormat.ISODate))
+            
             self.salario.setText(str(colaborator[9]))
             self.is_active.setChecked(bool(colaborator[10]))
             self.puesto.setText(colaborator[11])
-            self.fecha_nacimiento.setDate(QDate.fromString(colaborator[12], Qt.DateFormat.ISODate))
+            self.fecha_nacimiento.setDateTime(QDateTime.fromString(colaborator[12], Qt.DateFormat.ISODate))
+            
             self.numero_seguro_social.setText(colaborator[13])
             self.informacion_adicional.setText(colaborator[14])
             self.result_label.setStyleSheet("color: green;")
