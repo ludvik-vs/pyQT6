@@ -1,0 +1,134 @@
+from datetime import datetime
+from PyQt6.QtWidgets import (
+    QMessageBox,
+    QTextEdit,
+    QWidget,
+    QFormLayout,
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QHBoxLayout,
+    QComboBox,
+    QSpinBox
+)
+from src.components.custom.cq_divisor import CQDivisor
+
+class FormularioIngresoCaja(QWidget):
+    """
+    Clase Formulario de Ingreso de Caja
+    """
+    def __init__(self, auth_service, client_service, work_order_service):
+        super().__init__()
+        self.auth_service = auth_service
+        self.client_service = client_service
+        self.work_order_service = work_order_service
+        self.initUI()
+
+    def initUI(self):
+        layout = QFormLayout(self)
+
+        # Header FormularioIngresoCaja
+        self.form_header = QLabel("Registro: Ingreso De Caja")
+        self.form_header.setStyleSheet(
+            "font-weight: bold;"
+            "font-size: 24px;"
+        )
+        layout.addRow(self.form_header)
+        layout.addRow(CQDivisor())
+
+        # Layut horizontal
+        self.layout_horizontal = QHBoxLayout()
+
+        # Enlazar Orden
+        self.orden_btn = QPushButton("Enlazar")
+        self.orden_btn.clicked.connect(self.cargar_orden)
+        self.orden_input = QLineEdit()
+        self.orden_input.setPlaceholderText("Ingrese el número de orden")
+        self.layout_horizontal.addWidget(self.orden_input)
+        self.layout_horizontal.addWidget(self.orden_btn)
+        layout.addRow(self.layout_horizontal)
+        layout.addRow(CQDivisor())
+        # ---------------------------------------------------------------------
+        self.order_data_label = QLabel("")
+        layout.addRow(self.order_data_label)
+        self.setLayout(layout)
+        layout.addRow(CQDivisor())
+        self.fecha_payment_label = QLabel("Fecha del Pago:")
+        self.fecha_payment_input = QLineEdit()
+        date_now = datetime.now()
+        self.fecha_payment_input.setPlaceholderText(date_now.strftime("%d-%m-%Y %I:%M:%S %p"))
+        self.fecha_payment_input.setReadOnly(True)
+        layout.addRow(self.fecha_payment_label, self.fecha_payment_input)
+
+        self.payment_type_label = QLabel("Tipo de Pago:")
+        self.payment_type_input = QComboBox()
+        self.payment_type_input.addItems(["Efectivo", "Tarjeta", "Transferencia", "Cheque", "Deposito Bancario", "Otro"])
+        layout.addRow(self.payment_type_label, self.payment_type_input)
+
+        self.reference_label = QLabel("Referencia:")
+        self.reference_input = QLineEdit()
+        layout.addRow(self.reference_label, self.reference_input)
+
+        self.paymetn_mount_label = QLabel("Monto | Cantidad (C$):")
+        # Monto input
+        self.payment_mount_input = QSpinBox()
+        self.payment_mount_input.setRange(0, 1000000)
+        self.payment_mount_input.setValue(0)
+        layout.addRow(self.paymetn_mount_label, self.payment_mount_input)
+
+        self.comentario_label = QLabel("Comentario:")
+        self.comentario_input = QTextEdit()
+        layout.addRow(self.comentario_label, self.comentario_input)
+        layout.addRow(CQDivisor())
+        # ---------------------------------------------------------------------
+        self.h_btns_layout = QHBoxLayout()
+
+        self.save_button = QPushButton("Guardar")
+        self.save_button.clicked.connect(self.guardar_pago)
+        self.clean_button = QPushButton("Limpiar")
+        self.clean_button.clicked.connect(self.limpiar_formulario)
+        self.h_btns_layout.setSpacing(60)
+        self.h_btns_layout.addWidget(self.save_button)
+        self.h_btns_layout.addWidget(self.clean_button)
+        # ---------------------------------------------------------------------
+        layout.addRow(self.h_btns_layout)
+
+    def cargar_orden(self):
+        numero_orden = self.orden_input.text()
+        if numero_orden:
+            orden = self.work_order_service.get_work_order(numero_orden)
+            if orden:
+                self.order_data_label.setText(f'''
+                    Número de Orden: {orden[1]}
+                    Fecha: {orden[2]}
+                    ID Cliente: {orden[4]}
+                    Monto Facturado: {orden[7]}
+                    Estado: {"Abierta" if orden[6] == 1 else "Cerrada"}
+                ''')
+            else:
+                QMessageBox().warning(self, "Error", "Orden no encontrada")
+        else:
+            QMessageBox().warning(self, "Alerta", "Ingrese el número de orden")
+
+    def guardar_pago(self):
+        numero_orden = self.orden_input.text()
+        monto = self.payment_mount_input.value()
+        comentario = self.comentario_input.toPlainText()
+        if numero_orden:
+            orden = self.work_order_service.get_work_order(numero_orden)
+            if orden:
+                self.work_order_service.update_work_order(numero_orden, monto, comentario)
+                QMessageBox().information(self, "Éxito", "Ingreso guardado")
+            else:
+                QMessageBox().warning(self, "Error", "Orden no encontrada")
+        else:
+            QMessageBox().warning(self, "Alerta", "Ingrese el número de orden")
+
+    def limpiar_formulario(self):
+        self.order_data_label.setText("")
+        self.orden_input.clear()
+        self.payment_mount_input.setValue(0)
+        self.comentario_input.clear()
+
+    def cancelar_ingreso(self):
+        self.close()

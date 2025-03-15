@@ -47,3 +47,13 @@ class DatabaseManager:
                     return False
 
                 return True
+
+    def _execute_query(self, query, params=None):
+        """Ejecuta una consulta SQL con parámetros opcionales."""
+        with self.conn:
+            cursor = self.conn.cursor()
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            return cursor

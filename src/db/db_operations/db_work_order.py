@@ -95,15 +95,15 @@ class DatabaseWorkOrder(DatabaseManager):
     def close(self):
         self.conn.close()
 
-    def _execute_query(self, query, params=None):
-        """Ejecuta una consulta SQL con parámetros opcionales."""
-        with self.conn:
-            cursor = self.conn.cursor()
-            if params:
-                cursor.execute(query, params)
-            else:
-                cursor.execute(query)
-            return cursor
+    #def _execute_query(self, query, params=None):
+    #    """Ejecuta una consulta SQL con parámetros opcionales."""
+    #    with self.conn:
+    #        cursor = self.conn.cursor()
+    #        if params:
+    #            cursor.execute(query, params)
+    #        else:
+    #            cursor.execute(query)
+    #        return cursor
 
     def _insert_work_order(self, work_order_id, start_date, end_date, user_id, client_id, colaborador_id, total_cost, order_status):
         """Registra los datos de una orden de trabajo y devuelve el ID de la orden."""

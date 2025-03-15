@@ -24,6 +24,9 @@ from src.components.forms.orders.create_orders import CrearOrdenForm
 from src.components.tables.wo_table import WorkOrderTable
 from src.components.forms.orders.wo_details import WorkOrderDetails
 
+# Caja
+from src.components.forms.caja.ingresos import FormularioIngresoCaja
+
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
 
@@ -63,78 +66,68 @@ class DisplayWidget(QWidget):
             print("No hay usuario autenticado")
 
     def set_content(self, text):
-        """Actualiza el contenido del widget según el sub-elemento seleccionado."""
-        # Limpiar el layout antes de agregar nuevos widgets
         self.clear_layout()
 
-        if text == "ACRIL CAR":
-            # Crear un nuevo QLabel para mostrar la imagen
-            image_label = QLabel(self)
-            image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            image_label.setScaledContents(True)
-            image_label.setFixedSize(800, 600)
-
-            # Cargar la imagen
-            pixmap = QPixmap('assets/acril_car_banner.jpg')
-            image_label.setPixmap(pixmap)
-            self.grid_layout.addWidget(image_label, 0, 0, Qt.AlignmentFlag.AlignCenter)
-        elif text == "Cambiar Contraseña":
-            form = PasswordChangeForm(self.current_user_data)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Alta de Cliente":
-            form = CreateClient(self.client_service)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Operaciones con Cliente":
-            form = ClientOperations(self.client_service)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Tabla de Clientes":
-            form = ClientTableWidget(self.client_service)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Alta de Colaborador":
-            form = CreateColaborator(self.colaborator_service)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Operaciones con Colaborador":
-            form = ColaboratorOperations(self.colaborator_service)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Detalle por Colaborador":
-            form = ColaboratorRegister(self.colaborator_service)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Tabla Planilla":
-            form = ColaboratorTableWidget(self.colaborator_service)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Crear Orden T":
-            form = CrearOrdenForm(
-                self.current_user_data,
-                self.auth_service,
-                self.client_service,
-                self.colaborator_service,
-                self.work_order_service
-            )
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Detalle Orden T":
-            form = WorkOrderDetails(
+        widget_map = {
+            "ACRIL CAR": self.show_acril_car_image,
+            "Cambiar Contraseña": lambda: self.grid_layout.addWidget(
+                PasswordChangeForm(self.current_user_data), 0, 0),
+            "Alta de Cliente": lambda: self.grid_layout.addWidget(
+                CreateClient(self.client_service), 0, 0),
+            "Operaciones con Cliente": lambda: self.grid_layout.addWidget(
+                ClientOperations(self.client_service), 0, 0),
+            "Tabla de Clientes": lambda: self.grid_layout.addWidget(
+                ClientTableWidget(self.client_service), 0, 0),
+            "Alta de Colaborador": lambda: self.grid_layout.addWidget(
+                CreateColaborator(self.colaborator_service), 0, 0),
+            "Operaciones con Colaborador": lambda: self.grid_layout.addWidget(
+                ColaboratorOperations(self.colaborator_service), 0, 0),
+            "Detalle por Colaborador": lambda: self.grid_layout.addWidget(
+                ColaboratorRegister(self.colaborator_service), 0, 0),
+            "Tabla Planilla": lambda: self.grid_layout.addWidget(
+                ColaboratorTableWidget(self.colaborator_service), 0, 0),
+            "Crear Orden T": lambda: self.grid_layout.addWidget(
+                CrearOrdenForm(
+                    self.current_user_data,
+                    self.auth_service,
+                    self.client_service,
+                    self.colaborator_service,
+                    self.work_order_service), 0, 0),
+            "Detalle Orden T": lambda: self.grid_layout.addWidget(WorkOrderDetails(
                 self.work_order_service,
                 self.client_service,
                 self.colaborator_service,
-                self.auth_service,
-            )
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Tabla Orden T":
-            form = WorkOrderTable(self.work_order_service)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Crear Usuario":
-            form = CreateUserForm(self.auth_service)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Operaciones de Usuario":
-            form = UserOperations(self.auth_service)
-            self.grid_layout.addWidget(form, 0, 0)
-        elif text == "Tabla Usuario":
-            form = UserTableWidget(self.auth_service)
-            self.grid_layout.addWidget(form, 0, 0)
+                self.auth_service), 0, 0),
+            "Tabla Orden T": lambda: self.grid_layout.addWidget(
+                WorkOrderTable(self.work_order_service), 0, 0),
+            "Ingresos de Caja": lambda: self.grid_layout.addWidget(
+                FormularioIngresoCaja(
+                    self.auth_service,
+                    self.client_service,
+                    self.work_order_service), 0, 0),
+            "Crear Usuario": lambda: self.grid_layout.addWidget(CreateUserForm(
+                self.auth_service), 0, 0),
+            "Operaciones de Usuario": lambda: self.grid_layout.addWidget(UserOperations(
+                self.auth_service), 0, 0),
+            "Tabla Usuario": lambda: self.grid_layout.addWidget(UserTableWidget(
+                self.auth_service), 0, 0),
+        }
+
+        action = widget_map.get(text)
+        if action:
+            action()
         else:
             label = QLabel(f"Formulario para: {text}", self)
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.grid_layout.addWidget(label, 0, 0)
+    def show_acril_car_image(self):
+        image_label = QLabel(self)
+        image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        image_label.setScaledContents(True)
+        image_label.setFixedSize(800, 600)
+        pixmap = QPixmap('assets/acril_car_banner.jpg')
+        image_label.setPixmap(pixmap)
+        self.grid_layout.addWidget(image_label, 0, 0, Qt.AlignmentFlag.AlignCenter)
 
     def clear_layout(self):
         """Elimina todos los widgets del layout."""

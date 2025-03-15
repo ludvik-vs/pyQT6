@@ -25,9 +25,9 @@ class CrearOrdenForm(QWidget):
         layout.setVerticalSpacing(18)
 
         # Form Header
-        self.header = QLabel("Crear Orden de Servicio", self)
-        self.header.setStyleSheet("font-size: 24px; font-weight: bold;")
-        layout.addRow(self.header)
+        self.fm_header = QLabel("Crear Orden de Servicio", self)
+        self.fm_header.setStyleSheet("font-size: 24px; font-weight: bold;")
+        layout.addRow(self.fm_header)
         layout.addRow(CQDivisor())
 
         # Cliente
@@ -36,8 +36,8 @@ class CrearOrdenForm(QWidget):
 
         self.orden_input = QLineEdit(self)
         self.orden_input.setPlaceholderText("Ingrese el número de orden")
-        self.orden_label = QLabel("Número de Orden:", self)
-        layout.addRow(self.orden_label, self.orden_input)
+        #self.orden_label = QLabel("Número de Orden:", self)
+        layout.addRow(self.orden_input)
 
         self.client_id_input = QLineEdit(self)
         self.client_id_input.setPlaceholderText("Ingrese el numero ID del cliente")
@@ -66,7 +66,8 @@ class CrearOrdenForm(QWidget):
 
         # Elaborado por
         nombre_usuario = self.current_user_data.username
-        self.usuario_id_label = QLabel(f"Registrado por: {nombre_usuario}  ✅", self)
+        self.usuario_id_label = QLabel(f"Orden creada por: {nombre_usuario}  ✅", self)
+        self.usuario_id_label.setStyleSheet("font-size: 12px; color: #4BB543;;")
         layout.addRow(self.usuario_id_label)
         layout.addRow(CQDivisor())
 
@@ -101,7 +102,7 @@ class CrearOrdenForm(QWidget):
         self.costo_total_servicios_input.setMaximum(9999999.99)
         self.costo_total_servicios_input.setMinimum(0.00)
         self.costo_total_servicios_input.setDecimals(2)
-        self.costo_label = QLabel("Costo Total de Servicios:", self)
+        self.costo_label = QLabel("Costo Total de Servicios (C$):", self)
         layout.addRow(self.costo_label, self.costo_total_servicios_input)
 
         # Botones Procesar Orden y Limpiar Formulario

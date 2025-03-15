@@ -8,7 +8,8 @@ from PyQt6.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QHeaderView,
-    QSizePolicy
+    QSizePolicy,
+    QHBoxLayout
 )
 from src.components.custom.cq_divisor import CQDivisor
 
@@ -42,15 +43,19 @@ class WorkOrderDetails(QWidget):
 
         # Form Header
         self.form_header = QLabel("Detalles de la Orden")
+        self.form_header.setStyleSheet("font-size: 24px; font-weight: bold;")
         self.details_layout.addRow(self.form_header)
         self.details_layout.addRow(CQDivisor())
 
+        self.h_order_layout = QHBoxLayout()
         # Order ID Input and Load Button
         self.order_id_input = QLineEdit()
         self.order_id_input.setPlaceholderText("Ingresar número de Orden")
         self.load_order_button = QPushButton("Cargar Orden")
         self.load_order_button.clicked.connect(self.load_order_details)
-        self.details_layout.addRow(self.load_order_button, self.order_id_input)
+        self.h_order_layout.addWidget(self.order_id_input)
+        self.h_order_layout.addWidget(self.load_order_button)
+        self.details_layout.addRow(self.h_order_layout)
         self.details_layout.addRow(CQDivisor())
 
         self.client_name_label = QLabel("Nombre del Cliente:")
@@ -142,61 +147,76 @@ class WorkOrderDetails(QWidget):
     def load_order_details(self):
         order_id = self.order_id_input.text()
         if not order_id:
-            QMessageBox.warning(self, "Error", "Ingrese un número de orden válido")
+            self.show_error("Ingrese un número de orden válido")
             return
-        else:
-            # Fetch order details
-            try:
-                order = self.wo_service.get_work_order(order_id)
-                # Fetch related data
-                try:
-                    client = self.client_service.get_client_by_id(order[5])
-                    self.client_name_input.setText(client['name'])
-                    self.client_phone_input.setText(client['contact_1'])
-                    self.client_email_input.setText(client['email'])
-                except Exception as e:
-                    QMessageBox.critical(self, "Error", f"Error fetching client details: {e}")
-                try:
-                    colaborator = self.colaborator_service.get_colaborator_by_id(order[6])
-                    self.colaborator_name_input.setText(f"{colaborator[1]} {colaborator[2]}")
-                except Exception as e:
-                    QMessageBox.critical(self, "Error", f"Error fetching colaborator details: {e}")
-                try:
-                    user = self.user_service.get_current_user()
-                    self.user_name_input.setText(user.username)
-                except Exception as e:
-                    QMessageBox.critical(self, "Error", f"Error fetching user details: {e}")
-                try:
-                    order_balance = self.wo_service.work_order_balance(order[1])
-                    if order_balance is not None:
-                        if float(order_balance) < 0:
-                            self.order_balance_input.setStyleSheet("color: red;")
-                            self.order_balance_input.setText(str(order_balance))
-                        else:
-                            self.order_balance_input.setStyleSheet("color: green;")
-                            self.order_balance_input.setText(str(order_balance))
-                    else:
-                        self.order_balance_input.setText("Balance no disponible") # o algun otro mensaje.
-                    self.order_date_in_input.setText(order[2])
-                    self.order_date_out_input.setText(order[3])
-                    self.order_status_input.setText(order[8])
-                    self.order_total_input.setText(str(order[7]))
-                except Exception as e:
-                    QMessageBox.critical(self, "Error", f"Error fetching order balance: {e}")
-                    return
 
-                try:
-                    paymet_details = self.wo_service.get_all_paymets_for_order(order[1])
-                    self.table.setRowCount(len(paymet_details))
-                    for row_index, payment in enumerate(paymet_details):
-                        for col_index, value in enumerate(payment):
-                            item = QTableWidgetItem(str(value))
-                            self.table.setItem(row_index, col_index, item)
-                    self.adjust_column_widths()
+        try:
+            order = self.wo_service.get_work_order(order_id)
+            self.load_client_details(order[5])
+            self.load_colaborator_details(order[6])
+            self.load_user_details()
+            self.load_order_balance(order[1])
+            self.load_order_info(order)
+            self.load_payment_details(order[1])
 
-                except Exception as e:
-                    QMessageBox.critical(self, "Error", f"Error fetching all payments order: {e}")
-
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Error fetching order details: {e}")
+        except Exception as e:
+            self.show_error(f"Error fetching order details: {e}")
             return
+
+    def load_client_details(self, client_id):
+        try:
+            client = self.client_service.get_client_by_id(client_id)
+            self.client_name_input.setText(client['name'])
+            self.client_phone_input.setText(client['contact_1'])
+            self.client_email_input.setText(client['email'])
+        except Exception as e:
+            self.show_error(f"Error fetching client details: {e}")
+
+    def load_colaborator_details(self, colaborator_id):
+        try:
+            colaborator = self.colaborator_service.get_colaborator_by_id(colaborator_id)
+            self.colaborator_name_input.setText(f"{colaborator[1]} {colaborator[2]}")
+        except Exception as e:
+            self.show_error(f"Error fetching colaborator details: {e}")
+
+    def load_user_details(self):
+        try:
+            user = self.user_service.get_current_user()
+            self.user_name_input.setText(user.username)
+        except Exception as e:
+            self.show_error(f"Error fetching user details: {e}")
+
+    def load_order_balance(self, order_id):
+        try:
+            order_balance = self.wo_service.work_order_balance(order_id)
+            if order_balance is not None:
+                if float(order_balance) < 0:
+                    self.order_balance_input.setStyleSheet("color: red;")
+                else:
+                    self.order_balance_input.setStyleSheet("color: green;")
+                self.order_balance_input.setText(str(order_balance))
+            else:
+                self.order_balance_input.setText("Balance no disponible")
+        except Exception as e:
+            self.show_error(f"Error fetching order balance: {e}")
+
+    def load_order_info(self, order):
+        self.order_date_in_input.setText(order[2])
+        self.order_date_out_input.setText(order[3])
+        self.order_status_input.setText(order[8])
+        self.order_total_input.setText(str(order[7]))
+
+    def load_payment_details(self, order_id):
+        try:
+            paymet_details = self.wo_service.get_all_paymets_for_order(order_id)
+            self.table.setRowCount(len(paymet_details))
+            for row_index, payment in enumerate(paymet_details):
+                for col_index, value in enumerate(payment):
+                    item = QTableWidgetItem(str(value))
+                    self.table.setItem(row_index, col_index, item)
+            self.adjust_column_widths()
+        except Exception as e:
+            self.show_error(f"Error fetching all payments order: {e}")
+
+    def show_error(self, message):
+        QMessageBox.critical(self, "Error", message)
