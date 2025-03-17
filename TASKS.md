@@ -4,9 +4,11 @@
 - [X] Modulo "1 - Inicio": Agregar funcionalidad (Formulario) cambio password usuario actual.
 
 - [X] Modulo "Operaciones con Ordenes": Agrega funcionalidad "Crear Orden" (Formulario).
-- [ ] Modulo "Operaciones con Ordenes": Agrega funcionalidad "Actualziar orden" (Formulario).
+- [X] Modulo "Operaciones con Ordenes": Agrega funcionalidad "Actualziar orden" (Formulario).
 
-- [ ] Modulo "Operaciones de Caja": Agrega funcionalidad "Ingreso de Caja" (Formulario).
+- [] Modulo "Operaciones de Administracion": Agrega funcionalidad "Anular Orden" (Formulario).
+
+- [X] Modulo "Operaciones de Caja": Agrega funcionalidad "Ingreso de Caja" (Formulario).
 - [ ] Modulo "Operaciones de Caja": Agrega funcionalidad "Egreso de Caja" (Formulario).
 - [ ] Modulo "Operaciones de Caja": Agrega funcionalidad "Cierre de Caja" (Formulario).
 

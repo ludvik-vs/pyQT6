@@ -24,7 +24,7 @@ class WorkOrderService:
         columns = ', '.join(f"{key} = ?" for key in kwargs.keys())
         values = list(kwargs.values())
         values.append(work_order_id)
-        query = f'UPDATE work_orders SET {columns} WHERE id = ?'
+        query = f'UPDATE work_orders SET {columns} WHERE work_order_id = ?'
         self.db._execute_query(query, values)
 
     def delete_work_order(self, work_order_id):
