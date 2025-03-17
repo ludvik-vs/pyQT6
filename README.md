@@ -31,3 +31,6 @@ fail_data = db.get_user("admin", "wrongpass")
 print(fail_data)  # None
 
 db.close()
+
+pyinstaller --onefile --icon=assets/icons/icono.ico main.py
+pyinstaller --onefile --icon=assets/icons/icono.ico --add-data "src/styles;src/styles" --add-data "assets;assets" main.py

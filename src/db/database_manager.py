@@ -5,12 +5,16 @@ import hashlib
 
 class DatabaseManager:
     def __init__(self):
-        self.base_path = os.path.dirname(sys.executable) 
         if getattr(sys, 'frozen', False):
-            self.db_name = os.path.join(self.base_path, 'acrilcar_db.db')
+            # Entorno empaquetado: usar el directorio del ejecutable
+            base_path = os.path.dirname(sys.executable)
+            self.db_name = os.path.join(base_path, 'acrilcar_database.db')
         else:
-            self.base_path = os.path.abspath(os.path.dirname(__file__))
-            self.db_name = os.path.join(self.base_path, 'acrilcar_db.db')
+            # Entorno de desarrollo: usar la raíz del proyecto
+            base_path = os.path.abspath(os.path.dirname(__file__))
+            # Si dbmanager.py está en src/, subir un nivel para la raíz
+            base_path = os.path.dirname(base_path)
+            self.db_name = os.path.join(base_path, 'acrilcar_database.db')
         self.conn = sqlite3.connect(self.db_name)
 
     def connect(self, db_name):

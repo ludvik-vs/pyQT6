@@ -25,8 +25,21 @@ from src.db.db_operations.db_work_order import DatabaseWorkOrder
 from src.services.work_order_service import WorkOrderService
 
 def load_styles():
-    with open("main.css", "r") as file:
-        return file.read()
+    if getattr(sys, 'frozen', False):
+        # Entorno empaquetado: usar sys._MEIPASS para acceder al directorio temporal
+        base_path = sys._MEIPASS
+        file_path = os.path.join(base_path, 'src', 'styles', 'main.css')
+    else:
+        # Entorno de desarrollo: usar la ruta relativa desde el script
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(base_path, 'src', 'styles', 'main.css')
+    
+    try:
+        with open(file_path, "r", encoding='utf-8') as file:
+            return file.read()
+    except FileNotFoundError:
+        print(f"Warning: Style file not found at {file_path}")
+        return ""  # Return empty string if file not found
 
 class MainWindow(QMainWindow):
 
