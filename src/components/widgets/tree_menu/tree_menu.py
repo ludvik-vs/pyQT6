@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import QTreeView
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 
-
 class TreeMenu(QTreeView):
     item_selected = pyqtSignal(str)
 
