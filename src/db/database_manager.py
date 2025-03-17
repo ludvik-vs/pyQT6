@@ -1,12 +1,19 @@
+import sys
+import os
 import sqlite3
 import hashlib
 
 class DatabaseManager:
     def __init__(self):
-        self.db_name = 'src/db/database.db'
+        self.base_path = os.path.dirname(sys.executable) 
+        if getattr(sys, 'frozen', False):
+            self.db_name = os.path.join(self.base_path, 'acrilcar_db.db')
+        else:
+            self.base_path = os.path.abspath(os.path.dirname(__file__))
+            self.db_name = os.path.join(self.base_path, 'acrilcar_db.db')
         self.conn = sqlite3.connect(self.db_name)
 
-    def connect(self, db_name='src/db/database.db'):
+    def connect(self, db_name):
         """Conectar a la base de datos."""
         self.conn = sqlite3.connect(db_name)
 

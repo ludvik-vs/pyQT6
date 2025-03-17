@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt6.QtWidgets import QMainWindow, QApplication, QStyleFactory, QWidget, QGridLayout, QDialog
 from PyQt6.QtGui import QScreen
 
@@ -35,7 +36,7 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(load_styles())
         #--------------------------------------------------------------
         self.user_db_manager = DatabaseUser()
-        self.user_db_manager.connect()
+        self.user_db_manager.connect(self.user_db_manager.db_name)
         self.auth_service = AuthService(self.user_db_manager)
         #--------------------------------------------------------------
         self.db_client = DatabaseClient()
