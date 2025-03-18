@@ -25,13 +25,14 @@ class DatabaseWorkOrder(DatabaseManager):
                 colaborador_id INTEGER NOT NULL,
                 total_cost REAL DEFAULT 0,
                 order_status TEXT NOT NULL DEFAULT 'Abierta' CHECK (order_status IN ('Abierta', 'Procesando', 'Cerrada', 'Anulada')),
+                note TEXT,
                 FOREIGN KEY (user_id) REFERENCES users(id),
                 FOREIGN KEY (client_id) REFERENCES clients(id),
                 FOREIGN KEY (colaborador_id) REFERENCES colaboradores(id)
             )
         '''
         self._execute_query(query)
-        #self._insert_work_order('777', '2021-01-01', '2021-01-02', 1, 1, 1, 600, 'Abierta')
+        #self._insert_work_order('777', '2021-01-01', '2021-01-02', 1, 1, 1, 600, 'Abierta', "Nota Ejemplo")
 
     def create_work_order_items_table(self):
         """Crea la tabla de ítems de órdenes de trabajo."""
@@ -97,13 +98,13 @@ class DatabaseWorkOrder(DatabaseManager):
     def close(self):
         self.conn.close()
 
-    def _insert_work_order(self, work_order_id, start_date, end_date, user_id, client_id, colaborador_id, total_cost, order_status):
+    def _insert_work_order(self, work_order_id, start_date, end_date, user_id, client_id, colaborador_id, total_cost, order_status, note):
         """Registra los datos de una orden de trabajo y devuelve el ID de la orden."""
         query = '''
-            INSERT INTO work_orders (work_order_id, start_date, end_date, user_id, client_id, colaborador_id, total_cost, order_status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO work_orders (work_order_id, start_date, end_date, user_id, client_id, colaborador_id, total_cost, order_status, note)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         '''
-        cursor = self._execute_query(query, (work_order_id, start_date, end_date, user_id, client_id, colaborador_id, total_cost, order_status))
+        cursor = self._execute_query(query, (work_order_id, start_date, end_date, user_id, client_id, colaborador_id, total_cost, order_status, note))
         if cursor:
             return cursor.lastrowid
         else:

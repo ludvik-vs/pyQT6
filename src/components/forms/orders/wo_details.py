@@ -11,7 +11,8 @@ from PyQt6.QtWidgets import (
     QSizePolicy,
     QHBoxLayout,
     QVBoxLayout,
-    QScrollArea
+    QScrollArea,
+    QTextEdit
 )
 from src.components.custom.cq_divisor import CQDivisor
 
@@ -123,6 +124,10 @@ class WorkOrderDetails(QWidget):
         self.order_balance_input.setReadOnly(True)
         self.details_layout.addRow(self.order_balance_label, self.order_balance_input)
 
+        self.order_note_label = QLabel("Notas de la Orden: ")
+        self.order_note_text = QTextEdit()
+        self.details_layout.addRow(self.order_note_label, self.order_note_text)
+
         self.details_layout.addRow(CQDivisor())
 
         # Header seccion detalle de pagos
@@ -187,6 +192,7 @@ class WorkOrderDetails(QWidget):
             self.load_order_info(order)
             self.load_payment_details(order[1])
             self.load_order_status(order[8])
+            
 
         except Exception as e:
             self.show_error("Error", f"Error al buscar la orden, verifique el numero de orden ingresado:  <<{e}>>")
@@ -239,6 +245,7 @@ class WorkOrderDetails(QWidget):
         self.order_date_out_input.setText(order[3])
         self.order_status_input.setText(order[8])
         self.order_total_input.setText(str(order[7]))
+        self.order_note_text.setText(order[9])
 
     def load_payment_details(self, order_id):
         try:

@@ -25,10 +25,6 @@ class CreateColaborator(QWidget):
         self.fecha_ingreso.setDateTime(QDateTime.currentDateTime())
         self.nombre_contacto_emergencia = QLineEdit(self)
         self.telefono_emergencia = QLineEdit(self)
-        self.fecha_baja = QDateEdit(self)
-        self.fecha_baja.setDisplayFormat("dd/MM/yyyy HH:mm:ss AP")
-        self.fecha_baja.setCalendarPopup(True)
-        self.fecha_baja.setDateTime(QDateTime.currentDateTime())
         self.salario = QLineEdit(self)
         self.is_active = QCheckBox("Activo", self)
         self.is_active.setChecked(True)
@@ -54,16 +50,16 @@ class CreateColaborator(QWidget):
         layout.setVerticalSpacing(18)
 
         # Crear QLabels con fondo transparente
-        nombre_label = QLabel("Nombre:", self)
+        nombre_label = QLabel("Nombres:", self)
         layout.addRow(nombre_label, self.nombre)
 
-        apellido_label = QLabel("Apellido:", self)
+        apellido_label = QLabel("Apellidos:", self)
         layout.addRow(apellido_label, self.apellido)
 
         telefono_label = QLabel("Teléfono Personal:", self)
         layout.addRow(telefono_label, self.telefono_personal)
 
-        documento_label = QLabel("Documento de Identidad:", self)
+        documento_label = QLabel("Documento de Identidad (CEDULA):", self)
         layout.addRow(documento_label, self.documento_identidad)
 
         fecha_ingreso_label = QLabel("Fecha de Ingreso:", self)
@@ -74,9 +70,6 @@ class CreateColaborator(QWidget):
 
         telefono_emergencia_label = QLabel("Teléfono Emergencia:", self)
         layout.addRow(telefono_emergencia_label, self.telefono_emergencia)
-
-        fecha_baja_label = QLabel("Fecha de Baja:", self)
-        layout.addRow(fecha_baja_label, self.fecha_baja)
 
         salario_label = QLabel("Salario:", self)
         layout.addRow(salario_label, self.salario)
@@ -122,7 +115,6 @@ class CreateColaborator(QWidget):
         self.fecha_ingreso.setDateTime(QDateTime.currentDateTime())
         self.nombre_contacto_emergencia.clear()
         self.telefono_emergencia.clear()
-        self.fecha_baja.setDateTime(QDateTime.currentDateTime())
         self.salario.clear()
         self.is_active.setChecked(True)
         self.puesto.clear()
@@ -148,7 +140,7 @@ class CreateColaborator(QWidget):
             fecha_ingreso = self.fecha_ingreso.date().toString("yyyy-MM-dd")
             nombre_contacto_emergencia = self.nombre_contacto_emergencia.text()
             telefono_emergencia = self.telefono_emergencia.text()
-            fecha_baja = self.fecha_baja.text() if self.fecha_baja.text() else None
+            fecha_baja = ""
             salario = self.salario.text()
             is_active = self.is_active.isChecked()
             puesto = self.puesto.text()

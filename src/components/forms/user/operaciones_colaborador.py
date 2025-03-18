@@ -152,13 +152,13 @@ class ColaboratorOperations(QWidget):
         self.result_label = QLabel(self)
 
         # Añadir el formulario y los botones al contenedor principal
-        form_layout.addRow(self.result_label)     
         # Establecer el layout del contenedor en el scroll area
         container.setLayout(form_layout)
         # Establecer el layout del scroll area en el layout principal
         scroll.setWidget(container)
         # Añadir el scroll area al layout principal
         main_layout.addWidget(scroll)
+        main_layout.addWidget(self.result_label)     
         main_layout.addLayout(button_container)
 
         # Añadir el layout principal al widget principal

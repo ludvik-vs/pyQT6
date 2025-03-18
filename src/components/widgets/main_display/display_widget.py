@@ -23,6 +23,7 @@ from src.components.forms.user.change_password import PasswordChangeForm
 from src.components.forms.orders.create_orders import CrearOrdenForm
 from src.components.tables.wo_table import WorkOrderTable
 from src.components.forms.orders.wo_details import WorkOrderDetails
+from src.components.forms.orders.cancel_order import CancelOrderForm
 
 # Caja
 from src.components.forms.caja.ingresos import FormularioIngresoCaja
@@ -111,6 +112,12 @@ class DisplayWidget(QWidget):
                 self.auth_service), 0, 0),
             "Tabla Usuario": lambda: self.grid_layout.addWidget(UserTableWidget(
                 self.auth_service), 0, 0),
+            "Anular Orden": lambda: self.grid_layout.addWidget(
+                CancelOrderForm(
+                self.current_user_data,
+                self.auth_service,
+                self.work_order_service,
+            ), 0, 0),
         }
 
         action = widget_map.get(text)
@@ -120,6 +127,7 @@ class DisplayWidget(QWidget):
             label = QLabel(f"Formulario para: {text}", self)
             label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.grid_layout.addWidget(label, 0, 0)
+
     def show_acril_car_image(self):
         image_label = QLabel(self)
         image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
