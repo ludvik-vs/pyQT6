@@ -24,6 +24,10 @@ from src.components.login.login_dialog import LoginDialog
 from src.db.db_operations.db_work_order import DatabaseWorkOrder
 from src.services.work_order_service import WorkOrderService
 
+# CASHBOX
+from src.db.db_operations.db_cashbox import DBCashBox
+from src.services.cashbox_service import CashBoxService
+
 def load_styles():
     if getattr(sys, 'frozen', False):
         # Entorno empaquetado: usar sys._MEIPASS para acceder al directorio temporal
@@ -61,8 +65,17 @@ class MainWindow(QMainWindow):
         self.db_work_order = DatabaseWorkOrder()
         self.work_order_service = WorkOrderService(self.db_work_order)
         #--------------------------------------------------------------
+        self.db_cashbox = DBCashBox()
+        self.cashbox_service = CashBoxService(self.db_cashbox)
+        #--------------------------------------------------------------
         self.aside_widget = AsideWidget(self.auth_service)
-        self.display_widget = DisplayWidget(self.auth_service, self.client_service, self.colaborator_service, self.work_order_service)
+        self.display_widget = DisplayWidget(
+            self.auth_service, 
+            self.client_service, 
+            self.colaborator_service, 
+            self.work_order_service,
+            self.cashbox_service
+        )
         self.login_form = LoginDialog(self.auth_service)
         self.init_ui()
         self.aside_widget.tree_menu.item_selected.connect(self.update_display)

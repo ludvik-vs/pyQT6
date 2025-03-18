@@ -12,14 +12,10 @@
 - [ ] Modulo "Operaciones de Caja": Agrega funcionalidad "Egreso de Caja" (Formulario).
 - [ ] Modulo "Operaciones de Caja": Agrega funcionalidad "Cierre de Caja" (Formulario).
 
-- [ ] Modulo "Reportes Operativos": Reporte ingresos (Tabla filtro rango de fecha).
-- [ ] Modulo "Reportes Operativos": Reporte egresos (Tabla filtro rango de fecha).
-- [ ] Modulo "Reportes Operativos": Reporte cierre de caja (Tabla filtro rango de fecha).
-- [ ] Modulo "Reportes Operativos": Reporte ordenes (Tabla filtro rango de fecha).
+- [ ] Modulo "Reportes Operativos": Ordenes por estatus (Abiertas | Cerradas | Anuladas) (Tabla filtro rango de fecha).
+- [ ] Modulo "Reportes Operativo": Reporte cierre de caja (Tabla filtro rango de fecha).
 
 - [ ] Modulo "Reportes Gerenciales": Reporte ingresos (Tabla filtro rango de fecha).
 - [ ] Modulo "Reportes Gerenciales": Reporte egresos (Tabla filtro rango de fecha).
-- [ ] Modulo "Reportes Gerenciales": Reporte cierre de caja (Tabla filtro rango de fecha).
-- [ ] Modulo "Reportes Gerenciales": Reporte ordenes (Tabla filtro rango de fecha).
 
 ## En Proceso:

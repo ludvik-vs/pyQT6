@@ -31,7 +31,7 @@ from src.components.forms.caja.ingresos import FormularioIngresoCaja
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
 
-    def __init__(self, auth_service, client_service, colaborator_service, work_order_service):
+    def __init__(self, auth_service, client_service, colaborator_service, work_order_service, cashbox_service):
         super().__init__()
         self.setStyleSheet("background-color: #fafafc;")
         #--------------------------------------------------------------
@@ -45,6 +45,8 @@ class DisplayWidget(QWidget):
         self.colaborator_service = colaborator_service
         #--------------------------------------------------------------
         self.work_order_service = work_order_service
+        #--------------------------------------------------------------
+        self.cashbox_service = cashbox_service
         #--------------------------------------------------------------
         self.init_ui()
 
@@ -105,7 +107,9 @@ class DisplayWidget(QWidget):
                 FormularioIngresoCaja(
                     self.auth_service,
                     self.client_service,
-                    self.work_order_service), 0, 0),
+                    self.work_order_service,
+                    self.cashbox_service
+                ), 0, 0),
             "Crear Usuario": lambda: self.grid_layout.addWidget(CreateUserForm(
                 self.auth_service), 0, 0),
             "Operaciones de Usuario": lambda: self.grid_layout.addWidget(UserOperations(

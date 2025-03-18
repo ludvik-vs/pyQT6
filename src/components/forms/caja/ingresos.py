@@ -17,11 +17,12 @@ class FormularioIngresoCaja(QWidget):
     """
     Clase Formulario de Ingreso de Caja
     """
-    def __init__(self, auth_service, client_service, work_order_service):
+    def __init__(self, auth_service, client_service, work_order_service, cashbox_service):
         super().__init__()
         self.auth_service = auth_service
         self.client_service = client_service
         self.work_order_service = work_order_service
+        self.cashbox_service = cashbox_service
         self.initUI()
 
     def initUI(self):
@@ -62,7 +63,7 @@ class FormularioIngresoCaja(QWidget):
 
         self.payment_type_label = QLabel("Tipo de Pago:")
         self.payment_type_input = QComboBox()
-        self.payment_type_input.addItems(["Efectivo", "Tarjeta", "Transferencia", "Cheque", "Deposito Bancario", "Otro"])
+        self.payment_type_input.addItems(["Efectivo", "Tarjeta", "Transferencia", "Cheque", "Deposito", "Otro"])
         layout.addRow(self.payment_type_label, self.payment_type_input)
 
         self.reference_label = QLabel("Registrado por:")
@@ -121,7 +122,7 @@ class FormularioIngresoCaja(QWidget):
         numero_orden = self.orden_input.text()
         order_data = self.order_data_label.text()
         paymet_date = self.fecha_payment_input.text()
-        paymet_type = self.payment_type_input.currentText()
+        paymet_type =  self.payment_type_input.currentText().lower()
         user_log_register_input = self.user_log_register_input.text()
         monto = self.payment_mount_input.value()
         comentario = self.comentario_input.toPlainText()
@@ -138,6 +139,21 @@ class FormularioIngresoCaja(QWidget):
                     comentario,
                 )
                 QMessageBox().information(self, "Éxito", "Ingreso de caja registrado correctamente")
+                # Guardar en caja
+                # fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id
+                try: 
+                    self.cashbox_service.create_cashbox_entry_service(
+                        paymet_date,
+                        comentario,
+                        monto,
+                        'ingreso',
+                        paymet_type,
+                        user_log_register_input,
+                        numero_orden,
+                    )
+                except Exception as e:
+                    QMessageBox().warning(self, "Error", f"Error no se realizo registro en caja: {e}")
+
                 self.limpiar_formulario()
             else:
                 QMessageBox().warning(self, "Error", "Orden no encontrada")
