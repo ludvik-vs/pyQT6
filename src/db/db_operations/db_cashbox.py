@@ -7,6 +7,7 @@ class DBCashBox(DatabaseManager):
 
     def initialize_tables(self):
         self.create_table_caja()
+        self.create_table_movimientos()
 
     def create_table_caja(self):
         query = """
@@ -21,6 +22,17 @@ class DBCashBox(DatabaseManager):
                 order_id INTEGER NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES users(id),
                 FOREIGN KEY (order_id) REFERENCES work_orders(work_order_id)
+            );
+        """
+        self._execute_query(query)
+
+    def create_table_movimientos(self):
+        query = """
+            CREATE TABLE IF NOT EXISTS catalogo_movimientos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL,
+                tipo TEXT CHECK (tipo IN ('ingreso', 'egreso')),
+                descripcion TEXT
             );
         """
         self._execute_query(query)
@@ -55,15 +67,57 @@ class DBCashBox(DatabaseManager):
         return self._execute_query(query).fetchall()
 
     def update_entry(self, entry_id, fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id):
-        query = """
-            UPDATE cashbox
-            SET fecha = ?, descripcion = ?, monto = ?, tipo = ?, metodo_pago = ?, user_id = ?, order_id = ?
-            WHERE id = ?;
-        """
-        params = (fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id, entry_id)
-        self._execute_query(query, params)
+        try:
+            # Validate payment method
+            metodo_pago = self._validate_payment_method(metodo_pago)
+            
+            # Validate transaction type
+            if tipo.lower() not in ['ingreso', 'egreso']:
+                raise ValueError("Tipo de transacción inválido. Debe ser 'ingreso' o 'egreso'")
+            
+            query = """
+                UPDATE cashbox
+                SET fecha = ?, descripcion = ?, monto = ?, tipo = ?, metodo_pago = ?, user_id = ?, order_id = ?
+                WHERE id = ?;
+            """
+            params = (fecha, descripcion, monto, tipo.lower(), metodo_pago, user_id, order_id, entry_id)
+            self._execute_query(query, params)
+        except ValueError as e:
+            raise ValueError(f"Error de validación: {str(e)}")
 
     def delete_entry(self, entry_id):
         query = "DELETE FROM cashbox WHERE id = ?;"
         params = (entry_id,)
+        self._execute_query(query, params)
+    
+    #Catalogo Movimientos-------------------------------------------------
+    def create_movimiento(self, nombre, tipo, descripcion):
+        query = """
+            INSERT INTO catalogo_movimientos (nombre, tipo, descripcion)
+            VALUES (?, ?, ?);
+        """
+        params = (nombre, tipo, descripcion)
+        self._execute_query(query, params)
+
+    def read_movimiento(self, movimiento_id):
+        query = "SELECT * FROM catalogo_movimientos WHERE id = ?;"
+        params = (movimiento_id,)
+        return self._execute_query(query, params).fetchone()
+
+    def read_all_movimientos(self):
+        query = "SELECT * FROM catalogo_movimientos;"
+        return self._execute_query(query).fetchall()
+
+    def update_movimiento(self, movimiento_id, nombre, tipo, descripcion):
+        query = """
+            UPDATE catalogo_movimientos
+            SET nombre = ?, tipo = ?, descripcion = ?
+            WHERE id = ?;
+        """
+        params = (nombre, tipo, descripcion, movimiento_id)
+        self._execute_query(query, params)
+
+    def delete_movimiento(self, movimiento_id):
+        query = "DELETE FROM catalogo_movimientos WHERE id = ?;"
+        params = (movimiento_id,)
         self._execute_query(query, params)

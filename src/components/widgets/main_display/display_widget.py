@@ -27,11 +27,19 @@ from src.components.forms.orders.cancel_order import CancelOrderForm
 
 # Caja
 from src.components.forms.caja.ingresos import FormularioIngresoCaja
+from src.components.forms.caja.cash_movements import CashMovementForm
 
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
 
-    def __init__(self, auth_service, client_service, colaborator_service, work_order_service, cashbox_service):
+    def __init__(
+        self, 
+        auth_service, 
+        client_service, 
+        colaborator_service, 
+        work_order_service, 
+        cashbox_service
+    ):
         super().__init__()
         self.setStyleSheet("background-color: #fafafc;")
         #--------------------------------------------------------------
@@ -122,6 +130,11 @@ class DisplayWidget(QWidget):
                 self.auth_service,
                 self.work_order_service,
             ), 0, 0),
+            "Catalogo de Movimientos": lambda: self.grid_layout.addWidget(
+                CashMovementForm(
+                    self.cashbox_service,
+                    self.auth_service
+                ), 0, 0),
         }
 
         action = widget_map.get(text)

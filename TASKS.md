@@ -9,6 +9,8 @@
 - [X] Modulo "Operaciones de Administracion": Agrega funcionalidad "Anular Orden" (Formulario).
 
 - [X] Modulo "Operaciones de Caja": Agrega funcionalidad "Ingreso de Caja" (Formulario).
+- [X] Modulo "Operaciones de Caja": Agrega funcionalidad "Catalogo de movimientos"
+- [X] Modulo "Operaciones de Caja": Aactualizar funcionalidad "Ingreso de caja movimientos"
 - [ ] Modulo "Operaciones de Caja": Agrega funcionalidad "Egreso de Caja" (Formulario).
 - [ ] Modulo "Operaciones de Caja": Agrega funcionalidad "Cierre de Caja" (Formulario).
 

@@ -42,3 +42,40 @@ class CashBoxService:
             return self.db.delete_entry(entry_id)
         except Exception as e:
             print(f"Error al eliminar registro de caja: {e}")
+    
+    # Catalogo Movimientos
+
+    def create_movimiento_service(self, nombre, tipo, descripcion):
+        """Crea un nuevo movimiento en el catálogo de movimientos."""
+        try:
+            return self.db.create_movimiento(nombre, tipo, descripcion)
+        except Exception as e:
+            print(f"Error al crear movimiento: {e}")
+
+    def read_movimiento_service(self, movimiento_id):
+        """Lee un movimiento del catálogo de movimientos."""
+        try:
+            return self.db.read_movimiento(movimiento_id)
+        except Exception as e:
+            print(f"Error al leer movimiento: {e}")
+
+    def read_all_movimientos_service(self):
+        """Lee todos los movimientos del catálogo de movimientos."""
+        try:
+            return self.db.read_all_movimientos()
+        except Exception as e:
+            print(f"Error al leer movimientos: {e}")
+    
+    def update_movimiento_service(self, movimiento_id, nombre, tipo, descripcion):
+        """Actualiza un movimiento existente en el catálogo de movimientos."""
+        try:
+            return self.db.update_movimiento(movimiento_id, nombre, tipo, descripcion)
+        except Exception as e:
+            print(f"Error al actualizar movimiento: {e}")
+    
+    def delete_movimiento_service(self, movimiento_id):
+        """Elimina un movimiento existente del catálogo de movimientos."""
+        try:
+            return self.db.delete_movimiento(movimiento_id)
+        except Exception as e:
+            print(f"Error al eliminar movimiento: {e}")

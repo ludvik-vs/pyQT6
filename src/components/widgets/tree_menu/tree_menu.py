@@ -19,7 +19,7 @@ class TreeMenu(QTreeView):
             '6 - Operaciones de Caja': ['Ingresos de Caja', 'Egresos de Caja', 'Arqueo de Caja'],
             '7 - Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
             '8 - Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
-            '9 - Operaciones de Administración': ['Aprobar Descuento', 'Anular Orden', 'Eliminar Orden'],
+            '9 - Operaciones de Administración': ['Aprobar Descuento', 'Anular Orden', 'Catalogo de Movimientos', 'Eliminar Orden'],
             '10 - Reportes Administrativos': ['RA 1', 'RA 2', 'RA 3']
         }
         self.init_ui()

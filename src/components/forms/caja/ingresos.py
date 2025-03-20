@@ -105,13 +105,14 @@ class FormularioIngresoCaja(QWidget):
         numero_orden = self.orden_input.text()
         if numero_orden:
             orden = self.work_order_service.get_work_order(numero_orden)
+            print(orden)
             if orden:
                 self.order_data_label.setText(f'''
                 Número de Orden: {orden[1]}
                 Fecha: {orden[2]}
                 ID Cliente: {orden[4]}
                 Monto Facturado: {orden[7]}
-                Estado: {"Abierta" if orden[6] == 1 else "Cerrada"}
+                Estado: {orden[8]}
                 ''')
             else:
                 QMessageBox().warning(self, "Error", "Orden no encontrada")
