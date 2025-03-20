@@ -47,11 +47,12 @@ class DBCashBox(DatabaseManager):
         return metodo_pago.lower()
 
     def create_entry(self, fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id):
+        print(fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id)
         try:
             # Validate payment method before insertion
             metodo_pago = self._validate_payment_method(metodo_pago)
             query = """
-                INSERT INTO cashbox (fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id)
+                INSERT INTO cashbox (fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?);
             """
             params = (fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id)
