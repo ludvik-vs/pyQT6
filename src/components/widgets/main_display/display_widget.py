@@ -28,6 +28,7 @@ from src.components.forms.orders.cancel_order import CancelOrderForm
 # Caja
 from src.components.forms.caja.ingresos import FormularioIngresoCaja
 from src.components.forms.caja.cash_movements import CashMovementForm
+from src.components.forms.caja.salidas import FormularioEgresoCaja
 
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
@@ -118,6 +119,12 @@ class DisplayWidget(QWidget):
                     self.work_order_service,
                     self.cashbox_service
                 ), 0, 0),
+            "Egresos de Caja": lambda: self.grid_layout.addWidget(
+                FormularioEgresoCaja(
+                    self.auth_service,
+                    self.work_order_service,
+                    self.cashbox_service
+            ), 0, 0),
             "Crear Usuario": lambda: self.grid_layout.addWidget(CreateUserForm(
                 self.auth_service), 0, 0),
             "Operaciones de Usuario": lambda: self.grid_layout.addWidget(UserOperations(
