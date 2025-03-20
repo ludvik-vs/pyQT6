@@ -2,9 +2,9 @@ class CashBoxService:
     def __init__(self, db_cashbox):
         self.db = db_cashbox
 
-    def create_cashbox_entry_service(self, fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id):
+    def create_cashbox_entry_service(self, fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id):
         try:
-            return self.db.create_entry(fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id)
+            return self.db.create_entry(fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id)
         except Exception as e:
             print(f"Error al crear registro de caja: {e}")
 
@@ -20,7 +20,7 @@ class CashBoxService:
         except Exception as e:
             print(f"Error al leer registros de caja: {e}")
 
-    def update_entry_service(self, entry_id, fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id):
+    def update_entry_service(self, entry_id, fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id):
         """Actualiza un registro de caja existente."""
         try:
             return self.db.update_entry(
@@ -30,6 +30,7 @@ class CashBoxService:
                 monto=monto,
                 tipo=tipo,
                 metodo_pago=metodo_pago,
+                movimiento_caja=movimiento_caja,
                 user_id=user_id,
                 order_id=order_id
             )

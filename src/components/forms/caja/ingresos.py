@@ -17,7 +17,13 @@ class FormularioIngresoCaja(QWidget):
     """
     Clase Formulario de Ingreso de Caja
     """
-    def __init__(self, auth_service, client_service, work_order_service, cashbox_service):
+    def __init__(
+        self,
+        auth_service,
+        client_service,
+        work_order_service,
+        cashbox_service
+        ):
         super().__init__()
         self.auth_service = auth_service
         self.client_service = client_service
@@ -79,6 +85,12 @@ class FormularioIngresoCaja(QWidget):
         self.payment_mount_input.setValue(0)
         layout.addRow(self.paymetn_mount_label, self.payment_mount_input)
 
+        # Movimiento input
+        self.movimiento_label = QLabel("Movimiento:")
+        self.movimiento_input = QComboBox()
+        self.load_movimientos()
+        layout.addRow(self.movimiento_label, self.movimiento_input)
+
         self.comentario_label = QLabel("Comentario:")
         self.comentario_input = QTextEdit()
         layout.addRow(self.comentario_label, self.comentario_input)
@@ -96,9 +108,17 @@ class FormularioIngresoCaja(QWidget):
         # ---------------------------------------------------------------------
         layout.addRow(self.h_btns_layout)
 
+    def load_movimientos(self):
+        try:
+            movimientos = self.cashbox_service.read_all_movimientos_service()
+            for movimiento in movimientos:
+                self.movimiento_input.addItem(f"{movimiento[0]} - {movimiento[1]}", movimiento[0])
+        except Exception as e:
+            QMessageBox().warning(self, "Error", f"Error al cargar movimientos: {e}")
+
     def get_curret_user(self):
         current_user = self.auth_service.get_current_user()
-        prin(current_user)
+        print(current_user)
         return current_user
 
     def cargar_orden(self):
@@ -114,6 +134,11 @@ class FormularioIngresoCaja(QWidget):
                 Monto Facturado: {orden[7]}
                 Estado: {orden[8]}
                 ''')
+                # Validar el estado de la orden
+                if orden[8].lower() == "cerrada":
+                    self.save_button.setVisible(False)
+                else:
+                    self.save_button.setVisible(True)
             else:
                 QMessageBox().warning(self, "Error", "Orden no encontrada")
         else:
@@ -127,6 +152,8 @@ class FormularioIngresoCaja(QWidget):
         user_log_register_input = self.user_log_register_input.text()
         monto = self.payment_mount_input.value()
         comentario = self.comentario_input.toPlainText()
+        movimiento_id = self.movimiento_input.currentData()
+
         if numero_orden:
             orden = self.work_order_service.get_work_order(numero_orden)
             if orden:
@@ -141,16 +168,17 @@ class FormularioIngresoCaja(QWidget):
                 )
                 QMessageBox().information(self, "Éxito", "Ingreso de caja registrado correctamente")
                 # Guardar en caja
-                # fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id
-                try: 
+                # fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id, movimiento_caja
+                try:
                     self.cashbox_service.create_cashbox_entry_service(
                         paymet_date,
                         comentario,
                         monto,
                         'ingreso',
                         paymet_type,
+                        movimiento_id,
                         user_log_register_input,
-                        numero_orden,
+                        numero_orden
                     )
                 except Exception as e:
                     QMessageBox().warning(self, "Error", f"Error no se realizo registro en caja: {e}")

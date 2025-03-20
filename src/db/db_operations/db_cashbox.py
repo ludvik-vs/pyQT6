@@ -18,10 +18,12 @@ class DBCashBox(DatabaseManager):
                 monto REAL NOT NULL,
                 tipo TEXT CHECK (tipo IN ('ingreso', 'egreso')),
                 metodo_pago TEXT CHECK (metodo_pago IN ('efectivo', 'tarjeta', 'transferencia', 'cheque', 'deposito', 'otro')),
+                movimiento_caja INTEGER,
                 user_id INTEGER NOT NULL,
                 order_id INTEGER NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES users(id),
-                FOREIGN KEY (order_id) REFERENCES work_orders(work_order_id)
+                FOREIGN KEY (order_id) REFERENCES work_orders(work_order_id),
+                FOREIGN KEY (movimiento_caja) REFERENCES catalogo_movimientos(id)
             );
         """
         self._execute_query(query)
@@ -44,15 +46,15 @@ class DBCashBox(DatabaseManager):
             raise ValueError(f"Método de pago inválido. Debe ser uno de: {', '.join(valid_methods)}")
         return metodo_pago.lower()
 
-    def create_entry(self, fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id):
+    def create_entry(self, fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id):
         try:
             # Validate payment method before insertion
             metodo_pago = self._validate_payment_method(metodo_pago)
             query = """
                 INSERT INTO cashbox (fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?);
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?);
             """
-            params = (fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id)
+            params = (fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id)
             self._execute_query(query, params)
         except ValueError as e:
             raise ValueError(f"Error de validación: {str(e)}")
@@ -66,7 +68,7 @@ class DBCashBox(DatabaseManager):
         query = "SELECT * FROM cashbox;"
         return self._execute_query(query).fetchall()
 
-    def update_entry(self, entry_id, fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id):
+    def update_entry(self, entry_id, fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id):
         try:
             # Validate payment method
             metodo_pago = self._validate_payment_method(metodo_pago)
@@ -80,7 +82,7 @@ class DBCashBox(DatabaseManager):
                 SET fecha = ?, descripcion = ?, monto = ?, tipo = ?, metodo_pago = ?, user_id = ?, order_id = ?
                 WHERE id = ?;
             """
-            params = (fecha, descripcion, monto, tipo.lower(), metodo_pago, user_id, order_id, entry_id)
+            params = (fecha, descripcion, monto, tipo.lower(), metodo_pago, movimiento_caja, user_id, order_id, entry_id)
             self._execute_query(query, params)
         except ValueError as e:
             raise ValueError(f"Error de validación: {str(e)}")
