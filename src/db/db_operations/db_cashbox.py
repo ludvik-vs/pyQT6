@@ -8,7 +8,6 @@ class DBCashBox(DatabaseManager):
     def initialize_tables(self):
         self.create_table_caja()
         self.create_table_movimientos()
-        self.create_cash_count_table()
         self.create_cash_count_denominations_table()
 
     def create_table_caja(self):
@@ -41,93 +40,22 @@ class DBCashBox(DatabaseManager):
         """
         self._execute_query(query)
 
-    def create_cash_count_table(self):
-        query = """
-        CREATE TABLE IF NOT EXISTS cash_count (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            register_date DATE NOT NULL,
-            operation_type TEXT CHECK (operation_type IN ('apertura', 'cierre')),
-            id_cajero INTEGER,
-            id_caja INTEGER,
-            initial_cash REAL,
-            final_cash REAL,
-            expected_cash REAL,
-            cash_difference REAL,
-            remarks TEXT,
-            FOREIGN KEY (id_cajero) REFERENCES users(id)
-        )
-        """
-        self._execute_query(query)
-    
     def create_cash_count_denominations_table(self):
         query = """
         CREATE TABLE IF NOT EXISTS cash_count_denominations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            id_cash_count INTEGER,
             id_user_cashier INTEGER,
             nio_denominations TEXT CHECK (nio_denominations IN ('0.01', '0.05', '0.1', '0.25', '0.5', '1', '5', '10', '20', '50', '100', '200', '500', '1000')),
             us_denominations TEXT CHECK (us_denominations IN ('1', '5', '10', '20', '50', '100')),
             exchange_rate REAL,
             count INTEGER,
             subtotal REAL,
-            FOREIGN KEY (id_cash_count) REFERENCES cash_count(id)
             FOREIGN KEY (id_user_cashier) REFERENCES users(id)
         )
         """
         self._execute_query(query)
     
     #Arqueo de Efectivo-------------------------------------------------
-    def create_cash_count(
-        self, 
-        id_cash_count, 
-        id_user_cashier, 
-        nio_denominations=None, 
-        us_denominations=None, 
-        exchange_rate=None, 
-        count=0, 
-        subtotal=0
-        ):
-        """
-        Creates a new denomination record with support for both NIO and USD
-        """
-        query = """
-        INSERT INTO cash_count_denominations (id_cash_count, id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        """
-        params = (id_cash_count, id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal)
-        self._execute_query(query, params)
-
-    def read_cash_count_denomination(self, denomination_id):
-        query = "SELECT * FROM cash_count_denominations WHERE id = ?"
-        cursor = self._execute_query(query, (denomination_id,))
-        return cursor.fetchone()
-    
-    def read_cash_count_denominations_by_cash_count_id(self, id_cash_count):
-        """Get all denominations for a specific cash count"""
-        query = """
-        SELECT id, nio_denominations, us_denominations, exchange_rate, count, subtotal
-        FROM cash_count_denominations
-        WHERE id_cash_count = ?
-        """
-        cursor = self._execute_query(query, (id_cash_count,))
-        return cursor.fetchall()
-
-    def update_cash_count_denomination(self, denomination_id, id_cash_count, nio_denominations=None, us_denominations=None, exchange_rate=None, count=0, subtotal=0):
-        """
-        Updates an existing denomination record with support for both NIO and USD
-        """
-        query = """
-        UPDATE cash_count_denominations
-        SET id_cash_count = ?, nio_denominations = ?, us_denominations = ?, exchange_rate = ?, count = ?, subtotal = ?
-        WHERE id = ?
-        """
-        params = (id_cash_count, nio_denominations, us_denominations, exchange_rate, count, subtotal, denomination_id)
-        self._execute_query(query, params)
-
-    def delete_cash_count_denomination(self, denomination_id):
-        query = "DELETE FROM cash_count_denominations WHERE id = ?"
-        self._execute_query(query, (denomination_id,))
-    
     def save_denomination_count(self, fecha, currency_type, denomination, count, subtotal, exchange_rate=None):
         """
         Save denomination count without requiring a cash_count_id
@@ -253,37 +181,9 @@ class DBCashBox(DatabaseManager):
         params = (movimiento_id,)
         self._execute_query(query, params)
     
-    #Arqueo de Caja-------------------------------------------------
-    def create_cash_count(self, register_date, operation_type, id_cajero, id_caja, initial_cash, final_cash, expected_cash, cash_difference, remarks):
-        query = """
-        INSERT INTO cash_count (register_date, operation_type, id_cajero, id_caja, initial_cash, final_cash, expected_cash, cash_difference, remarks)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """
-        params = (register_date, operation_type, id_cajero, id_caja, initial_cash, final_cash, expected_cash, cash_difference, remarks)
-        self._execute_query(query, params)
-
-    def read_cash_count(self, cash_count_id):
-        query = "SELECT * FROM cash_count WHERE id = ?"
-        cursor = self._execute_query(query, (cash_count_id,))
-        return cursor.fetchone()
-
-    def update_cash_count(self, cash_count_id, register_date, operation_type, id_cajero, id_caja, initial_cash, final_cash, expected_cash, cash_difference, remarks):
-        query = """
-        UPDATE cash_count
-        SET register_date = ?, operation_type = ?, id_cajero = ?, id_caja = ?, initial_cash = ?, final_cash = ?, expected_cash = ?, cash_difference = ?, remarks = ?
-        WHERE id = ?
-        """
-        params = (register_date, operation_type, id_cajero, id_caja, initial_cash, final_cash, expected_cash, cash_difference, remarks, cash_count_id)
-        self._execute_query(query, params)
-
-    def delete_cash_count(self, cash_count_id):
-        query = "DELETE FROM cash_count WHERE id = ?"
-        self._execute_query(query, (cash_count_id,))
-    
     #Arqueo de Efectivo-------------------------------------------------
     def create_cash_count_denomination(
         self, 
-        id_cash_count, 
         id_user_cashier, 
         nio_denominations=None, 
         us_denominations=None, 
@@ -292,100 +192,20 @@ class DBCashBox(DatabaseManager):
         subtotal=0
         ):
         query = """
-        INSERT INTO cash_count_denominations (id_cash_count, id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO cash_count_denominations (
+            id_user_cashier, 
+            nio_denominations, 
+            us_denominations, 
+            exchange_rate, 
+            count, 
+            subtotal
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
         """
-        params = (id_cash_count, id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal)
+        params = (id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal)
         self._execute_query(query, params)
 
-    def read_cash_count_denomination(self, denomination_id):
-        query = "SELECT * FROM cash_count_denominations WHERE id = ?"
-        cursor = self._execute_query(query, (denomination_id,))
+    def read_cash_count_denomination(self, user_id):
+        query = "SELECT * FROM cash_count_denominations WHERE id_user_cashier = ?"
+        cursor = self._execute_query(query, (user_id,))
         return cursor.fetchone()
-
-    def update_cash_count_denomination(self, denomination_id, id_cash_count, denominations, count, subtotal):
-        query = """
-        UPDATE cash_count_denominations
-        SET id_cash_count = ?, denominations = ?, count = ?, subtotal = ?
-        WHERE id = ?
-        """
-        params = (id_cash_count, denominations, count, subtotal, denomination_id)
-        self._execute_query(query, params)
-
-    def delete_cash_count_denomination(self, denomination_id):
-        query = "DELETE FROM cash_count_denominations WHERE id = ?"
-        self._execute_query(query, (denomination_id,))
-
-    def get_daily_totals(self, fecha):
-        """
-        Get total income and expenses for a specific date
-        Args:
-            fecha: Date to calculate totals
-        Returns:
-            dict: Dictionary with date, total income and total expenses
-        """
-        query = """
-            SELECT 
-                fecha,
-                SUM(CASE WHEN tipo = 'ingreso' THEN monto ELSE 0 END) as total_ingresos,
-                SUM(CASE WHEN tipo = 'egreso' THEN monto ELSE 0 END) as total_egresos
-            FROM cashbox 
-            WHERE fecha = ?
-            GROUP BY fecha;
-        """
-        cursor = self._execute_query(query, (fecha,))
-        result = cursor.fetchone()
-
-        if result:
-            return {
-                "fecha": result[0],
-                "total_ingresos": float(result[1] or 0),
-                "total_egresos": float(result[2] or 0)
-            }
-        else:
-            return {
-                "fecha": fecha,
-                "total_ingresos": 0.0,
-                "total_egresos": 0.0
-            }
-
-    def get_last_cash_count_id(self):
-            query = """
-            SELECT id FROM cash_count 
-            ORDER BY id DESC 
-            LIMIT 1;
-            """
-            cursor = self._execute_query(query)
-            result = cursor.fetchone()
-            return result[0] if result else 0
-
-    def get_movement_totals(self, fecha):
-            """Get totals grouped by movement type"""
-            query = """
-                SELECT 
-                    cm.nombre,
-                    cm.tipo,
-                    SUM(c.monto) as total
-                FROM cashbox c
-                JOIN catalogo_movimientos cm ON c.movimiento_caja = cm.id
-                WHERE c.fecha = ?
-                GROUP BY cm.id, cm.nombre, cm.tipo
-                ORDER BY cm.tipo, cm.nombre
-            """
-            cursor = self._execute_query(query, (fecha,))
-            return cursor.fetchall()
-    
-    def get_payment_method_totals(self, fecha):
-            """Get totals grouped by payment method"""
-            query = """
-                SELECT 
-                    metodo_pago,
-                    tipo,
-                    SUM(monto) as total
-                FROM cashbox
-                WHERE fecha = ?
-                GROUP BY metodo_pago, tipo
-                ORDER BY metodo_pago, tipo
-            """
-            cursor = self._execute_query(query, (fecha,))
-            return cursor.fetchall()

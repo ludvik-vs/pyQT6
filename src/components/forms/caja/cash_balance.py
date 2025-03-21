@@ -46,11 +46,6 @@ class CashBalanceForm(QWidget):
         user_group = QGroupBox("Información De Referencia")
         user_layout = QFormLayout()
 
-        # ID Referenicia del Arqueo
-        self.reference_id_input = QLineEdit()
-        self.reference_id_input.setText(str(self.cashbox_service.get_last_cash_count_id_service() + 1))
-        user_layout.addRow("ID Referencia:", self.reference_id_input)
-
         self.user_id_input = QLineEdit()
         self.user_id_input.setReadOnly(True)
         if self.current_user:
@@ -294,7 +289,6 @@ class CashBalanceForm(QWidget):
         self.update_totals()
 
     def save_denominations(self):
-        cash_count_id = self.reference_id_input.text()
         rate = self.exchange_rate.value()
         current_user_id = self.user_id_input.text()
 
@@ -309,7 +303,6 @@ class CashBalanceForm(QWidget):
                 if count > 0:
                     subtotal = float(denom_data['subtotal'].text())
                     self.cashbox_service.create_cash_count_denomination_service(
-                        id_cash_count=cash_count_id,
                         id_user_cashier=current_user_id,
                         nio_denominations=denom_name,
                         us_denominations=None,
@@ -324,7 +317,6 @@ class CashBalanceForm(QWidget):
                 if count > 0:  # Only save if there are bills/coins
                     subtotal = float(denom_data['subtotal'].text())
                     self.cashbox_service.create_cash_count_denomination_service(
-                        id_cash_count=cash_count_id,
                         id_user_cashier=current_user_id,
                         nio_denominations=None,
                         us_denominations=denom_name,
