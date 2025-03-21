@@ -30,6 +30,7 @@ from src.components.forms.caja.ingresos import FormularioIngresoCaja
 from src.components.forms.caja.cash_movements import CashMovementForm
 from src.components.forms.caja.salidas import FormularioEgresoCaja
 from src.components.forms.caja.cash_balance import CashBalanceForm
+from src.components.forms.caja.cash_flow_control import CashFlowControlForm
 
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
@@ -126,7 +127,7 @@ class DisplayWidget(QWidget):
                     self.work_order_service,
                     self.cashbox_service
             ), 0, 0),
-            "Arqueo de Caja": lambda: self.grid_layout.addWidget(
+            "Arqueo de Efectivo en Caja": lambda: self.grid_layout.addWidget(
                 CashBalanceForm(
                     self.auth_service,
                     self.cashbox_service
@@ -139,10 +140,15 @@ class DisplayWidget(QWidget):
                 self.auth_service), 0, 0),
             "Anular Orden": lambda: self.grid_layout.addWidget(
                 CancelOrderForm(
-                self.current_user_data,
-                self.auth_service,
-                self.work_order_service,
-            ), 0, 0),
+                    self.current_user_data,
+                    self.auth_service,
+                    self.work_order_service,
+                ), 0, 0),
+            "Balance Entradas|Salidas": lambda: self.grid_layout.addWidget(
+                CashFlowControlForm(
+                    self.auth_service,
+                    self.cashbox_service,
+                ), 0, 0),
             "Catalogo de Movimientos": lambda: self.grid_layout.addWidget(
                 CashMovementForm(
                     self.cashbox_service,

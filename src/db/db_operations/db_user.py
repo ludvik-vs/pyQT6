@@ -1,5 +1,6 @@
 import sqlite3
 from src.db.database_manager import DatabaseManager
+from src.config.menu_structure import MenuStructure
 
 class DatabaseUser(DatabaseManager):
     def __init__(self):
@@ -74,37 +75,14 @@ class DatabaseUser(DatabaseManager):
         cursor.execute("SELECT role FROM users WHERE id = ?", (user_id,))
         user_role = cursor.fetchone()
         if user_role and user_role[0] == 'admin':
-            all_branches = [
-                '1 - Inicio',
-                '2 - Administración de Usuarios',
-                '3 - Clientes',
-                '4 - Órdenes de Trabajo',
-                '5 - Órdenes de Producción',
-                '6 - Operaciones de Caja',
-                '7 - Reportes Operativos',
-                '8 - Planilla',
-                '9 - Operaciones de Administración',
-                '10 - Reportes Administrativos'
-            ]
-            all_sub_branches = {
-                '1 - Inicio': ['ACRIL CAR', 'Cambiar Contraseña'],
-                '2 - Administración de Usuarios': ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario'],
-                '3 - Clientes': ['Alta de Cliente', 'Operaciones con Cliente', 'Tabla de Clientes'],
-                '4 - Órdenes de Trabajo': ['Crear Orden T', 'Detalle Orden T', 'Tabla Orden T'],
-                '5 - Órdenes de Producción': ['Crear Orden P', 'Detalle Orden P'],
-                '6 - Operaciones de Caja': ['Ingresos de Caja', 'Egresos de Caja', 'Arqueo de Caja'],
-                '7 - Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
-                '8 - Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
-                '9 - Operaciones de Administración': ['Aprobar Descuento', 'Anular Orden', 'Catalogo de Movimientos', 'Eliminar Orden'],
-                '10 - Reportes Administrativos': ['RA 1', 'RA 2', 'RA 3']
-            }
+            all_branches = MenuStructure.get_all_branches()
+            all_sub_branches = MenuStructure.get_menu_structure()
+            
             with self.conn:
                 for branch in all_branches:
-                    # Otorgar acceso solo a la rama principal si no tiene subramas
                     if branch not in all_sub_branches:
                         self.grant_access(user_id, branch)
                     else:
-                        # Otorgar acceso a cada subrama
                         for sub_branch in all_sub_branches[branch]:
                             self.grant_access(user_id, branch, sub_branch)
 

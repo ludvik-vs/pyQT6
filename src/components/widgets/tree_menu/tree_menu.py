@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QTreeView
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
+from src.config.menu_structure import MenuStructure
 
 class TreeMenu(QTreeView):
     item_selected = pyqtSignal(str)
@@ -10,18 +11,7 @@ class TreeMenu(QTreeView):
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Transacciones'])
         self.setModel(self.model)
-        self.tree_structure = {
-            '1 - Inicio': ['ACRIL CAR', 'Cambiar Contraseña'],
-            '2 - Administración de Usuarios': ['Crear Usuario', 'Operaciones de Usuario', 'Tabla Usuario'],
-            '3 - Clientes': ['Alta de Cliente', 'Operaciones con Cliente', 'Tabla de Clientes'],
-            '4 - Órdenes de Trabajo': ['Crear Orden T', 'Detalle Orden T', 'Tabla Orden T'],
-            '5 - Órdenes de Producción': ['Crear Orden P', 'Detalle Orden P'],
-            '6 - Operaciones de Caja': ['Ingresos de Caja', 'Egresos de Caja', 'Arqueo de Caja'],
-            '7 - Reportes Operativos': ['RO 1', 'RO 2', 'RO 3'],
-            '8 - Planilla': ['Alta de Colaborador', 'Operaciones con Colaborador', 'Detalle por Colaborador', 'Tabla Planilla'],
-            '9 - Operaciones de Administración': ['Aprobar Descuento', 'Anular Orden', 'Catalogo de Movimientos', 'Eliminar Orden'],
-            '10 - Reportes Administrativos': ['RA 1', 'RA 2', 'RA 3']
-        }
+        self.tree_structure = MenuStructure.get_menu_structure()
         self.init_ui()
         self.clicked.connect(self.on_item_selected)
         self.setEditTriggers(QTreeView.EditTrigger.NoEditTriggers)
