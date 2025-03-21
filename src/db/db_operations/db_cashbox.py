@@ -254,3 +254,34 @@ class DBCashBox(DatabaseManager):
             cursor = self._execute_query(query)
             result = cursor.fetchone()
             return result[0] if result else 0
+
+    def get_movement_totals(self, fecha):
+            """Get totals grouped by movement type"""
+            query = """
+                SELECT 
+                    cm.nombre,
+                    cm.tipo,
+                    SUM(c.monto) as total
+                FROM cashbox c
+                JOIN catalogo_movimientos cm ON c.movimiento_caja = cm.id
+                WHERE c.fecha = ?
+                GROUP BY cm.id, cm.nombre, cm.tipo
+                ORDER BY cm.tipo, cm.nombre
+            """
+            cursor = self._execute_query(query, (fecha,))
+            return cursor.fetchall()
+    
+    def get_payment_method_totals(self, fecha):
+            """Get totals grouped by payment method"""
+            query = """
+                SELECT 
+                    metodo_pago,
+                    tipo,
+                    SUM(monto) as total
+                FROM cashbox
+                WHERE fecha = ?
+                GROUP BY metodo_pago, tipo
+                ORDER BY metodo_pago, tipo
+            """
+            cursor = self._execute_query(query, (fecha,))
+            return cursor.fetchall()

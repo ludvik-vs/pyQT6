@@ -170,6 +170,22 @@ class CashBoxService:
             return self.db.get_last_cash_count_id()
         except Exception as e:
             print(f"Error al obtener último ID de arqueo: {e}")
+
+    def get_movement_totals_service(self, fecha):
+        """Get totals by movement type"""
+        try:
+            return self.db.get_movement_totals(fecha)
+        except Exception as e:
+            print(f"Error al obtener totales por movimiento: {e}")
+            return []
+
+    def get_payment_method_totals_service(self, fecha):
+        """Get totals by payment method"""
+        try:
+            return self.db.get_payment_method_totals(fecha)
+        except Exception as e:
+            print(f"Error al obtener totales por método de pago: {e}")
+            return []
             
 
     
