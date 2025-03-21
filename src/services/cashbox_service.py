@@ -117,10 +117,21 @@ class CashBoxService:
             print(f"Error al eliminar arqueo de caja: {e}")
 
     # Cash Count Denominations Services -------------------------------------------------
-    def create_cash_count_denomination_service(self, id_cash_count, denominations, count, subtotal):
-        """Creates a new denomination record for a cash count."""
+    def create_cash_count_denomination_service(
+        self, 
+        id_cash_count=None, 
+        id_user_cashier=None, 
+        nio_denominations=None, 
+        us_denominations=None, 
+        exchange_rate=None, 
+        count=0, 
+        subtotal=0
+        ):
+        """Creates a new denomination record with support for both NIO and USD."""
         try:
-            return self.db.create_cash_count_denomination(id_cash_count, denominations, count, subtotal)
+            return self.db.create_cash_count_denomination(
+                id_cash_count, id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal
+            )
         except Exception as e:
             print(f"Error al crear denominación: {e}")
 
@@ -130,12 +141,20 @@ class CashBoxService:
             return self.db.read_cash_count_denomination(denomination_id)
         except Exception as e:
             print(f"Error al leer denominación: {e}")
+    
+    def read_cash_count_denominations_by_cash_count_id_service(self, id_cash_count):
+        """Get all denominations for a specific cash count"""
+        try:
+            return self.db.read_cash_count_denominations_by_cash_count_id(id_cash_count)
+        except Exception as e:
+            print(f"Error al leer denominaciones por arqueo: {e}")
+            return []
 
-    def update_cash_count_denomination_service(self, denomination_id, id_cash_count, denominations, count, subtotal):
-        """Updates an existing denomination record."""
+    def update_cash_count_denomination_service(self, denomination_id, id_cash_count=None, nio_denominations=None, us_denominations=None, exchange_rate=None, count=0, subtotal=0):
+        """Updates an existing denomination record with support for both NIO and USD."""
         try:
             return self.db.update_cash_count_denomination(
-                denomination_id, id_cash_count, denominations, count, subtotal
+                denomination_id, id_cash_count, nio_denominations, us_denominations, exchange_rate, count, subtotal
             )
         except Exception as e:
             print(f"Error al actualizar denominación: {e}")
@@ -146,6 +165,30 @@ class CashBoxService:
             return self.db.delete_cash_count_denomination(denomination_id)
         except Exception as e:
             print(f"Error al eliminar denominación: {e}")
+    
+    def save_denomination_count_service(self, fecha, currency_type, denomination, count, subtotal, exchange_rate=None):
+        """
+        Save denomination count without requiring a cash_count_id
+        Args:
+            fecha: Date of the count
+            currency_type: 'nio' or 'usd'
+            denomination: Denomination value
+            count: Number of bills/coins
+            subtotal: Total value
+            exchange_rate: Exchange rate for USD (only needed for USD)
+        """
+        try:
+            return self.db.save_denomination_count(fecha, currency_type, denomination, count, subtotal, exchange_rate)
+        except Exception as e:
+            print(f"Error al guardar conteo de denominación: {e}")
+    
+    def get_denominations_by_date_service(self, fecha):
+        """Get all denominations for a specific date"""
+        try:
+            return self.db.get_denominations_by_date(fecha)
+        except Exception as e:
+            print(f"Error al obtener denominaciones por fecha: {e}")
+            return []
 
     def get_daily_totals_service(self, fecha):
         """

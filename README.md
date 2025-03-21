@@ -1,14 +1,20 @@
+### Crear entorno virtual con py
+py -3.9 -m venv .venv
 py -3.10 -m venv .venv
+py -3.11 -m venv .venv
+py -3.12 -m venv .venv
+py -3.13 -m venv .venv
 
 windows
 .venv\Scripts\activate
+.venv\Scripts\deactivate
 
 ubuntu
 source .venv/bin/activate
 
 pip install PyQt6 pyqt6-tools
 
-pip install -r requirements.txt 
+pip install -r requirements.txt
 
 pip freeze > requirements.txt
 

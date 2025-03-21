@@ -64,13 +64,108 @@ class DBCashBox(DatabaseManager):
         CREATE TABLE IF NOT EXISTS cash_count_denominations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_cash_count INTEGER,
-            denominations TEXT CHECK (denominations IN ('0.01', '0.05', '0.1', '0.25', '0.5', '1', '5', '10', '20', '50', '100', '200', '500', '1000')),
+            id_user_cashier INTEGER,
+            nio_denominations TEXT CHECK (nio_denominations IN ('0.01', '0.05', '0.1', '0.25', '0.5', '1', '5', '10', '20', '50', '100', '200', '500', '1000')),
+            us_denominations TEXT CHECK (us_denominations IN ('1', '5', '10', '20', '50', '100')),
+            exchange_rate REAL,
             count INTEGER,
             subtotal REAL,
             FOREIGN KEY (id_cash_count) REFERENCES cash_count(id)
+            FOREIGN KEY (id_user_cashier) REFERENCES users(id)
         )
         """
         self._execute_query(query)
+    
+    #Arqueo de Efectivo-------------------------------------------------
+    def create_cash_count(
+        self, 
+        id_cash_count, 
+        id_user_cashier, 
+        nio_denominations=None, 
+        us_denominations=None, 
+        exchange_rate=None, 
+        count=0, 
+        subtotal=0
+        ):
+        """
+        Creates a new denomination record with support for both NIO and USD
+        """
+        query = """
+        INSERT INTO cash_count_denominations (id_cash_count, id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """
+        params = (id_cash_count, id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal)
+        self._execute_query(query, params)
+
+    def read_cash_count_denomination(self, denomination_id):
+        query = "SELECT * FROM cash_count_denominations WHERE id = ?"
+        cursor = self._execute_query(query, (denomination_id,))
+        return cursor.fetchone()
+    
+    def read_cash_count_denominations_by_cash_count_id(self, id_cash_count):
+        """Get all denominations for a specific cash count"""
+        query = """
+        SELECT id, nio_denominations, us_denominations, exchange_rate, count, subtotal
+        FROM cash_count_denominations
+        WHERE id_cash_count = ?
+        """
+        cursor = self._execute_query(query, (id_cash_count,))
+        return cursor.fetchall()
+
+    def update_cash_count_denomination(self, denomination_id, id_cash_count, nio_denominations=None, us_denominations=None, exchange_rate=None, count=0, subtotal=0):
+        """
+        Updates an existing denomination record with support for both NIO and USD
+        """
+        query = """
+        UPDATE cash_count_denominations
+        SET id_cash_count = ?, nio_denominations = ?, us_denominations = ?, exchange_rate = ?, count = ?, subtotal = ?
+        WHERE id = ?
+        """
+        params = (id_cash_count, nio_denominations, us_denominations, exchange_rate, count, subtotal, denomination_id)
+        self._execute_query(query, params)
+
+    def delete_cash_count_denomination(self, denomination_id):
+        query = "DELETE FROM cash_count_denominations WHERE id = ?"
+        self._execute_query(query, (denomination_id,))
+    
+    def save_denomination_count(self, fecha, currency_type, denomination, count, subtotal, exchange_rate=None):
+        """
+        Save denomination count without requiring a cash_count_id
+        Args:
+            fecha: Date of the count
+            currency_type: 'nio' or 'usd'
+            denomination: Denomination value
+            count: Number of bills/coins
+            subtotal: Total value
+            exchange_rate: Exchange rate for USD (only needed for USD)
+        """
+        if currency_type.lower() == 'nio':
+            query = """
+            INSERT INTO cash_count_denominations (nio_denominations, count, subtotal)
+            VALUES (?, ?, ?)
+            """
+            params = (denomination, count, subtotal)
+        else:
+            query = """
+            INSERT INTO cash_count_denominations (us_denominations, count, subtotal, exchange_rate)
+            VALUES (?, ?, ?, ?)
+            """
+            params = (denomination, count, subtotal, exchange_rate)
+            
+        self._execute_query(query, params)
+        
+    def get_denominations_by_date(self, fecha):
+        """
+        Get all denominations for a specific date
+        """
+        query = """
+        SELECT cd.id, cd.nio_denominations, cd.us_denominations, cd.exchange_rate, cd.count, cd.subtotal
+        FROM cash_count_denominations cd
+        JOIN cash_count cc ON cd.id_cash_count = cc.id
+        WHERE cc.register_date = ?
+        """
+        cursor = self._execute_query(query, (fecha,))
+        return cursor.fetchall()
 
     def _validate_payment_method(self, metodo_pago):
         """Validates if the payment method is allowed."""
@@ -186,12 +281,21 @@ class DBCashBox(DatabaseManager):
         self._execute_query(query, (cash_count_id,))
     
     #Arqueo de Efectivo-------------------------------------------------
-    def create_cash_count_denomination(self, id_cash_count, denominations, count, subtotal):
+    def create_cash_count_denomination(
+        self, 
+        id_cash_count, 
+        id_user_cashier, 
+        nio_denominations=None, 
+        us_denominations=None, 
+        exchange_rate=None, 
+        count=0, 
+        subtotal=0
+        ):
         query = """
-        INSERT INTO cash_count_denominations (id_cash_count, denominations, count, subtotal)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO cash_count_denominations (id_cash_count, id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """
-        params = (id_cash_count, denominations, count, subtotal)
+        params = (id_cash_count, id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal)
         self._execute_query(query, params)
 
     def read_cash_count_denomination(self, denomination_id):
