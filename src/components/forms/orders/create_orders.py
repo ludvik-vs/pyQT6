@@ -198,8 +198,6 @@ class CrearOrdenForm(QWidget):
         else:
             self.datos_colaborador.setText("Colaborador no encontrado")
 
-        print("Cargando datos de colaborador...")
-
     def update_services(self, services):
         """Actualizar la lista de servicios en el formulario."""
         self.services = eval(services)

@@ -45,7 +45,7 @@ class FormularioEgresoCaja(QWidget):
         self.fecha_payment_label = QLabel("Fecha del Egreso:")
         self.fecha_payment_input = QLineEdit()
         date_now = datetime.now()
-        self.fecha_payment_input.setText(date_now.strftime("%d-%m-%Y %I:%M:%S %p"))
+        self.fecha_payment_input.setText(date_now.strftime("%d-%m-%Y"))
         self.fecha_payment_input.setReadOnly(True)
         layout.addRow(self.fecha_payment_label, self.fecha_payment_input)
 
@@ -150,7 +150,7 @@ class FormularioEgresoCaja(QWidget):
 
     def limpiar_formulario(self):
         date_now = datetime.now()
-        self.fecha_payment_input.setText(date_now.strftime("%d-%m-%Y %I:%M:%S %p"))
+        self.fecha_payment_input.setText(date_now.strftime("%d-%m-%Y"))
         self.payment_mount_input.setValue(0)
         self.orden_input.clear()
         self.comentario_input.clear()

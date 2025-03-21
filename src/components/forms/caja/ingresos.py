@@ -63,7 +63,7 @@ class FormularioIngresoCaja(QWidget):
         self.fecha_payment_label = QLabel("Fecha del Pago:")
         self.fecha_payment_input = QLineEdit()
         date_now = datetime.now()
-        self.fecha_payment_input.setText(date_now.strftime("%d-%m-%Y %I:%M:%S %p"))
+        self.fecha_payment_input.setText(date_now.strftime("%d-%m-%Y"))
         self.fecha_payment_input.setReadOnly(True)
         layout.addRow(self.fecha_payment_label, self.fecha_payment_input)
 
@@ -118,14 +118,12 @@ class FormularioIngresoCaja(QWidget):
 
     def get_curret_user(self):
         current_user = self.auth_service.get_current_user()
-        print(current_user)
         return current_user
 
     def cargar_orden(self):
         numero_orden = self.orden_input.text()
         if numero_orden:
             orden = self.work_order_service.get_work_order(numero_orden)
-            print(orden)
             if orden:
                 self.order_data_label.setText(f'''
                 Número de Orden: {orden[1]}

@@ -29,6 +29,7 @@ from src.components.forms.orders.cancel_order import CancelOrderForm
 from src.components.forms.caja.ingresos import FormularioIngresoCaja
 from src.components.forms.caja.cash_movements import CashMovementForm
 from src.components.forms.caja.salidas import FormularioEgresoCaja
+from src.components.forms.caja.cash_balance import CashBalanceForm
 
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
@@ -123,6 +124,11 @@ class DisplayWidget(QWidget):
                 FormularioEgresoCaja(
                     self.auth_service,
                     self.work_order_service,
+                    self.cashbox_service
+            ), 0, 0),
+            "Arqueo de Caja": lambda: self.grid_layout.addWidget(
+                CashBalanceForm(
+                    self.auth_service,
                     self.cashbox_service
             ), 0, 0),
             "Crear Usuario": lambda: self.grid_layout.addWidget(CreateUserForm(
