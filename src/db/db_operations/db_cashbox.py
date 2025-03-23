@@ -9,6 +9,7 @@ class DBCashBox(DatabaseManager):
         self.create_table_caja()
         self.create_table_movimientos()
         self.create_cash_count_denominations_table()
+        self.create_index_identifier_table()
 
     def create_table_caja(self):
         query = """
@@ -55,6 +56,15 @@ class DBCashBox(DatabaseManager):
         """
         self._execute_query(query)
     
+    def create_index_identifier_table(self):
+        query = """
+        CREATE TABLE IF NOT EXISTS index_identifier (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            identifier TEXT NOT NULL
+        );
+        """
+        self._execute_query(query)
+
     #Arqueo de Efectivo-------------------------------------------------
     def save_denomination_count(self, fecha, currency_type, denomination, count, subtotal, exchange_rate=None):
         """
@@ -209,3 +219,8 @@ class DBCashBox(DatabaseManager):
         query = "SELECT * FROM cash_count_denominations WHERE id_user_cashier = ?"
         cursor = self._execute_query(query, (user_id,))
         return cursor.fetchone()
+    
+    # Indice Identificador
+    def create_index_identifier(self, identifier):
+        query = "INSERT INTO index_identifier (identifier) VALUES (?)"
+        self._execute_query(query, (identifier,))
