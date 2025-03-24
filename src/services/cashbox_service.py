@@ -2,12 +2,6 @@ class CashBoxService:
     def __init__(self, db_cashbox):
         self.db = db_cashbox
 
-    def create_cashbox_entry_service(self, fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id):
-        try:
-            return self.db.create_entry(fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id)
-        except Exception as e:
-            print(f"Error al crear registro de caja: {e}")
-
     def read_cashbox_entry_service(self, entry_id):
         try:
             return self.db.read_entry(entry_id)
@@ -85,6 +79,8 @@ class CashBoxService:
     def create_cash_count_denomination_service(
         self, 
         id_user_cashier=None, 
+        index_identifier=None,
+        fecha=None,
         nio_denominations=None, 
         us_denominations=None, 
         exchange_rate=None, 
@@ -94,7 +90,7 @@ class CashBoxService:
         """Creates a new denomination record with support for both NIO and USD."""
         try:
             return self.db.create_cash_count_denomination(
-                id_user_cashier, nio_denominations, us_denominations, exchange_rate, count, subtotal
+                id_user_cashier, index_identifier, fecha, nio_denominations, us_denominations, exchange_rate, count, subtotal
             )
         except Exception as e:
             print(f"Error al crear denominación: {e}")
@@ -105,3 +101,26 @@ class CashBoxService:
             return self.db.read_cash_count_denomination(user_id)
         except Exception as e:
             print(f"Error al leer denominación: {e}")
+
+    # Indice Identificador
+
+    def create_index_identifier_service(self, id_user_cashier):
+        """Creates a new index identifier record."""
+        try:
+            return self.db.create_index_identifier(id_user_cashier)
+        except Exception as e:
+            print(f"Error al crear índice identificador: {e}")
+    
+    def get_last_index_identifier_service(self):
+        """Gets the last index identifier."""
+        try:
+            return self.db.get_last_index_identifier()
+        except Exception as e:
+            print(f"Error al obtener último índice identificador: {e}")
+
+    def generate_next_index_identifier_service(self, date):
+        """Generates the next index identifier."""
+        try:
+            return self.db.generate_next_index_identifier(date)
+        except Exception as e:
+            print(f"Error al generar siguiente índice identificador: {e}")

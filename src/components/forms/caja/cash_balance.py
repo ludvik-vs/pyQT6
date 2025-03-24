@@ -9,6 +9,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QDate  # Qt no se utiliza
 
 class CashBalanceForm(QWidget):
+
     def __init__(self, auth_service, cashbox_service):
         super().__init__()
         self.auth_service = auth_service
@@ -45,6 +46,10 @@ class CashBalanceForm(QWidget):
         # User info
         user_group = QGroupBox("Información De Referencia")
         user_layout = QFormLayout()
+        
+        self.balance_index = QLineEdit()
+        self.balance_index.setReadOnly(True)
+        self.balance_index.setText(str(self.cashbox_service.get_last_index_identifier_service()))
 
         self.user_id_input = QLineEdit()
         self.user_id_input.setReadOnly(True)
@@ -56,6 +61,7 @@ class CashBalanceForm(QWidget):
         if self.current_user:
             self.username_input.setText(self.current_user.username)
 
+        user_layout.addRow("Indice Arqueo", self.balance_index) 
         user_layout.addRow("ID Cajero:", self.user_id_input)
         user_layout.addRow("Nombre Cajero:", self.username_input)
 
@@ -291,6 +297,8 @@ class CashBalanceForm(QWidget):
     def save_denominations(self):
         rate = self.exchange_rate.value()
         current_user_id = self.user_id_input.text()
+        index_identifier_form = self.balance_index.text()
+        date = self.date_input.date().toString("dd-MM-yyyy")
 
         try:
             if not self.current_user:
@@ -304,6 +312,8 @@ class CashBalanceForm(QWidget):
                     subtotal = float(denom_data['subtotal'].text())
                     self.cashbox_service.create_cash_count_denomination_service(
                         id_user_cashier=current_user_id,
+                        index_identifier=index_identifier_form,
+                        fecha=date,
                         nio_denominations=denom_name,
                         us_denominations=None,
                         exchange_rate=rate,
@@ -318,12 +328,16 @@ class CashBalanceForm(QWidget):
                     subtotal = float(denom_data['subtotal'].text())
                     self.cashbox_service.create_cash_count_denomination_service(
                         id_user_cashier=current_user_id,
+                        index_identifier=index_identifier_form,
+                        fecha=date,
                         nio_denominations=None,
                         us_denominations=denom_name,
                         exchange_rate=rate,
                         count=count,
                         subtotal=subtotal
                     )
+            
+            self.balance_index.setText(str(self.cashbox_service.generate_next_index_identifier_service(date)))
 
             QMessageBox.information(self, "Éxito", "Arqueo guardado exitosamente")
             self.clear_form()  # Clear form after successful save
