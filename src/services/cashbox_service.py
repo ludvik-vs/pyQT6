@@ -124,3 +124,10 @@ class CashBoxService:
             return self.db.generate_next_index_identifier(date)
         except Exception as e:
             print(f"Error al generar siguiente índice identificador: {e}")
+
+    def get_cash_count_report_service(self, fecha=None, index_identifier=None):
+        """Get cash count report by date and index identifier."""
+        try:
+            return self.db.get_cash_count_by_date_and_index(fecha, index_identifier)
+        except Exception as e:
+            print(f"Error al obtener reporte de conteo: {e}")

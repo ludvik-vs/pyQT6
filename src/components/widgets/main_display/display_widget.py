@@ -31,6 +31,9 @@ from src.components.forms.caja.cash_movements import CashMovementForm
 from src.components.forms.caja.salidas import FormularioEgresoCaja
 from src.components.forms.caja.cash_balance import CashBalanceForm
 
+# Reportes
+from src.components.forms.reports.cashbox_balance_report import CashboxReportForm
+
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
 
@@ -147,6 +150,10 @@ class DisplayWidget(QWidget):
                 CashMovementForm(
                     self.cashbox_service,
                     self.auth_service
+                ), 0, 0),
+            "Balance de Caja": lambda: self.grid_layout.addWidget(
+                CashboxReportForm(
+                    self.cashbox_service
                 ), 0, 0),
         }
 

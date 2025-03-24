@@ -32,7 +32,8 @@ class MenuStructure:
             ],
             '7 - Reportes Operativos': [
                 'Movimientos del Dia', 
-                'Moviminetos Rango de Fecha'
+                'Moviminetos Rango de Fecha',
+                'Balance de Caja',
                 ],
             '8 - Planilla': [
                 'Alta de Colaborador', 

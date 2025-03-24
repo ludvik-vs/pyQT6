@@ -153,3 +153,38 @@ class DBCashBox(DatabaseManager):
         cursor = self._execute_query(query)
         result = cursor.fetchone()
         return result[0] if result else 100000001
+
+    def get_cash_count_by_date_and_index(self, fecha=None, index_identifier=None):
+        """Get cash count records by date and/or index identifier"""
+        query = """
+        SELECT 
+            ccd.id,
+            ccd.fecha,
+            ccd.index_identifier,
+            ccd.nio_denominations,
+            ccd.us_denominations,
+            ccd.exchange_rate,
+            ccd.count,
+            ccd.subtotal,
+            u.username
+        FROM cash_count_denominations ccd
+        LEFT JOIN users u ON ccd.id_user_cashier = u.id
+        WHERE 1=1
+        """
+        params = []
+        
+        if fecha:
+            query += " AND ccd.fecha = ?"
+            params.append(fecha.toString("dd-MM-yyyy"))
+        if index_identifier:
+            query += " AND ccd.index_identifier = ?"
+            params.append(index_identifier)
+            
+        query += " ORDER BY ccd.fecha DESC, ccd.index_identifier"
+        
+        try:
+            results = self._execute_query(query, tuple(params)).fetchall()
+            return results
+        except Exception as e:
+            print(f"Error executing query: {e}")
+            return [] # return empty list in case of error.
