@@ -38,6 +38,14 @@ class ClientOperations(QWidget):
         self.email = QLineEdit(self)
         layout.addRow(self.email_label, self.email)
 
+        # Nuevos campos
+        self.numero_ruc_label = QLabel("Número RUC:")
+        self.numero_ruc = QLineEdit(self)
+        layout.addRow(self.numero_ruc_label, self.numero_ruc)
+
+        self.nombre_empresa_label = QLabel("Nombre de la Empresa:")
+        self.nombre_empresa = QLineEdit(self)
+        layout.addRow(self.nombre_empresa_label, self.nombre_empresa)
 
         # Botones
         self.limpiar_btn = QPushButton('Limpiar Formulario', self)
@@ -49,7 +57,6 @@ class ClientOperations(QWidget):
         self.limpiar_btn.clicked.connect(self.clear_form)
         self.actualizar_cliente_btn.clicked.connect(self.actualizar_cliente)
         self.eliminar_cliente_btn.clicked.connect(self.eliminar_cliente)
-
 
         # Añadir botones a un contenedor horizontal
         button_container = QHBoxLayout()
@@ -73,7 +80,6 @@ class ClientOperations(QWidget):
             self.result_label.setText("Por favor ingrese un ID de cliente.")
             return
 
-        # Nota: Esto asume que tienes un método get_client_by_id en ClientService
         client_data = self.client_service.get_client_by_id(client_id)
 
         if client_data:
@@ -81,6 +87,8 @@ class ClientOperations(QWidget):
             self.phone_contacto_1.setText(client_data["contact_1"])
             self.phone_contacto_2.setText(client_data["contact_2"])
             self.email.setText(client_data["email"])
+            self.numero_ruc.setText(client_data["numero_ruc"])
+            self.nombre_empresa.setText(client_data["nombre_empresa"])
             self.result_label.setStyleSheet("color: green;")
             self.result_label.setText("Cliente cargado exitosamente.")
         else:
@@ -94,6 +102,8 @@ class ClientOperations(QWidget):
         self.phone_contacto_1.clear()
         self.phone_contacto_2.clear()
         self.email.clear()
+        self.numero_ruc.clear()
+        self.nombre_empresa.clear()
         self.result_label.clear()
 
     def actualizar_cliente(self):
@@ -102,6 +112,8 @@ class ClientOperations(QWidget):
         contact_1 = self.phone_contacto_1.text()
         contact_2 = self.phone_contacto_2.text()
         email = self.email.text()
+        numero_ruc = self.numero_ruc.text()
+        nombre_empresa = self.nombre_empresa.text()
 
         if not client_id_text:
             self.result_label.setStyleSheet("color: red;")
@@ -123,8 +135,7 @@ class ClientOperations(QWidget):
         )
 
         if confirmation == QMessageBox.StandardButton.Yes:
-            # Usar client_id en lugar de email como identificador
-            if self.client_service.update_client_by_id(client_id, name, contact_1, contact_2, email):
+            if self.client_service.update_client_by_id(client_id, name, contact_1, contact_2, email, numero_ruc, nombre_empresa):
                 self.clear_form()
                 self.result_label.setStyleSheet("color: green;")
                 self.result_label.setText("Cliente actualizado exitosamente.")
@@ -152,7 +163,6 @@ class ClientOperations(QWidget):
             self.result_label.setText("El ID del cliente debe ser un número válido.")
             return
 
-        # Obtener datos del cliente usando el ID
         client_data = self.client_service.get_client_by_id(client_id)
 
         if client_data:
@@ -165,7 +175,7 @@ class ClientOperations(QWidget):
 
             if confirmation == QMessageBox.StandardButton.Yes:
                 if self.client_service.remove_client(client_id):
-                    self.clear_form()  # Limpiar formulario después de eliminar
+                    self.clear_form()
                     self.result_label.setStyleSheet("color: green;")
                     self.result_label.setText("Cliente eliminado exitosamente.")
                 else:

@@ -42,8 +42,8 @@ class ClientTableWidget(QWidget):
 
         # Tabla
         self.table = QTableWidget(self)
-        self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels(["ID", "Nombre", "Contacto 1", "Contacto 2", "Email"])
+        self.table.setColumnCount(7)
+        self.table.setHorizontalHeaderLabels(["ID", "Nombre", "Contacto 1", "Contacto 2", "Email", "Número RUC", "Nombre Empresa"])
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -98,6 +98,8 @@ class ClientTableWidget(QWidget):
             self.table.setItem(row, 2, QTableWidgetItem(client["contact_1"] or ""))
             self.table.setItem(row, 3, QTableWidgetItem(client["contact_2"] or ""))
             self.table.setItem(row, 4, QTableWidgetItem(client["email"]))
+            self.table.setItem(row, 5, QTableWidgetItem(client["numero_ruc"] or ""))
+            self.table.setItem(row, 6, QTableWidgetItem(client["nombre_empresa"] or ""))
 
         self.adjust_column_widths()
         self.result_label.setText(f"Mostrando {len(clients)} clientes")
@@ -109,7 +111,7 @@ class ClientTableWidget(QWidget):
 
         filtered_clients = [
             client for client in all_clients
-            if filter_text in client["name"].lower() or filter_text in client["contact_1"].lower()
+            if filter_text in client["name"].lower() or filter_text in client["contact_1"].lower() or filter_text in client["contact_2"].lower()
         ]
 
         self.table.setRowCount(0)
@@ -120,6 +122,8 @@ class ClientTableWidget(QWidget):
             self.table.setItem(row, 2, QTableWidgetItem(client["contact_1"] or ""))
             self.table.setItem(row, 3, QTableWidgetItem(client["contact_2"] or ""))
             self.table.setItem(row, 4, QTableWidgetItem(client["email"]))
+            self.table.setItem(row, 5, QTableWidgetItem(client["numero_ruc"] or ""))
+            self.table.setItem(row, 6, QTableWidgetItem(client["nombre_empresa"] or ""))
 
         self.result_label.setText(f"Mostrando {len(filtered_clients)} clientes filtrados")
 
@@ -162,4 +166,3 @@ class ClientTableWidget(QWidget):
 
         libro_excel.save(file_path)
         print(f"Tabla exportada a Excel: {file_path}")
-

@@ -32,6 +32,15 @@ class CreateClient(QWidget):
         self.email = QLineEdit(self)
         layout.addRow(self.email_label, self.email)
 
+        # Nuevos campos
+        self.numero_ruc_label = QLabel("Número RUC:")
+        self.numero_ruc = QLineEdit(self)
+        layout.addRow(self.numero_ruc_label, self.numero_ruc)
+
+        self.nombre_empresa_label = QLabel("Nombre de la Empresa:")
+        self.nombre_empresa = QLineEdit(self)
+        layout.addRow(self.nombre_empresa_label, self.nombre_empresa)
+
         # Botones
         button_container = QHBoxLayout()
         button_container.setSpacing(60)
@@ -57,6 +66,8 @@ class CreateClient(QWidget):
         self.phone_contacto_1.clear()
         self.phone_contacto_2.clear()
         self.email.clear()
+        self.numero_ruc.clear()
+        self.nombre_empresa.clear()
         self.result_label.clear()
 
     def alta_cliente(self):
@@ -73,8 +84,10 @@ class CreateClient(QWidget):
             contact_1 = self.phone_contacto_1.text()
             contact_2 = self.phone_contacto_2.text()
             email = self.email.text()
+            numero_ruc = self.numero_ruc.text()
+            nombre_empresa = self.nombre_empresa.text()
 
-            if self.client_service.create_client(name, contact_1, contact_2, email):
+            if self.client_service.create_client(name, contact_1, contact_2, email, numero_ruc, nombre_empresa):
                 self.clear_form()
                 self.result_label.setStyleSheet("color: green;")
                 self.result_label.setText("Cliente dado de alta exitosamente.")
