@@ -27,7 +27,7 @@ class ClientTableWidget(QWidget):
 
         # Campo de filtro
         self.filter_input = QLineEdit(self)
-        self.filter_input.setPlaceholderText("Filtrar por nombre o email...")
+        self.filter_input.setPlaceholderText("Filtrar por nombre o número de teléfono...")
         self.filter_input.textChanged.connect(self.filter_table)
         filter_export_layout.addWidget(self.filter_input)
 
@@ -109,7 +109,7 @@ class ClientTableWidget(QWidget):
 
         filtered_clients = [
             client for client in all_clients
-            if filter_text in client["name"].lower() or filter_text in client["email"].lower()
+            if filter_text in client["name"].lower() or filter_text in client["contact_1"].lower()
         ]
 
         self.table.setRowCount(0)

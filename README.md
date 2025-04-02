@@ -6,7 +6,7 @@ py -3.12 -m venv .venv
 py -3.13 -m venv .venv
 
 windows
-.venv\Scripts\activate  
+.venv\Scripts\activate    
 .venv\Scripts\deactivate
 
 ubuntu
