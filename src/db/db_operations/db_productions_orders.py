@@ -13,7 +13,7 @@ class DatabaseProductionOrders(DatabaseManager):
         query = '''
             CREATE TABLE IF NOT EXISTS production_orders (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                work_order_id TEXT NOT NULL,
+                work_order_id TEXT NOT NULL UNIQUE,
                 start_date TEXT NOT NULL,
                 end_date TEXT NOT NULL,
                 colaborador_id INTEGER NOT NULL,

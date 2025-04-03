@@ -1,8 +1,9 @@
 from PyQt6.QtWidgets import (
-    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QMessageBox, 
-    QVBoxLayout, QScrollArea, QTextEdit  # Added QTextEdit import
+    QWidget, QLineEdit, QFormLayout, QPushButton, QLabel, QMessageBox,
+    QVBoxLayout, QScrollArea, QTextEdit
 )
 from PyQt6.QtCore import Qt
+import sqlite3
 
 class CrearProductionOrdenForm(QWidget):
     def __init__(
@@ -76,6 +77,12 @@ class CrearProductionOrdenForm(QWidget):
         self.tasks_details_textArea.setStyleSheet("background-color: #f0f0f0;")  # Light gray background
         self.details_layout.addRow("Detalles de Trabajo:", self.tasks_details_textArea)
 
+        # Campo para agregar notas
+        self.notes_textArea = QTextEdit(self)
+        self.notes_textArea.setPlaceholderText("Agregar notas sobre la orden de producción...")
+        self.notes_textArea.setMinimumHeight(100)  # Set minimum height
+        self.details_layout.addRow("Notas:", self.notes_textArea)
+
         # Botón para crear la orden de producción
         self.crear_orden_btn = QPushButton('Procesar Orden', self)
         self.crear_orden_btn.clicked.connect(self.crear_orden_produccion)
@@ -104,7 +111,7 @@ class CrearProductionOrdenForm(QWidget):
             self.end_date_label.setText(f"Fecha de Fin: {order_data[3]}")
             self.client_label.setText(f"Cliente: {client_details}")
             self.colaborador_label.setText(f"Colaborador: {colaborador_details}")
-            
+
             # Format tasks details with line breaks
             tasks_text = ""
             if order_details_list:
@@ -116,10 +123,8 @@ class CrearProductionOrdenForm(QWidget):
                         tasks_text += f"• {service}\n"
 
                 self.tasks_details_textArea.setText(tasks_text)
-    
             else:
-                tasks_text = "No hay tareas registradas"
-                self.tasks_details_textArea.setText("Detalles de Tareas: ...")  # Aquí puedes cargar los detalles específicos
+                self.tasks_details_textArea.setText("No hay tareas registradas")
         else:
             QMessageBox.warning(self, "Advertencia", "Orden de trabajo no encontrada.")
 
@@ -129,7 +134,7 @@ class CrearProductionOrdenForm(QWidget):
 
     def cargar_colaborador_data(self, colaborador_id):
         colaborador_data = self.colaborator_service.get_colaborator_by_id(colaborador_id)
-        return f"{colaborador_data[1]} {colaborador_data[2] }"
+        return f"{colaborador_data[1]} {colaborador_data[2]}"
 
     def crear_orden_produccion(self):
         """Crear una nueva orden de producción con los datos cargados."""
@@ -141,24 +146,48 @@ class CrearProductionOrdenForm(QWidget):
         # Obtener datos de la orden de trabajo
         order_data = self.work_order_service.get_work_order(work_order_id)
         order_task_details = self.tasks_details_textArea.toPlainText()
-        print(order_task_details)
-        print(type(order_task_details))
+        note = self.notes_textArea.toPlainText()
+
         if order_data:
-            # Crear la orden de producción con estado "procesando"
-            self.production_order_service.create_production_order(
-                work_order_id=work_order_id,
-                start_date=order_data[2],      # start_date
-                end_date=order_data[3],        # end_date
-                colaborador_id=order_data[4],  # colaborador_id
-                client_id=order_data[5],       # client_id
-                product_id=None,
-                quantity=None,
-                order_status="procesando",
-                tasks_details=order_task_details,   # tasks_details
-                note=""
-            )
-            QMessageBox.information(self, "Éxito", "Orden de producción creada exitosamente.")
+            try:
+                # Crear la orden de producción con estado "procesando"
+                self.production_order_service.create_production_order(
+                    work_order_id=work_order_id,
+                    start_date=order_data[2],
+                    end_date=order_data[3],
+                    colaborador_id=order_data[4],
+                    client_id=order_data[5],
+                    product_id=None,
+                    quantity=None,
+                    order_status="procesando",
+                    tasks_details=order_task_details,
+                    note=note
+                )
+                QMessageBox.information(self, "Éxito", "Orden de producción creada exitosamente.")
+                self.clean_form()
+            except sqlite3.IntegrityError as e:
+                if "UNIQUE constraint failed" in str(e):
+                    QMessageBox.warning(self, "Advertencia", "Esta orden de trabajo ya tiene una orden de producción creada.")
+                else:
+                    QMessageBox.critical(self, "Error", "Error de integridad en la base de datos.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Error al crear la orden de producción: {str(e)}")
         else:
             QMessageBox.warning(self, "Advertencia", "Orden de trabajo no encontrada.")
 
+    def clean_form(self):
+        """Limpiar el formulario."""
+        self.orden_input.clear()
+        self.start_date_label.setText("Fecha de Inicio:")
+        self.end_date_label.setText("Fecha de Fin:")
+        self.client_label.setText("Cliente:")
+        self.colaborador_label.setText("Colaborador:")
+        self.tasks_details_textArea.clear()
+        self.notes_textArea.clear()  # Clear the note text area
+        self.orden_input.setFocus()
+
+    def closeEvent(self, event):
+        """Evento que se ejecuta cuando se cierra la ventana."""
+        self.clean_form()
+        event.accept()  # Accept the close event to close the window
 
