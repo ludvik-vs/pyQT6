@@ -32,12 +32,13 @@ class WorkOrderDetails(QWidget):
         AttributeError: If any service is not provided.
         TypeError: If any service is not an instance of its respective class.
     """
-    def __init__(self, wo_service, client_service, colaborator_service, user_service):
+    def __init__(self, wo_service, client_service, colaborator_service, user_service, production_order_service):
         super().__init__()
         self.wo_service = wo_service
         self.client_service = client_service
         self.colaborator_service = colaborator_service
         self.user_service = user_service
+        self.production_order_service = production_order_service
         self.init_ui()
 
     def init_ui(self):
@@ -192,7 +193,6 @@ class WorkOrderDetails(QWidget):
             self.load_order_info(order)
             self.load_payment_details(order[1])
             self.load_order_status(order[8])
-            
 
         except Exception as e:
             self.show_error("Error", f"Error al buscar la orden, verifique el numero de orden ingresado:  <<{e}>>")
@@ -224,21 +224,14 @@ class WorkOrderDetails(QWidget):
     def load_order_balance(self, order_id):
         try:
             order_balance = self.wo_service.work_order_balance(order_id)
-            
+
             if order_balance is not None:
-                if float(order_balance) == 0:
-                    self.order_balance_input.setStyleSheet("color: green;")
-                    self.close_order_button.setStyleSheet("color: green;")
-                    self.close_order_button.setVisible(True)
-                else:
-                    self.close_order_button.setVisible(False)
-                    self.order_balance_input.setStyleSheet("color: orange;")
-                    
                 self.order_balance_input.setText(str(order_balance))
+                self.update_close_order_button_visibility(order_balance)
             else:
                 self.order_balance_input.setText("Balance no disponible")
         except Exception as e:
-            self.show_error("Error", f"Error error en la busqueda del balance de la orden: {e}")
+            self.show_error("Error", f"Error en la busqueda del balance de la orden: {e}")
 
     def load_order_info(self, order):
         self.order_date_in_input.setText(order[2])
@@ -260,11 +253,16 @@ class WorkOrderDetails(QWidget):
             self.show_error("Error", f"Error en la busqueda de los detalles de pago de la orden: {e}")
 
     def load_order_status(self, order_status):
-        if order_status == "Abierta":
-            self.order_status_input.setStyleSheet("color: red;")
+        self.order_status_input.setText(order_status)
+        self.update_close_order_button_visibility(order_balance=float(self.order_balance_input.text()))
+
+    def update_close_order_button_visibility(self, order_balance):
+        order_status = self.order_status_input.text()
+        if order_balance == 0 and order_status in ["abierta", "procesando"]:
+            self.close_order_button.setStyleSheet("color: green;")
+            self.close_order_button.setVisible(True)
         else:
             self.close_order_button.setVisible(False)
-            self.order_status_input.setStyleSheet("color: green;")
 
     def close_order(self):
         order_id = self.order_id_input.text()
@@ -283,8 +281,9 @@ class WorkOrderDetails(QWidget):
 
         if confirmation.exec() == QMessageBox.StandardButton.Yes:
             try:
-                self.wo_service.update_work_order(order_id, order_status='Cerrada')
+                self.wo_service.update_work_order(order_id, order_status='cerrada')
                 self.load_order_details()
+                self.production_order_service.close_production_order(order_id)
                 self.show_error("info", "Orden cerrada correctamente")
             except Exception as e:
                 self.show_error("error", f"Error al cerrar la orden: {e}")
@@ -296,3 +295,4 @@ class WorkOrderDetails(QWidget):
             QMessageBox.warning(self, "Advertencia", message)
         elif message_type.lower() == "info":
             QMessageBox.information(self, "Información", message)
+

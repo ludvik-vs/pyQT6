@@ -155,19 +155,18 @@ class FormularioIngresoCaja(QWidget):
         if numero_orden:
             orden = self.work_order_service.get_work_order(numero_orden)
             if orden:
-                #work_order_id, payment_date, payment_method, payment, user_log_registration, note
-                self.work_order_service.set_work_order_payment(
-                    numero_orden,
-                    paymet_date,
-                    paymet_type,
-                    user_log_register_input,
-                    monto,
-                    comentario,
-                )
-                QMessageBox().information(self, "Éxito", "Ingreso de caja registrado correctamente")
-                # Guardar en caja
-                # fecha, descripcion, monto, tipo, metodo_pago, user_id, order_id, movimiento_caja
                 try:
+                    #work_order_id, payment_date, payment_method, payment, user_log_registration, note
+                    self.work_order_service.set_work_order_payment(
+                        numero_orden,
+                        paymet_date,
+                        paymet_type,
+                        user_log_register_input,
+                        monto,
+                        comentario,
+                    )
+                    # Guardar en caja
+                    # fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id
                     self.cashbox_service.create_cashbox_entry_service(
                         paymet_date,
                         comentario,
@@ -178,6 +177,7 @@ class FormularioIngresoCaja(QWidget):
                         user_log_register_input,
                         numero_orden
                     )
+                    QMessageBox().information(self, "Éxito", "Ingreso de caja registrado correctamente")
                 except Exception as e:
                     QMessageBox().warning(self, "Error", f"Error no se realizo registro en caja: {e}")
 

@@ -69,6 +69,16 @@ class DBCashBox(DatabaseManager):
         """
         self._execute_query(query)
 
+    #Registro de ingreso-------------------------------------------------
+    def create_cashbox_entry(self):
+        query = """
+            INSERT INTO cashbox (fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id)
+            VALUES (?,?,?,?,?,?,?,?);
+        """
+        params = (self.fecha, self.descripcion, self.monto, self.tipo, self.metodo_pago, self.movimiento_caja, self.user_id, self.order_id)
+        self._execute_query(query, params)
+    
+
     #Catalogo Movimientos-------------------------------------------------
     def create_movimiento(self, nombre, tipo, descripcion):
         query = """

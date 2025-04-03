@@ -120,7 +120,8 @@ class DisplayWidget(QWidget):
                 self.work_order_service,
                 self.client_service,
                 self.colaborator_service,
-                self.auth_service), 0, 0),
+                self.auth_service,
+                self.production_order_service), 0, 0),
             "Tabla Orden T": lambda: self.grid_layout.addWidget(
                 WorkOrderTable(self.work_order_service), 0, 0),
             "Crear Orden P": lambda: self.grid_layout.addWidget(
