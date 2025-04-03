@@ -43,7 +43,8 @@ class WorkOrderService:
     def get_work_order_items(self, work_order_id):
         """Obtiene los ítems de una orden de trabajo."""
         query = 'SELECT * FROM work_order_items WHERE work_order_id = ?'
-        return self.db._fetch_all(query, (work_order_id,))
+        cursor = self.db._execute_query(query, (work_order_id,))
+        return cursor.fetchall()
 
     def set_work_order_payment(self, work_order_id, payment_date, payment_method, payment, user_log_registration, note):
         """Agrega un pago a una orden de trabajo."""

@@ -34,6 +34,9 @@ from src.components.forms.caja.cash_balance import CashBalanceForm
 # Reportes
 from src.components.forms.reports.cashbox_balance_report import CashboxReportForm
 
+# Production
+from src.components.forms.p_orders.create_porder import CrearProductionOrdenForm
+
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
 
@@ -43,7 +46,8 @@ class DisplayWidget(QWidget):
         client_service, 
         colaborator_service, 
         work_order_service, 
-        cashbox_service
+        cashbox_service,
+        production_order_service
     ):
         super().__init__()
         self.setStyleSheet("background-color: #fafafc;")
@@ -60,6 +64,8 @@ class DisplayWidget(QWidget):
         self.work_order_service = work_order_service
         #--------------------------------------------------------------
         self.cashbox_service = cashbox_service
+        #--------------------------------------------------------------
+        self.production_order_service = production_order_service
         #--------------------------------------------------------------
         self.init_ui()
 
@@ -116,6 +122,14 @@ class DisplayWidget(QWidget):
                 self.auth_service), 0, 0),
             "Tabla Orden T": lambda: self.grid_layout.addWidget(
                 WorkOrderTable(self.work_order_service), 0, 0),
+            "Crear Orden P": lambda: self.grid_layout.addWidget(
+                CrearProductionOrdenForm(
+                    self.current_user_data,
+                    self.auth_service,
+                    self.client_service,
+                    self.colaborator_service,
+                    self.work_order_service,
+                    self.production_order_service), 0, 0),
             "Ingresos de Caja": lambda: self.grid_layout.addWidget(
                 FormularioIngresoCaja(
                     self.auth_service,

@@ -17,7 +17,14 @@ from src.components.custom.cq_services_list import CQServicesList
 
 class CrearOrdenForm(QWidget):
 
-    def __init__(self, current_user_data, aunth_service, client_service, colaborator_service, work_order_service):
+    def __init__(
+        self, 
+        current_user_data, 
+        aunth_service, 
+        client_service, 
+        colaborator_service, 
+        work_order_service
+    ):
         super().__init__()
         self.aunth_service = aunth_service
         self.client_service = client_service

@@ -28,6 +28,10 @@ from src.services.work_order_service import WorkOrderService
 from src.db.db_operations.db_cashbox import DBCashBox
 from src.services.cashbox_service import CashBoxService
 
+# PRODUCTION ORDER
+from src.db.db_operations.db_productions_orders import DatabaseProductionOrders
+from src.services.production_order_service import ProductionOrderService
+
 def load_styles():
     if getattr(sys, 'frozen', False):
         # Entorno empaquetado: usar sys._MEIPASS para acceder al directorio temporal
@@ -65,6 +69,9 @@ class MainWindow(QMainWindow):
         self.db_work_order = DatabaseWorkOrder()
         self.work_order_service = WorkOrderService(self.db_work_order)
         #--------------------------------------------------------------
+        self.db_productio_order = DatabaseProductionOrders()
+        self.work_productio_service = ProductionOrderService(self.db_productio_order)
+        #--------------------------------------------------------------
         self.db_cashbox = DBCashBox()
         self.cashbox_service = CashBoxService(self.db_cashbox)
         #--------------------------------------------------------------
@@ -74,7 +81,8 @@ class MainWindow(QMainWindow):
             self.client_service, 
             self.colaborator_service, 
             self.work_order_service,
-            self.cashbox_service
+            self.cashbox_service,
+            self.work_productio_service
         )
         self.login_form = LoginDialog(self.auth_service)
         self.init_ui()
