@@ -24,7 +24,7 @@ class DatabaseWorkOrder(DatabaseManager):
                 client_id INTEGER NOT NULL,
                 colaborador_id INTEGER NOT NULL,
                 total_cost REAL DEFAULT 0,
-                order_status TEXT NOT NULL DEFAULT 'Abierta' CHECK (order_status IN ('Abierta', 'Procesando', 'Cerrada', 'Anulada')),
+                order_status TEXT NOT NULL DEFAULT 'abierta' CHECK (order_status IN ('abierta', 'procesando', 'cerrada', 'anulada')),
                 note TEXT,
                 FOREIGN KEY (user_id) REFERENCES users(id),
                 FOREIGN KEY (client_id) REFERENCES clients(id),

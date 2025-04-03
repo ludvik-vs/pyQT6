@@ -121,7 +121,7 @@ class CrearOrdenForm(QWidget):
 
         # Lista desplegable para seleccionar estatus de la orden
         self.estatus_label = QLabel("Estatus de la Orden:", self)
-        self.order_status = QLabel("Abierta")
+        self.order_status = QLabel("abierta")
         self.order_status.setStyleSheet("font-size: 12px; color: #4BB543;")
         self.details_layout.addRow(self.estatus_label, self.order_status)
 

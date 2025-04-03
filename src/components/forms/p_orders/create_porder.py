@@ -165,6 +165,7 @@ class CrearProductionOrdenForm(QWidget):
                 )
                 QMessageBox.information(self, "Éxito", "Orden de producción creada exitosamente.")
                 self.clean_form()
+                self.work_order_service.update_work_order(work_order_id, order_status="procesando")
             except sqlite3.IntegrityError as e:
                 if "UNIQUE constraint failed" in str(e):
                     QMessageBox.warning(self, "Advertencia", "Esta orden de trabajo ya tiene una orden de producción creada.")
