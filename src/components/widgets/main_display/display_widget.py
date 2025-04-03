@@ -36,6 +36,7 @@ from src.components.forms.reports.cashbox_balance_report import CashboxReportFor
 
 # Production
 from src.components.forms.p_orders.create_porder import CrearProductionOrdenForm
+from src.components.tables.po_table import ProductionOrderTable
 
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
@@ -129,6 +130,9 @@ class DisplayWidget(QWidget):
                     self.client_service,
                     self.colaborator_service,
                     self.work_order_service,
+                    self.production_order_service), 0, 0),
+            "Detalle Orden P": lambda: self.grid_layout.addWidget(
+                ProductionOrderTable(
                     self.production_order_service), 0, 0),
             "Ingresos de Caja": lambda: self.grid_layout.addWidget(
                 FormularioIngresoCaja(
