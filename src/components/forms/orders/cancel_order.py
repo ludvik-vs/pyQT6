@@ -17,12 +17,14 @@ class CancelOrderForm(QWidget):
         self, 
         current_user_data, 
         aunth_service, 
-        work_order_service
+        work_order_service,
+        production_order_service
         ):
         super().__init__()
         self.current_user_data = current_user_data
         self.aunth_service = aunth_service
         self.work_order_service = work_order_service
+        self.production_order_service = production_order_service
         self.init_ui()
 
     def init_ui(self):
@@ -128,12 +130,21 @@ class CancelOrderForm(QWidget):
         order_id = self.id_input.text()
         text_motivo = self.motivo_input.toPlainText()
         try:
-            self.work_order_service.update_work_order(order_id, order_status="Anulada", note=text_motivo)
+            # First verify if production order exists
+            production_order = self.production_order_service.get_production_order_details(order_id)
+            
+            # Update work order status
+            self.work_order_service.update_work_order(order_id, order_status="anulada", note=text_motivo)
+            
+            # Only cancel production order if it exists
+            if production_order:
+                self.production_order_service.cancel_production_order(order_id)
+            
             CQMessageBox().info_message("Orden anulada con exito")
             self.clear_form()
             
         except Exception as e:
-            CQMessageBox().error_message("Error al anular la orden")
+            CQMessageBox().error_message(f"Error al anular la orden: {str(e)}")
     
     def clear_form(self):
         self.id_input.clear()

@@ -163,6 +163,7 @@ class DisplayWidget(QWidget):
                     self.current_user_data,
                     self.auth_service,
                     self.work_order_service,
+                    self.production_order_service
                 ), 0, 0),
             "Catalogo de Movimientos": lambda: self.grid_layout.addWidget(
                 CashMovementForm(
