@@ -109,6 +109,17 @@ class CashBalanceForm(QWidget):
 
             count_input = QSpinBox()
             count_input.setRange(0, 10000)
+            count_input.setMinimumSize(80, 30)
+            count_input.setStyleSheet("""
+                QSpinBox::up-button, QSpinBox::down-button {
+                    width: 18px;
+                    height: 18px;
+                }
+                QSpinBox::up-arrow, QSpinBox::down-arrow {
+                    width: 4px;
+                    height: 4px;
+                }
+            """)
             subtotal_label = QLineEdit("0.00")
             subtotal_label.setReadOnly(True)
 
@@ -162,6 +173,17 @@ class CashBalanceForm(QWidget):
 
             count_input = QSpinBox()
             count_input.setRange(0, 10000)
+            count_input.setMinimumSize(80, 30)
+            count_input.setStyleSheet("""
+                QSpinBox::up-button, QSpinBox::down-button {
+                    width: 18px;
+                    height: 18px;
+                }
+                QSpinBox::up-arrow, QSpinBox::down-arrow {
+                    width: 4px;
+                    height: 4px;
+                }
+            """)
             subtotal_label = QLineEdit("0.00")
             subtotal_label.setReadOnly(True)
 
@@ -298,6 +320,7 @@ class CashBalanceForm(QWidget):
         rate = self.exchange_rate.value()
         current_user_id = self.user_id_input.text()
         index_identifier_form = self.balance_index.text()
+        print(f"INDEX IDENTIFIER FORM: {index_identifier_form}")
         date = self.date_input.date().toString("dd-MM-yyyy")
 
         try:
@@ -337,12 +360,12 @@ class CashBalanceForm(QWidget):
                         subtotal=subtotal
                     )
             
-            self.balance_index.setText(str(self.cashbox_service.generate_next_index_identifier_service(date)))
-
             QMessageBox.information(self, "Éxito", "Arqueo guardado exitosamente")
             self.clear_form()  # Clear form after successful save
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Error al guardar arqueo: {str(e)}")
+        finally:
+            self.balance_index.setText(str(self.cashbox_service.generate_next_index_identifier_service(date)))
 
     def clear_form(self):
         """Clear all form inputs and reset to default values"""

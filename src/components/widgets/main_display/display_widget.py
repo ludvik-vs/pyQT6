@@ -30,6 +30,7 @@ from src.components.forms.caja.ingresos import FormularioIngresoCaja
 from src.components.forms.caja.cash_movements import CashMovementForm
 from src.components.forms.caja.salidas import FormularioEgresoCaja
 from src.components.forms.caja.cash_balance import CashBalanceForm
+from src.components.tables.cashbox_resume_table import CashBoxResumeTableWidget
 
 # Reportes
 from src.components.forms.reports.cashbox_balance_report import CashboxReportForm
@@ -151,6 +152,16 @@ class DisplayWidget(QWidget):
             "Arqueo de Efectivo": lambda: self.grid_layout.addWidget(
                 CashBalanceForm(
                     self.auth_service,
+                    self.cashbox_service
+            ), 0, 0),
+            "Resumen de Arqueo": lambda: self.grid_layout.addWidget(
+                CashBoxResumeTableWidget(
+                    self.current_user_data,
+                    self.auth_service,
+                    self.client_service,
+                    self.colaborator_service,
+                    self.work_order_service,
+                    self.production_order_service,
                     self.cashbox_service
             ), 0, 0),
             "Crear Usuario": lambda: self.grid_layout.addWidget(CreateUserForm(

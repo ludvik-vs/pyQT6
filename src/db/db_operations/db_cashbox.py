@@ -78,7 +78,6 @@ class DBCashBox(DatabaseManager):
         params = (self.fecha, self.descripcion, self.monto, self.tipo, self.metodo_pago, self.movimiento_caja, self.user_id, self.order_id)
         self._execute_query(query, params)
     
-
     #Catalogo Movimientos-------------------------------------------------
     def create_movimiento(self, nombre, tipo, descripcion):
         query = """
@@ -144,7 +143,17 @@ class DBCashBox(DatabaseManager):
         cursor = self._execute_query(query, (user_id,))
         return cursor.fetchone()
     
+    def get_cash_count_denomination_by_index_identifier(self, index_identifier):
+        print(f"DB: {index_identifier}")
+        query = "SELECT * FROM cash_count_denominations WHERE index_identifier =?"
+        cursor = self._execute_query(query, (index_identifier,))
+        return cursor.fetchone()
+
     # Indice Identificador-------------------------------------------------
+    def get_all_index_identifiers(self):
+        query = "SELECT * FROM index_identifier ORDER BY id DESC"
+        return self._execute_query(query).fetchall()
+
     def create_index_identifier(self, identifier, fecha):
         query = "INSERT INTO index_identifier (identifier, fecha) VALUES (?, ?)"
         self._execute_query(query, (identifier, fecha))
@@ -198,3 +207,5 @@ class DBCashBox(DatabaseManager):
         except Exception as e:
             print(f"Error executing query: {e}")
             return [] # return empty list in case of error.
+
+            

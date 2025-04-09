@@ -34,6 +34,7 @@ class MenuStructure:
                 'Movimientos del Dia', 
                 'Moviminetos Rango de Fecha',
                 'Balance de Caja',
+                'Resumen de Arqueo',
                 ],
             '8 - Planilla': [
                 'Alta de Colaborador', 

@@ -118,8 +118,22 @@ class CashBoxService:
         except Exception as e:
             print(f"Error al leer denominación: {e}")
 
+    def get_cash_count_denomination_by_index_identifier_service(self, index_identifier):
+        print(f"SERVICE: {index_identifier}")
+        """Gets a denomination record by index identifier."""
+        try:
+            return self.db.get_cash_count_denomination_by_index_identifier(index_identifier)
+        except Exception as e:
+            print(f"Error al obtener denominación por índice identificador: {e}")
+    
     # Indice Identificador
-
+    def get_all_index_identifiers_service(self):
+        """Gets all index identifiers."""
+        try:
+            return self.db.get_all_index_identifiers()
+        except Exception as e:
+            print(f"Error al obtener índices identificadores: {e}")
+    
     def create_index_identifier_service(self, id_user_cashier):
         """Creates a new index identifier record."""
         try:
