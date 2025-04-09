@@ -144,10 +144,9 @@ class DBCashBox(DatabaseManager):
         return cursor.fetchone()
     
     def get_cash_count_denomination_by_index_identifier(self, index_identifier):
-        print(f"DB: {index_identifier}")
         query = "SELECT * FROM cash_count_denominations WHERE index_identifier =?"
         cursor = self._execute_query(query, (index_identifier,))
-        return cursor.fetchone()
+        return cursor.fetchall()
 
     # Indice Identificador-------------------------------------------------
     def get_all_index_identifiers(self):
@@ -155,23 +154,33 @@ class DBCashBox(DatabaseManager):
         return self._execute_query(query).fetchall()
 
     def create_index_identifier(self, identifier, fecha):
-        query = "INSERT INTO index_identifier (identifier, fecha) VALUES (?, ?)"
-        self._execute_query(query, (identifier, fecha))
-    
-    def generate_next_index_identifier(self, fecha):
-        last_identifier = self.get_last_index_identifier()
-        if last_identifier is None:
-            self.create_index_identifier(100000001, fecha)
-            return 100000001
-        else:
-            self.create_index_identifier(last_identifier + 1, fecha)
-            return last_identifier + 1
+        try:
+            query = "INSERT INTO index_identifier (identifier, fecha) VALUES (?, ?)"
+            self._execute_query(query, (identifier, fecha))
+            self.conn.commit()  # Add commit to ensure the transaction is saved
+        except Exception as e:
+            print(f"Error creating index identifier: {e}")
+            raise e
 
     def get_last_index_identifier(self):
-        query = "SELECT identifier FROM index_identifier ORDER BY id DESC LIMIT 1"
-        cursor = self._execute_query(query)
-        result = cursor.fetchone()
-        return result[0] if result else 100000001
+        try:
+            query = "SELECT identifier FROM index_identifier ORDER BY id DESC LIMIT 1"
+            cursor = self._execute_query(query)
+            result = cursor.fetchone()
+            return result[0] if result else None  # Return None instead of hardcoded value
+        except Exception as e:
+            print(f"Error getting last index: {e}")
+            return None
+
+    def generate_next_index_identifier(self, fecha):
+        try:
+            last_identifier = self.get_last_index_identifier()
+            new_identifier = 100000001 if last_identifier is None else last_identifier + 1
+            self.create_index_identifier(new_identifier, fecha)
+            return new_identifier
+        except Exception as e:
+            print(f"Error generating next index: {e}")
+            raise e
 
     def get_cash_count_by_date_and_index(self, fecha=None, index_identifier=None):
         """Get cash count records by date and/or index identifier"""

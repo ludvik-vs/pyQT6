@@ -15,6 +15,7 @@ class CashBalanceForm(QWidget):
         self.auth_service = auth_service
         self.cashbox_service = cashbox_service
         self.current_user = self.auth_service.get_current_user()
+        self.current_index = None  # Add this line
 
         # NIO denominations
         self.nio_denominations = [
@@ -49,7 +50,8 @@ class CashBalanceForm(QWidget):
         
         self.balance_index = QLineEdit()
         self.balance_index.setReadOnly(True)
-        self.balance_index.setText(str(self.cashbox_service.get_last_index_identifier_service()))
+        self.current_index = self.cashbox_service.get_last_index_identifier_service()
+        self.balance_index.setText(str(self.current_index))
 
         self.user_id_input = QLineEdit()
         self.user_id_input.setReadOnly(True)
@@ -319,14 +321,16 @@ class CashBalanceForm(QWidget):
     def save_denominations(self):
         rate = self.exchange_rate.value()
         current_user_id = self.user_id_input.text()
-        index_identifier_form = self.balance_index.text()
-        print(f"INDEX IDENTIFIER FORM: {index_identifier_form}")
         date = self.date_input.date().toString("dd-MM-yyyy")
 
         try:
             if not self.current_user:
                 QMessageBox.warning(self, "Error", "No hay usuario autenticado")
                 return
+
+            # Generate new index before saving denominations
+            new_index = self.cashbox_service.generate_next_index_identifier_service(date)
+            self.current_index = new_index
 
             # Save NIO denominations
             for denom_name, denom_data in self.nio_inputs.items():
@@ -335,7 +339,7 @@ class CashBalanceForm(QWidget):
                     subtotal = float(denom_data['subtotal'].text())
                     self.cashbox_service.create_cash_count_denomination_service(
                         id_user_cashier=current_user_id,
-                        index_identifier=index_identifier_form,
+                        index_identifier=self.current_index,  # Use new index
                         fecha=date,
                         nio_denominations=denom_name,
                         us_denominations=None,
@@ -347,11 +351,11 @@ class CashBalanceForm(QWidget):
             # Save USD denominations
             for denom_name, denom_data in self.usd_inputs.items():
                 count = denom_data['count'].value()
-                if count > 0:  # Only save if there are bills/coins
+                if count > 0:
                     subtotal = float(denom_data['subtotal'].text())
                     self.cashbox_service.create_cash_count_denomination_service(
                         id_user_cashier=current_user_id,
-                        index_identifier=index_identifier_form,
+                        index_identifier=self.current_index,  # Use new index
                         fecha=date,
                         nio_denominations=None,
                         us_denominations=denom_name,
@@ -361,11 +365,11 @@ class CashBalanceForm(QWidget):
                     )
             
             QMessageBox.information(self, "Éxito", "Arqueo guardado exitosamente")
-            self.clear_form()  # Clear form after successful save
+            self.balance_index.setText(str(self.current_index))
+            self.clear_form()
+            
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Error al guardar arqueo: {str(e)}")
-        finally:
-            self.balance_index.setText(str(self.cashbox_service.generate_next_index_identifier_service(date)))
 
     def clear_form(self):
         """Clear all form inputs and reset to default values"""

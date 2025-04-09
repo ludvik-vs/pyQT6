@@ -119,7 +119,6 @@ class CashBoxService:
             print(f"Error al leer denominación: {e}")
 
     def get_cash_count_denomination_by_index_identifier_service(self, index_identifier):
-        print(f"SERVICE: {index_identifier}")
         """Gets a denomination record by index identifier."""
         try:
             return self.db.get_cash_count_denomination_by_index_identifier(index_identifier)
@@ -144,16 +143,19 @@ class CashBoxService:
     def get_last_index_identifier_service(self):
         """Gets the last index identifier."""
         try:
-            return self.db.get_last_index_identifier()
+            last_id = self.db.get_last_index_identifier()
+            return last_id if last_id is not None else 100000001
         except Exception as e:
-            print(f"Error al obtener último índice identificador: {e}")
+            print(f"Error getting last index identifier: {e}")
+            return 100000001
 
     def generate_next_index_identifier_service(self, date):
         """Generates the next index identifier."""
         try:
             return self.db.generate_next_index_identifier(date)
         except Exception as e:
-            print(f"Error al generar siguiente índice identificador: {e}")
+            print(f"Error generating next index identifier: {e}")
+            raise e
 
     def get_cash_count_report_service(self, fecha=None, index_identifier=None):
         """Get cash count report by date and index identifier."""
