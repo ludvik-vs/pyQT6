@@ -11,6 +11,7 @@ class DBCashBox(DatabaseManager):
         self.create_table_movimientos()
         self.create_cash_count_denominations_table()
         self.create_index_identifier_table()
+        self.create_disconunts_table()
 
     def create_table_caja(self):
         query = """
@@ -70,6 +71,22 @@ class DBCashBox(DatabaseManager):
         """
         self._execute_query(query)
 
+    def create_disconunts_table(self):
+        query = """
+        CREATE TABLE IF NOT EXISTS discounts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date DATE NOT NULL,
+            user_id INTEGER,
+            order_id INTEGER,
+            discount_mont REAL,
+            discount_percentage REAL,
+            description TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (order_id) REFERENCES work_orders(work_order_id)
+        );
+        """
+        self._execute_query(query)
+
     #Registro de ingreso-------------------------------------------------
     def create_cashbox_entry(self, fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id):
         query = """
@@ -78,7 +95,7 @@ class DBCashBox(DatabaseManager):
         """
         params = (fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id)
         self._execute_query(query, params)
-    
+
     #Catalogo Movimientos-------------------------------------------------
     def create_movimiento(self, nombre, tipo, descripcion):
         query = """
@@ -309,3 +326,25 @@ class DBCashBox(DatabaseManager):
                 "detalle_movimiento": [],
                 "totales_por_movimiento": {}
             })
+
+    # Discount
+    def create_discount(self, date, user_id, order_id, discount_mont, discount_percentage, description):
+        query = """
+            INSERT INTO discounts (date, user_id, order_id, discount_mont, discount_percentage, description)
+            VALUES (?,?,?,?,?,?)
+        """
+        params = (date, user_id, order_id, discount_mont, discount_percentage, description)
+        self._execute_query(query, params)
+    
+    def get_all_discounts(self):
+        query = "SELECT * FROM discounts ORDER BY date DESC"
+        return self._execute_query(query).fetchall()
+
+    def get_discounts_in_date_range(self, start_date, end_date):
+        query = """
+            SELECT * FROM discounts
+            WHERE date BETWEEN ? AND ?
+            ORDER BY date DESC
+        """
+        params = (start_date, end_date)
+        return self._execute_query(query, params).fetchall()

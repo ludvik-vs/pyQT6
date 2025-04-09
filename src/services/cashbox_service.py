@@ -177,3 +177,26 @@ class CashBoxService:
             return self.db.cashbox_filter_and_totalize_per_movement(fecha_inicio, fecha_fin)
         except Exception as e:
             print(f"Error al filtrar y totalizar registros de caja por movimiento: {e}")
+
+    # Descuentos
+    def create_discount_service(self, date, user_id, order_id, discount_mont, discount_percentage, description):
+        """Crea un nuevo descuento."""
+        try:
+            return self.db.create_discount(date, user_id, order_id, discount_mont, discount_percentage, description)
+        except Exception as e:
+            print(f"Error al crear descuento: {e}")
+    
+    def get_all_discounts_service(self):
+        """Obtiene todos los descuentos."""
+        try:
+            return self.db.get_all_discounts()
+        except Exception as e:
+            print(f"Error al obtener descuentos: {e}")
+    
+    def get_discounts_in_date_range(self, start_date, end_date):
+        """Obtiene los descuentos dentro de un rango de fechas."""
+        try:
+            return self.db.get_discounts_in_date_range(start_date, end_date)
+        except Exception as e:
+            print(f"Error al obtener descuentos en rango de fechas: {e}")
+

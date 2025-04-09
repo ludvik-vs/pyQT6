@@ -41,6 +41,9 @@ from src.components.tables.wo_open_table import OpenWorkOrdersTableWidget
 from src.components.forms.p_orders.create_porder import CrearProductionOrdenForm
 from src.components.tables.po_table import ProductionOrderTable
 
+# Admin
+from src.components.forms.caja.cash_discount import CashDiscountForm
+
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
 
@@ -195,6 +198,12 @@ class DisplayWidget(QWidget):
             "Reporte de Órdenes": lambda: self.grid_layout.addWidget(
                 OpenWorkOrdersTableWidget(
                     self.work_order_service
+                ), 0, 0),
+            "Aprobar Descuento": lambda: self.grid_layout.addWidget(
+                CashDiscountForm(
+                    self.current_user_data,
+                    self.work_order_service,
+                    self.cashbox_service
                 ), 0, 0),
         }
 
