@@ -58,7 +58,13 @@ class OpenWorkOrdersTableWidget(QWidget):
         self.result_label = QLabel(self)
         self.result_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.result_label)
-
+        
+        # Add total cost label
+        self.total_cost_label = QLabel(self)
+        self.total_cost_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.total_cost_label.setStyleSheet("font-weight: bold;")
+        layout.addWidget(self.total_cost_label)
+        
         self.setLayout(layout)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
@@ -76,6 +82,10 @@ class OpenWorkOrdersTableWidget(QWidget):
             default_column_width = 20
             for col_index in range(column_count):
                 self.table.setColumnWidth(col_index, default_column_width)
+
+    def calculate_total_cost(self, work_orders):
+        total = sum(float(wo["total_cost"]) for wo in work_orders)
+        self.total_cost_label.setText(f"Costo Total: ${total:,.2f}")
 
     def load_work_orders(self):
         work_orders = self.work_order_service.get_open_workorders_filter_service()
@@ -113,6 +123,7 @@ class OpenWorkOrdersTableWidget(QWidget):
 
         self.adjust_column_widths()
         self.result_label.setText(f"Mostrando {len(work_orders)} órdenes de trabajo")
+        self.calculate_total_cost(work_orders)
 
     def filter_table(self):
         filter_text = self.filter_input.text().lower()
@@ -156,6 +167,7 @@ class OpenWorkOrdersTableWidget(QWidget):
                 end_date_item.setBackground(QColor("orange"))
 
         self.result_label.setText(f"Mostrando {len(filtered_work_orders)} órdenes de trabajo filtradas")
+        self.calculate_total_cost(filtered_work_orders)
 
     def export_to_excel_dialog(self):
         file_dialog = QFileDialog()
