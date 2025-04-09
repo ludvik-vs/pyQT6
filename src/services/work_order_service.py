@@ -76,6 +76,7 @@ class WorkOrderService:
         query = '''
             SELECT * FROM work_orders
             WHERE order_status = 'abierta'
+            ORDER BY end_date ASC
         '''
         cursor = self.db._execute_query(query)
         return cursor.fetchall()
