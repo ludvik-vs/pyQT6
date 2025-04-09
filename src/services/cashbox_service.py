@@ -170,3 +170,10 @@ class CashBoxService:
             return self.db.cashbox_filter_and_totalize(fecha_inicio, fecha_fin)
         except Exception as e:
             print(f"Error al filtrar y totalizar registros de caja: {e}")        
+
+    def cashbox_filter_and_totalize_per_movement_service(self, fecha_inicio, fecha_fin):
+        """Filtra y totaliza los registros de caja por fecha y movimiento."""
+        try:
+            return self.db.cashbox_filter_and_totalize_per_movement(fecha_inicio, fecha_fin)
+        except Exception as e:
+            print(f"Error al filtrar y totalizar registros de caja por movimiento: {e}")

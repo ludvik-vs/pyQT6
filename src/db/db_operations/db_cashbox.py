@@ -1,4 +1,5 @@
 from src.db.database_manager import DatabaseManager
+import json
 
 class DBCashBox(DatabaseManager):
     def __init__(self):
@@ -70,12 +71,12 @@ class DBCashBox(DatabaseManager):
         self._execute_query(query)
 
     #Registro de ingreso-------------------------------------------------
-    def create_cashbox_entry(self):
+    def create_cashbox_entry(self, fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id):
         query = """
             INSERT INTO cashbox (fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id)
             VALUES (?,?,?,?,?,?,?,?);
         """
-        params = (self.fecha, self.descripcion, self.monto, self.tipo, self.metodo_pago, self.movimiento_caja, self.user_id, self.order_id)
+        params = (fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id)
         self._execute_query(query, params)
     
     #Catalogo Movimientos-------------------------------------------------
@@ -222,33 +223,87 @@ class DBCashBox(DatabaseManager):
         query = """
             SELECT fecha, descripcion, monto, tipo
             FROM cashbox
-            WHERE fecha BETWEEN ? AND ?
+            WHERE DATE(fecha) BETWEEN DATE(?) AND DATE(?)
+            ORDER BY DATE(fecha)
         """
-        cursor = self._execute_query(query, (start_date, end_date))
-        rows = cursor.fetchall()
+        try:
+            cursor = self._execute_query(query, (start_date, end_date))
+            rows = cursor.fetchall()
 
-        detalle_movimiento = []
-        total_ingresos = 0
-        total_egresos = 0
+            detalle_movimiento = []
+            total_ingresos = 0
+            total_egresos = 0
 
-        for row in rows:
-            movimiento = {
-                "fecha": row[0],
-                "descripcion": row[1],
-                "monto": row[2],
-                "tipo": row[3]
+            for row in rows:
+                movimiento = {
+                    "fecha": row[0],
+                    "descripcion": row[1],
+                    "monto": row[2],
+                    "tipo": row[3]
+                }
+                detalle_movimiento.append(movimiento)
+
+                if row[3] == 'ingreso':
+                    total_ingresos += row[2]
+                elif row[3] == 'egreso':
+                    total_egresos += row[2]
+
+            result = {
+                "detalle_movimiento": detalle_movimiento,
+                "total_ingresos": total_ingresos,
+                "total_egresos": total_egresos
             }
-            detalle_movimiento.append(movimiento)
 
-            if row[3] == 'ingreso':
-                total_ingresos += row[2]
-            elif row[3] == 'egreso':
-                total_egresos += row[2]
+            return json.dumps(result, ensure_ascii=False, default=str)
+        except Exception as e:
+            print(f"Error in cashbox_filter_and_totalize: {e}")
+            return json.dumps({
+                "error": str(e),
+                "detalle_movimiento": [],
+                "total_ingresos": 0,
+                "total_egresos": 0
+            })
 
-        result = {
-            "detalle_movimiento": detalle_movimiento,
-            "total_ingresos": total_ingresos,
-            "total_egresos": total_egresos
-        }
+    def cashbox_filter_and_totalize_per_movement(self, start_date, end_date):
+        query = """
+            SELECT movimiento_caja, fecha, descripcion, SUM(monto) as total_monto
+            FROM cashbox
+            WHERE DATE(fecha) BETWEEN DATE(?) AND DATE(?)
+            GROUP BY movimiento_caja, fecha, descripcion
+            ORDER BY DATE(fecha)
+        """
+        try:
+            cursor = self._execute_query(query, (start_date, end_date))
+            rows = cursor.fetchall()
 
-        return json.dumps(result, ensure_ascii=False, default=str)
+            detalle_movimiento = []
+            totales_por_movimiento = {}
+
+            for row in rows:
+                movimiento = {
+                    "movimiento_caja": row[0],
+                    "fecha": row[1],
+                    "descripcion": row[2],
+                    "total_monto": row[3]
+                }
+                detalle_movimiento.append(movimiento)
+
+                # Acumula los totales por movimiento_caja
+                if row[0] in totales_por_movimiento:
+                    totales_por_movimiento[row[0]] += row[3]
+                else:
+                    totales_por_movimiento[row[0]] = row[3]
+
+            result = {
+                "detalle_movimiento": detalle_movimiento,
+                "totales_por_movimiento": totales_por_movimiento
+            }
+
+            return json.dumps(result, ensure_ascii=False, default=str)
+        except Exception as e:
+            print(f"Error in cashbox_filter_and_totalize_per_movement: {e}")
+            return json.dumps({
+                "error": str(e),
+                "detalle_movimiento": [],
+                "totales_por_movimiento": {}
+            })

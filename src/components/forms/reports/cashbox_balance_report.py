@@ -79,14 +79,21 @@ class CashboxReportForm(QWidget):
 
     def load_report_data(self):
         try:
-            fecha_inicio = self.start_date_filter.date().toString("dd-MM-yyyy")
-            fecha_fin = self.end_date_filter.date().toString("dd-MM-yyyy")
+            fecha_inicio = self.start_date_filter.date().toString("yyyy-MM-dd")
+            fecha_fin = self.end_date_filter.date().toString("yyyy-MM-dd")
 
             results = self.cashbox_service.cashbox_filter_and_totalize_service(fecha_inicio, fecha_fin)
-            self.display_results(results)
+            # Parse JSON string to dictionary
+            import json
+            results_dict = json.loads(results)
+            self.display_results(results_dict)
 
         except Exception as e:
             print(f"Error al cargar los datos: {str(e)}")
+            # Clear the display when there's an error
+            self.table.setRowCount(0)
+            self.ax.clear()
+            self.canvas.draw()
 
     def display_results(self, results):
         self.table.setRowCount(0)  # Clear existing rows
@@ -112,10 +119,13 @@ class CashboxReportForm(QWidget):
         self.plot_pie_chart(total_ingresos, total_egresos)
 
     def plot_pie_chart(self, total_ingresos, total_egresos):
-        labels = ['Ingresos', 'Egresos']
+        labels = [f'Ingresos\nC${total_ingresos:,.2f}', f'Egresos\nC${total_egresos:,.2f}']
         sizes = [total_ingresos, total_egresos]
         self.ax.clear()
-        self.ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
+        self.ax.pie(sizes, labels=labels, startangle=140)
+        # Add title with total balance
+        balance = total_ingresos - total_egresos
+        self.ax.set_title(f'Balance Total: C${balance:,.2f}')
         self.canvas.draw()
 
     def clear_filters(self):
