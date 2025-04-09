@@ -266,11 +266,12 @@ class DBCashBox(DatabaseManager):
 
     def cashbox_filter_and_totalize_per_movement(self, start_date, end_date):
         query = """
-            SELECT movimiento_caja, fecha, descripcion, SUM(monto) as total_monto
-            FROM cashbox
-            WHERE DATE(fecha) BETWEEN DATE(?) AND DATE(?)
-            GROUP BY movimiento_caja, fecha, descripcion
-            ORDER BY DATE(fecha)
+            SELECT cm.nombre, c.fecha, c.descripcion, SUM(c.monto) as total_monto
+            FROM cashbox c
+            LEFT JOIN catalogo_movimientos cm ON c.movimiento_caja = cm.id
+            WHERE DATE(c.fecha) BETWEEN DATE(?) AND DATE(?)
+            GROUP BY cm.nombre, c.fecha, c.descripcion
+            ORDER BY DATE(c.fecha)
         """
         try:
             cursor = self._execute_query(query, (start_date, end_date))
@@ -281,18 +282,19 @@ class DBCashBox(DatabaseManager):
 
             for row in rows:
                 movimiento = {
-                    "movimiento_caja": row[0],
+                    "movimiento_caja": row[0] or "Sin Movimiento",  # nombre del movimiento
                     "fecha": row[1],
                     "descripcion": row[2],
                     "total_monto": row[3]
                 }
                 detalle_movimiento.append(movimiento)
 
-                # Acumula los totales por movimiento_caja
-                if row[0] in totales_por_movimiento:
-                    totales_por_movimiento[row[0]] += row[3]
+                # Acumula los totales por nombre de movimiento
+                nombre_movimiento = row[0] or "Sin Movimiento"
+                if nombre_movimiento in totales_por_movimiento:
+                    totales_por_movimiento[nombre_movimiento] += row[3]
                 else:
-                    totales_por_movimiento[row[0]] = row[3]
+                    totales_por_movimiento[nombre_movimiento] = row[3]
 
             result = {
                 "detalle_movimiento": detalle_movimiento,

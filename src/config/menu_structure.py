@@ -9,21 +9,21 @@ class MenuStructure:
             '2 - Administración de Usuarios': [
                 'Crear Usuario', 
                 'Operaciones de Usuario', 
-                'Tabla Usuario'
+                'Tabla de Usuarios'
                 ],
             '3 - Clientes': [
                 'Alta de Cliente', 
-                'Operaciones con Cliente', 
+                'Operaciones de Cliente', 
                 'Tabla de Clientes'
                 ],
             '4 - Órdenes de Trabajo': [
-                'Crear Orden T', 
-                'Detalle Orden T', 
-                'Tabla Orden T'
+                'Crear Orden de Trabajo', 
+                'Detalle de Orden', 
+                'Tabla de Órdenes'
                 ],
             '5 - Órdenes de Producción': [
-                'Crear Orden P', 
-                'Detalle Orden P'
+                'Crear Orden de Producción', 
+                'Detalle de Producción'
                 ],
             '6 - Operaciones de Caja': [
                 'Ingresos de Caja', 
@@ -31,25 +31,26 @@ class MenuStructure:
                 'Arqueo de Efectivo'
             ],
             '7 - Reportes Operativos': [
-                'Movimientos del Dia', 
-                'Moviminetos Rango de Fecha',
+                'Movimientos por Fecha',
                 'Balance de Caja',
                 'Resumen de Arqueo',
+                'Reporte de Órdenes',
+                'Entregas'
                 ],
             '8 - Planilla': [
                 'Alta de Colaborador', 
-                'Operaciones con Colaborador', 
-                'Detalle por Colaborador', 
-                'Tabla Planilla'
+                'Operaciones de Colaborador', 
+                'Detalle de Colaborador', 
+                'Tabla de Planilla'
             ],
             '9 - Operaciones de Administración': [
                 'Aprobar Descuento', 
                 'Anular Orden', 
-                'Catalogo de Movimientos',
+                'Catálogo de Movimientos'
             ],
             '10 - Reportes Administrativos': [
-                'Balance (I/E)', 
-                'Balance Rango de Fecha'
+                'Registro de Descuentos',
+                'Saldo de Órdenes Abiertas'
                 ]
         }
 

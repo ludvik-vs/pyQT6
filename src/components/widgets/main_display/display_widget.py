@@ -34,7 +34,7 @@ from src.components.tables.cashbox_resume_table import CashBoxResumeTableWidget
 
 # Reportes
 from src.components.forms.reports.cashbox_balance_report import CashboxReportForm
-
+from src.components.forms.reports.cashbox_move_report import CashboxMovementReportForm
 # Production
 from src.components.forms.p_orders.create_porder import CrearProductionOrdenForm
 from src.components.tables.po_table import ProductionOrderTable
@@ -98,34 +98,34 @@ class DisplayWidget(QWidget):
                 PasswordChangeForm(self.current_user_data), 0, 0),
             "Alta de Cliente": lambda: self.grid_layout.addWidget(
                 CreateClient(self.client_service), 0, 0),
-            "Operaciones con Cliente": lambda: self.grid_layout.addWidget(
+            "Operaciones de Cliente": lambda: self.grid_layout.addWidget(
                 ClientOperations(self.client_service), 0, 0),
             "Tabla de Clientes": lambda: self.grid_layout.addWidget(
                 ClientTableWidget(self.client_service), 0, 0),
             "Alta de Colaborador": lambda: self.grid_layout.addWidget(
                 CreateColaborator(self.colaborator_service), 0, 0),
-            "Operaciones con Colaborador": lambda: self.grid_layout.addWidget(
+            "Operaciones de Colaborador": lambda: self.grid_layout.addWidget(
                 ColaboratorOperations(self.colaborator_service), 0, 0),
-            "Detalle por Colaborador": lambda: self.grid_layout.addWidget(
+            "Detalle de Colaborador": lambda: self.grid_layout.addWidget(
                 ColaboratorRegister(self.colaborator_service), 0, 0),
-            "Tabla Planilla": lambda: self.grid_layout.addWidget(
+            "Tabla de Planilla": lambda: self.grid_layout.addWidget(
                 ColaboratorTableWidget(self.colaborator_service), 0, 0),
-            "Crear Orden T": lambda: self.grid_layout.addWidget(
+            "Crear Orden de Trabajo": lambda: self.grid_layout.addWidget(
                 CrearOrdenForm(
                     self.current_user_data,
                     self.auth_service,
                     self.client_service,
                     self.colaborator_service,
                     self.work_order_service), 0, 0),
-            "Detalle Orden T": lambda: self.grid_layout.addWidget(WorkOrderDetails(
+            "Detalle de Orden": lambda: self.grid_layout.addWidget(WorkOrderDetails(
                 self.work_order_service,
                 self.client_service,
                 self.colaborator_service,
                 self.auth_service,
                 self.production_order_service), 0, 0),
-            "Tabla Orden T": lambda: self.grid_layout.addWidget(
+            "Tabla de Órdenes": lambda: self.grid_layout.addWidget(
                 WorkOrderTable(self.work_order_service), 0, 0),
-            "Crear Orden P": lambda: self.grid_layout.addWidget(
+            "Crear Orden de Producción": lambda: self.grid_layout.addWidget(
                 CrearProductionOrdenForm(
                     self.current_user_data,
                     self.auth_service,
@@ -133,7 +133,7 @@ class DisplayWidget(QWidget):
                     self.colaborator_service,
                     self.work_order_service,
                     self.production_order_service), 0, 0),
-            "Detalle Orden P": lambda: self.grid_layout.addWidget(
+            "Detalle de Producción": lambda: self.grid_layout.addWidget(
                 ProductionOrderTable(
                     self.production_order_service), 0, 0),
             "Ingresos de Caja": lambda: self.grid_layout.addWidget(
@@ -168,7 +168,7 @@ class DisplayWidget(QWidget):
                 self.auth_service), 0, 0),
             "Operaciones de Usuario": lambda: self.grid_layout.addWidget(UserOperations(
                 self.auth_service), 0, 0),
-            "Tabla Usuario": lambda: self.grid_layout.addWidget(UserTableWidget(
+            "Tabla de Usuarios": lambda: self.grid_layout.addWidget(UserTableWidget(
                 self.auth_service), 0, 0),
             "Anular Orden": lambda: self.grid_layout.addWidget(
                 CancelOrderForm(
@@ -177,13 +177,17 @@ class DisplayWidget(QWidget):
                     self.work_order_service,
                     self.production_order_service
                 ), 0, 0),
-            "Catalogo de Movimientos": lambda: self.grid_layout.addWidget(
+            "Catálogo de Movimientos": lambda: self.grid_layout.addWidget(
                 CashMovementForm(
                     self.cashbox_service,
                     self.auth_service
                 ), 0, 0),
             "Balance de Caja": lambda: self.grid_layout.addWidget(
                 CashboxReportForm(
+                    self.cashbox_service
+                ), 0, 0),
+            "Movimientos por Fecha": lambda: self.grid_layout.addWidget(
+                CashboxMovementReportForm(
                     self.cashbox_service
                 ), 0, 0),
         }
