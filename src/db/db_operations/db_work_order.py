@@ -131,3 +131,4 @@ class DatabaseWorkOrder(DatabaseManager):
             VALUES (?, ?, ?, ?, ?, ?)
         '''
         self._execute_query(query, (work_order_id, payment_date, payment_method, payment, user_log_registration, note))
+

@@ -35,6 +35,8 @@ from src.components.tables.cashbox_resume_table import CashBoxResumeTableWidget
 # Reportes
 from src.components.forms.reports.cashbox_balance_report import CashboxReportForm
 from src.components.forms.reports.cashbox_move_report import CashboxMovementReportForm
+from src.components.tables.wo_open_table import OpenWorkOrdersTableWidget
+
 # Production
 from src.components.forms.p_orders.create_porder import CrearProductionOrdenForm
 from src.components.tables.po_table import ProductionOrderTable
@@ -189,6 +191,10 @@ class DisplayWidget(QWidget):
             "Movimientos por Fecha": lambda: self.grid_layout.addWidget(
                 CashboxMovementReportForm(
                     self.cashbox_service
+                ), 0, 0),
+            "Reporte de Órdenes": lambda: self.grid_layout.addWidget(
+                OpenWorkOrdersTableWidget(
+                    self.work_order_service
                 ), 0, 0),
         }
 

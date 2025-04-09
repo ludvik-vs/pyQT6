@@ -69,3 +69,14 @@ class WorkOrderService:
     def close(self):
         """Cierra la conexión a la base de datos."""
         self.db.close()
+
+    #Reporte
+    def get_open_workorders_filter_service(self):
+        """Devuelve todas las órdenes de trabajo con estado 'abierta'."""
+        query = '''
+            SELECT * FROM work_orders
+            WHERE order_status = 'abierta'
+        '''
+        cursor = self.db._execute_query(query)
+        return cursor.fetchall()
+        
