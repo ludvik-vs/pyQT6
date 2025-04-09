@@ -35,7 +35,6 @@ class MenuStructure:
                 'Balance de Caja',
                 'Resumen de Arqueo',
                 'Reporte de Órdenes',
-                'Entregas'
                 ],
             '8 - Planilla': [
                 'Alta de Colaborador', 
