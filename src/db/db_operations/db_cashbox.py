@@ -217,4 +217,38 @@ class DBCashBox(DatabaseManager):
             print(f"Error executing query: {e}")
             return [] # return empty list in case of error.
 
-            
+    # REPORTES
+    def cashbox_filter_and_totalize(self, start_date, end_date):
+        query = """
+            SELECT fecha, descripcion, monto, tipo
+            FROM cashbox
+            WHERE fecha BETWEEN ? AND ?
+        """
+        cursor = self._execute_query(query, (start_date, end_date))
+        rows = cursor.fetchall()
+
+        detalle_movimiento = []
+        total_ingresos = 0
+        total_egresos = 0
+
+        for row in rows:
+            movimiento = {
+                "fecha": row[0],
+                "descripcion": row[1],
+                "monto": row[2],
+                "tipo": row[3]
+            }
+            detalle_movimiento.append(movimiento)
+
+            if row[3] == 'ingreso':
+                total_ingresos += row[2]
+            elif row[3] == 'egreso':
+                total_egresos += row[2]
+
+        result = {
+            "detalle_movimiento": detalle_movimiento,
+            "total_ingresos": total_ingresos,
+            "total_egresos": total_egresos
+        }
+
+        return json.dumps(result, ensure_ascii=False, default=str)

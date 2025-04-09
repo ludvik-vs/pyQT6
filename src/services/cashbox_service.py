@@ -55,7 +55,6 @@ class CashBoxService:
             print(f"Error al eliminar registro de caja: {e}")
     
     # Catalogo Movimientos
-
     def create_movimiento_service(self, nombre, tipo, descripcion):
         """Crea un nuevo movimiento en el catálogo de movimientos."""
         try:
@@ -163,3 +162,11 @@ class CashBoxService:
             return self.db.get_cash_count_by_date_and_index(fecha, index_identifier)
         except Exception as e:
             print(f"Error al obtener reporte de conteo: {e}")
+
+    #Reportes
+    def cashbox_filter_and_totalize_service(self, fecha_inicio, fecha_fin):
+        """Filtra y totaliza los registros de caja por fecha."""
+        try:
+            return self.db.cashbox_filter_and_totalize(fecha_inicio, fecha_fin)
+        except Exception as e:
+            print(f"Error al filtrar y totalizar registros de caja: {e}")        
