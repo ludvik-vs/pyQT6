@@ -74,6 +74,13 @@ class CashCountDetailPopup(QDialog):
         self.record = record
         self.count_data = count_data
         self.init_ui()
+        # Connect resize event to adjust columns
+        self.resizeEvent = self.on_resize
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        # Adjust columns when dialog is shown
+        self.adjust_column_widths()
 
     def init_ui(self):
         self.setWindowTitle("Detalle de Arqueo de Efectivo")
@@ -92,7 +99,8 @@ class CashCountDetailPopup(QDialog):
         headers = ["ID", "Usuario", "Índice", "Fecha", "Denominación NIO", 
                   "Denominación USD", "Tipo Cambio", "Cantidad", "Subtotal"]
         self.table.setHorizontalHeaderLabels(headers)
-        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        # Remove the ResizeToContents mode since we'll handle it manually
+        # self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
 
         # Populate table
@@ -104,6 +112,9 @@ class CashCountDetailPopup(QDialog):
                     self.table.setItem(row, col, item)
 
         self.layout.addWidget(self.table)
+        
+        # Apply initial column width adjustment
+        self.adjust_column_widths()
 
         # Buttons layout
         button_layout = QHBoxLayout()
@@ -165,3 +176,20 @@ class CashCountDetailPopup(QDialog):
                     worksheet.cell(row=row + 4, column=column + 1, value=value)
 
         workbook.save(file_path)
+
+    def adjust_column_widths(self):
+        table_width = self.table.viewport().width()
+        column_count = self.table.columnCount()
+        if column_count > 0 and table_width > 0:
+            equal_width = int(table_width / column_count)
+            for col_index in range(column_count):
+                self.table.setColumnWidth(col_index, equal_width)
+        else:
+            print("Warning: Could not calculate table width initially, using default column width.")
+            default_column_width = 20
+            for col_index in range(column_count):
+                self.table.setColumnWidth(col_index, default_column_width)
+
+    def on_resize(self, event):
+        super().resizeEvent(event)
+        self.adjust_column_widths()

@@ -327,6 +327,49 @@ class DBCashBox(DatabaseManager):
                 "totales_por_movimiento": {}
             })
 
+    def cashbox_filter_and_totalize_per_efectivo(self, start_date, end_date):
+        query = """
+            SELECT c.metodo_pago, SUM(c.monto) as total_monto
+            FROM cashbox c
+            WHERE DATE(c.fecha) BETWEEN DATE(?) AND DATE(?)
+            GROUP BY c.metodo_pago
+            ORDER BY c.metodo_pago
+        """
+        try:
+            cursor = self._execute_query(query, (start_date, end_date))
+            rows = cursor.fetchall()
+
+            detalle_movimiento = []
+            totales_por_efectivo = {}
+
+            for row in rows:
+                movimiento = {
+                    "metodo_pago": row[0],
+                    "total_monto": row[1]
+                }
+                detalle_movimiento.append(movimiento)
+
+                # Acumula los totales por método de pago
+                metodo_pago = row[0]    
+                if metodo_pago in totales_por_efectivo:
+                    totales_por_efectivo[metodo_pago] += row[1]
+                else:
+                    totales_por_efectivo[metodo_pago] = row[1]
+
+            result = {
+                "detalle_movimiento": detalle_movimiento,
+                "totales_por_efectivo": totales_por_efectivo
+            }
+
+            return json.dumps(result, ensure_ascii=False, default=str)
+        except Exception as e:
+            print(f"Error in cashbox_filter_and_totalize_per_efectivo: {e}")
+            return json.dumps({
+                "error": str(e),
+                "detalle_movimiento": [],
+                "totales_por_efectivo": {}
+            })
+
     # Discount
     def create_discount(self, date, user_id, order_id, discount_mont, discount_percentage, description):
         query = """
@@ -348,3 +391,4 @@ class DBCashBox(DatabaseManager):
         """
         params = (start_date, end_date)
         return self._execute_query(query, params).fetchall()
+

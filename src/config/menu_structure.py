@@ -32,7 +32,8 @@ class MenuStructure:
             ],
             '7 - Reportes Operativos': [
                 'Movimientos por Fecha',
-                'Balance de Caja',
+                'Balance de Ingresos-Egresos',
+                'Reporte de Ingresos Efectivo',
                 'Resumen de Arqueo',
                 'Reporte de Órdenes',
                 ],

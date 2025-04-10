@@ -178,6 +178,9 @@ class CashBoxService:
         except Exception as e:
             print(f"Error al filtrar y totalizar registros de caja por movimiento: {e}")
 
+    def cashbox_filter_and_totalize_per_efectivo_service(self, start_date, end_date):
+        return self.db.cashbox_filter_and_totalize_per_efectivo(start_date, end_date)
+
     # Descuentos
     def create_discount_service(self, date, user_id, order_id, discount_mont, discount_percentage, description):
         """Crea un nuevo descuento."""

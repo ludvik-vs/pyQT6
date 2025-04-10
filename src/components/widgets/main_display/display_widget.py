@@ -37,6 +37,7 @@ from src.components.forms.reports.cashbox_balance_report import CashboxReportFor
 from src.components.forms.reports.cashbox_move_report import CashboxMovementReportForm
 from src.components.tables.wo_open_table import OpenWorkOrdersTableWidget
 from src.components.tables.tabla_descuentos import DiscountRangeForm
+from src.components.forms.reports.cashbox_payment_report import CashboxPaymentReportForm
 
 # Production
 from src.components.forms.p_orders.create_porder import CrearProductionOrdenForm
@@ -188,7 +189,7 @@ class DisplayWidget(QWidget):
                     self.cashbox_service,
                     self.auth_service
                 ), 0, 0),
-            "Balance de Caja": lambda: self.grid_layout.addWidget(
+            "Balance de Ingresos-Egresos": lambda: self.grid_layout.addWidget(
                 CashboxReportForm(
                     self.cashbox_service
                 ), 0, 0),
@@ -208,6 +209,10 @@ class DisplayWidget(QWidget):
                 ), 0, 0),
             "Registro de Descuentos": lambda: self.grid_layout.addWidget(
                 DiscountRangeForm(
+                    self.cashbox_service
+                ), 0, 0),
+            "Reporte de Ingresos Efectivo": lambda: self.grid_layout.addWidget(
+                CashboxPaymentReportForm(
                     self.cashbox_service
                 ), 0, 0),
         }

@@ -113,7 +113,8 @@ class FormularioIngresoCaja(QWidget):
         try:
             movimientos = self.cashbox_service.read_all_movimientos_service()
             for movimiento in movimientos:
-                self.movimiento_input.addItem(f"{movimiento[0]} - {movimiento[1]}", movimiento[0])
+                if movimiento[2].lower() == 'ingreso':
+                    self.movimiento_input.addItem(f"{movimiento[0]} - {movimiento[1]}", movimiento[0])
         except Exception as e:
             QMessageBox().warning(self, "Error", f"Error al cargar movimientos: {e}")
 
