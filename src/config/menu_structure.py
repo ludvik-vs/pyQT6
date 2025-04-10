@@ -49,7 +49,6 @@ class MenuStructure:
             ],
             '10 - Reportes Administrativos': [
                 'Registro de Descuentos',
-                'Saldo de Órdenes Abiertas'
                 ]
         }
 

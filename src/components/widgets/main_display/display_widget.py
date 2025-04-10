@@ -36,6 +36,7 @@ from src.components.tables.cashbox_resume_table import CashBoxResumeTableWidget
 from src.components.forms.reports.cashbox_balance_report import CashboxReportForm
 from src.components.forms.reports.cashbox_move_report import CashboxMovementReportForm
 from src.components.tables.wo_open_table import OpenWorkOrdersTableWidget
+from src.components.tables.tabla_descuentos import DiscountRangeForm
 
 # Production
 from src.components.forms.p_orders.create_porder import CrearProductionOrdenForm
@@ -203,6 +204,10 @@ class DisplayWidget(QWidget):
                 CashDiscountForm(
                     self.current_user_data,
                     self.work_order_service,
+                    self.cashbox_service
+                ), 0, 0),
+            "Registro de Descuentos": lambda: self.grid_layout.addWidget(
+                DiscountRangeForm(
                     self.cashbox_service
                 ), 0, 0),
         }

@@ -116,7 +116,8 @@ class CashDiscountForm(QWidget):
                 raise ValueError("El descuento debe ser mayor que cero.")
 
             cash_discount = self.nuevo_monto_input.value()
-            discount_percentage = (float(self.monto_inicial_value.text()) / descuento) * 100
+            monto_inicial = float(self.monto_inicial_value.text())
+            discount_percentage = ((cash_discount / monto_inicial) * 100)
 
             if not self.descripcion_input.toPlainText():
                 raise ValueError("El motivo de descuento no puede estar vacío.")
