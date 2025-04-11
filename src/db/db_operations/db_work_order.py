@@ -132,3 +132,37 @@ class DatabaseWorkOrder(DatabaseManager):
         '''
         self._execute_query(query, (work_order_id, payment_date, payment_method, payment, user_log_registration, note))
 
+    # Add these methods to DatabaseWorkOrder class
+    
+    def get_orders_statistics(self, start_date, end_date):
+        """Get comprehensive statistics about orders in a date range."""
+        query = """
+            SELECT 
+                COUNT(CASE WHEN order_status = 'abierta' THEN 1 END) as open_orders,
+                COUNT(CASE WHEN order_status = 'cerrada' THEN 1 END) as closed_orders,
+                COUNT(CASE WHEN order_status = 'anulada' THEN 1 END) as cancelled_orders,
+                SUM(CASE WHEN order_status = 'abierta' THEN total_cost ELSE 0 END) as open_orders_amount,
+                SUM(CASE WHEN order_status = 'cerrada' THEN total_cost ELSE 0 END) as closed_orders_amount,
+                COUNT(*) as total_orders
+            FROM work_orders
+            WHERE DATE(start_date) BETWEEN DATE(?) AND DATE(?)
+        """
+        cursor = self._execute_query(query, (start_date, end_date))
+        return cursor.fetchone()
+    
+    def get_payment_statistics(self, start_date, end_date):
+        """Get statistics about payments in a date range."""
+        query = """
+            SELECT 
+                COUNT(*) as total_payments,
+                SUM(payment) as total_amount,
+                AVG(payment) as average_payment,
+                payment_method,
+                COUNT(*) as method_count
+            FROM work_order_payments
+            WHERE DATE(payment_date) BETWEEN DATE(?) AND DATE(?)
+            GROUP BY payment_method
+        """
+        cursor = self._execute_query(query, (start_date, end_date))
+        return cursor.fetchall()
+

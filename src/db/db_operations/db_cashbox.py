@@ -383,6 +383,23 @@ class DBCashBox(DatabaseManager):
         query = "SELECT * FROM discounts ORDER BY date DESC"
         return self._execute_query(query).fetchall()
 
+    def get_total_discounts_amount(self, start_date, end_date):
+        """Gets the total amount of discounts in a date range."""
+        query = """
+            SELECT 
+                COUNT(*) as total_discounts,
+                SUM(discount_mont) as total_discount_amount,
+                SUM(discount_percentage) as total_discount_percentage
+            FROM discounts
+            WHERE DATE(date) BETWEEN DATE(?) AND DATE(?)
+        """
+        try:
+            cursor = self._execute_query(query, (start_date, end_date))
+            return cursor.fetchone()
+        except Exception as e:
+            print(f"Error getting total discounts amount: {e}")
+            return None
+
     def get_discounts_in_date_range(self, start_date, end_date):
         query = """
             SELECT * FROM discounts

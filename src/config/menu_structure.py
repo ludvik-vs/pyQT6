@@ -28,7 +28,8 @@ class MenuStructure:
             '6 - Operaciones de Caja': [
                 'Ingresos de Caja', 
                 'Egresos de Caja', 
-                'Arqueo de Efectivo'
+                'Arqueo de Efectivo',
+                'Catálogo de Movimientos'
             ],
             '7 - Reportes Operativos': [
                 'Movimientos por Fecha',
@@ -46,10 +47,10 @@ class MenuStructure:
             '9 - Operaciones de Administración': [
                 'Aprobar Descuento', 
                 'Anular Orden', 
-                'Catálogo de Movimientos'
             ],
             '10 - Reportes Administrativos': [
                 'Registro de Descuentos',
+                'Reporte'
                 ]
         }
 

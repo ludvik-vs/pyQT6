@@ -80,4 +80,19 @@ class WorkOrderService:
         '''
         cursor = self.db._execute_query(query)
         return cursor.fetchall()
+
+    # Add these methods to WorkOrderService class
+    def get_dashboard_statistics(self, start_date, end_date):
+        """Get comprehensive dashboard statistics."""
+        try:
+            orders_stats = self.db.get_orders_statistics(start_date, end_date)
+            payment_stats = self.db.get_payment_statistics(start_date, end_date)
+            return {
+                'orders_stats': orders_stats,
+                'payment_stats': payment_stats
+            }
+        except Exception as e:
+            print(f"Error getting dashboard statistics: {e}")
+            return None
+        
         

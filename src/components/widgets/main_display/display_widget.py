@@ -38,6 +38,7 @@ from src.components.forms.reports.cashbox_move_report import CashboxMovementRepo
 from src.components.tables.wo_open_table import OpenWorkOrdersTableWidget
 from src.components.tables.tabla_descuentos import DiscountRangeForm
 from src.components.forms.reports.cashbox_payment_report import CashboxPaymentReportForm
+from src.components.forms.reports.dashboard_window import DashboardWindow
 
 # Production
 from src.components.forms.p_orders.create_porder import CrearProductionOrdenForm
@@ -213,6 +214,11 @@ class DisplayWidget(QWidget):
                 ), 0, 0),
             "Reporte de Ingresos Efectivo": lambda: self.grid_layout.addWidget(
                 CashboxPaymentReportForm(
+                    self.cashbox_service
+                ), 0, 0),
+            "Reporte": lambda: self.grid_layout.addWidget(
+                DashboardWindow(
+                    self.work_order_service,
                     self.cashbox_service
                 ), 0, 0),
         }

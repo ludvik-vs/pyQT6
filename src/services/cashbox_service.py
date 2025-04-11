@@ -203,3 +203,11 @@ class CashBoxService:
         except Exception as e:
             print(f"Error al obtener descuentos en rango de fechas: {e}")
 
+    def get_total_discounts_amount_service(self, start_date, end_date):
+        """Gets the total amount of discounts in a date range."""
+        try:
+            return self.db.get_total_discounts_amount(start_date, end_date)
+        except Exception as e:
+            print(f"Error getting total discounts amount: {e}")
+            return None
+
