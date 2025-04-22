@@ -19,8 +19,11 @@ from src.services.rh_service import ColaboratorService
 
 class ColaboratorOperations(QWidget):
 
-    def __init__(self, colaborator_services: ColaboratorService):
+    def __init__(self, logs_service, auth_service, colaborator_services: ColaboratorService):
         super().__init__()
+        self.logs_service = logs_service
+        self.auth_service = auth_service
+        self.current_username_data = self.auth_service.get_current_user()
         self.colaborator_services = colaborator_services
         self.init_ui()
 
@@ -276,9 +279,10 @@ class ColaboratorOperations(QWidget):
             )
 
             if success:
-                self.clear_form()
                 self.result_label.setStyleSheet("color: green;")
                 self.result_label.setText("Colaborador actualizado exitosamente.")
+                self.logs_service.register_activity(self.current_username_data.username,f"Actualizacion datos de Colaborador: {self.nombre_colaborador.text()}")
+                self.clear_form()
             else:
                 self.result_label.setStyleSheet("color: red;")
                 self.result_label.setText("Error al actualizar el colaborador.")
@@ -316,9 +320,10 @@ class ColaboratorOperations(QWidget):
                 success = self.colaborator_services.remove_colaborator_by_id(colaborator_id)
 
                 if success:
-                    self.clear_form()
                     self.result_label.setStyleSheet("color: green;")
                     self.result_label.setText("Colaborador eliminado exitosamente.")
+                    self.logs_service.register_activity(self.current_username_data.username,f"Elimino datos del Colaborador: {self.nombre_colaborador.text()}")
+                    self.clear_form()
                 else:
                     self.result_label.setStyleSheet("color: red;")
                     self.result_label.setText("Error al eliminar el colaborador.")

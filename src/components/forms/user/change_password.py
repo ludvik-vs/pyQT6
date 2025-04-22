@@ -4,8 +4,9 @@ from src.db.db_operations.db_user import DatabaseUser
 
 class PasswordChangeForm(QWidget):
 
-    def __init__(self, current_user_data):
+    def __init__(self, logs_service, current_user_data):
         super().__init__()
+        self.logs_service = logs_service
         self.current_user_data = current_user_data
         self.db_user = DatabaseUser()
         self.auth_serive = AuthService(self.db_user)
@@ -89,4 +90,5 @@ class PasswordChangeForm(QWidget):
         self.auth_serive.change_password(self.current_user_data.user_id, new_password)
         self.clear_form()
         self.result_label.setText("Contraseña cambiada exitosamente.")
+        self.logs_service.register_activity(self.current_user_data.username, "Cambio de contraseña")
         QApplication.instance().quit()

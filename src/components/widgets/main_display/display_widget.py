@@ -106,19 +106,42 @@ class DisplayWidget(QWidget):
         widget_map = {
             "ACRIL CAR": self.show_acril_car_image,
             "Cambiar Contraseña": lambda: self.grid_layout.addWidget(
-                PasswordChangeForm(self.current_user_data), 0, 0),
+                PasswordChangeForm(
+                    self.logs_service,
+                    self.current_user_data
+                ), 0, 0),
             "Alta de Cliente": lambda: self.grid_layout.addWidget(
-                CreateClient(self.client_service), 0, 0),
+                CreateClient(
+                    self.logs_service,
+                    self.auth_service,
+                    self.client_service
+                ), 0, 0),
             "Operaciones de Cliente": lambda: self.grid_layout.addWidget(
-                ClientOperations(self.client_service), 0, 0),
+                ClientOperations(
+                    self.logs_service,
+                    self.auth_service,
+                    self.client_service
+                ), 0, 0),
             "Tabla de Clientes": lambda: self.grid_layout.addWidget(
                 ClientTableWidget(self.client_service), 0, 0),
             "Alta de Colaborador": lambda: self.grid_layout.addWidget(
-                CreateColaborator(self.colaborator_service), 0, 0),
+                CreateColaborator(
+                    self.logs_service,
+                    self.auth_service,
+                    self.colaborator_service
+                ), 0, 0),
             "Operaciones de Colaborador": lambda: self.grid_layout.addWidget(
-                ColaboratorOperations(self.colaborator_service), 0, 0),
+                ColaboratorOperations(
+                    self.logs_service,
+                    self.auth_service,
+                    self.colaborator_service
+                ), 0, 0),
             "Detalle de Colaborador": lambda: self.grid_layout.addWidget(
-                ColaboratorRegister(self.colaborator_service), 0, 0),
+                ColaboratorRegister(
+                    self.logs_service,
+                    self.auth_service,
+                    self.colaborator_service
+                ), 0, 0),
             "Tabla de Planilla": lambda: self.grid_layout.addWidget(
                 ColaboratorTableWidget(self.colaborator_service), 0, 0),
             "Crear Orden de Trabajo": lambda: self.grid_layout.addWidget(

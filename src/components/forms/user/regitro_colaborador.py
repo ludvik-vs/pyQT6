@@ -3,9 +3,11 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdi
 from datetime import datetime
 
 class ColaboratorRegister(QWidget):
-    def __init__(self, colaborator_service):
+    def __init__(self, logs_service, auth_service, colaborator_service):
         super().__init__()
-
+        self.logs_service = logs_service
+        self.auth_service = auth_service
+        self.current_username_data = self.auth_service.get_current_user()
         self.service = colaborator_service
         self.initUI()
 
@@ -139,7 +141,6 @@ class ColaboratorRegister(QWidget):
             # Agregar el QFrame al layout principal
             self.registers_layout.addWidget(register_card)
 
-
     def register_record(self):
         colaborator_id = self.id_input.text()
         description = self.description_input.toPlainText()
@@ -147,6 +148,7 @@ class ColaboratorRegister(QWidget):
             fecha = datetime.now().strftime("%Y-%m-%d")
             self.service.create_colaborator_record(colaborator_id, fecha, description)
             QMessageBox.information(self, "Éxito", "Registro creado exitosamente.")
+            self.logs_service.register_activity(self.current_username_data.username,f"Agrego registro del colaborador: {self.self.nombre_label.text()}")
             self.description_input.clear()
             self.load_registers(colaborator_id)  # Recargar registros
         else:
@@ -155,4 +157,5 @@ class ColaboratorRegister(QWidget):
     def delete_register(self, register_id):
         self.service.remove_register(register_id)
         QMessageBox.information(self, "Éxito", "Registro eliminado exitosamente.")
+        self.logs_service.register_activity(self.current_username_data.username,f"Elimino registro del colaborador: {self.self.nombre_label.text()}")
         self.load_registers(self.id_input.text())  # Recargar registros

@@ -4,9 +4,12 @@ from PyQt6.QtWidgets import (
 from src.services.client_service import ClientService
 
 class ClientOperations(QWidget):
-    def __init__(self, client_service: ClientService):
+    def __init__(self, logs_service, auth_service, client_service: ClientService):
         super().__init__()
+        self.logs_service = logs_service
+        self.auth_service = auth_service
         self.client_service = client_service
+        self.current_username_data = self.auth_service.get_current_user()
         self.init_ui()
 
     def init_ui(self):
@@ -139,6 +142,7 @@ class ClientOperations(QWidget):
                 self.clear_form()
                 self.result_label.setStyleSheet("color: green;")
                 self.result_label.setText("Cliente actualizado exitosamente.")
+                self.logs_service.register_activity(self.current_username_data.username,f"Actualizo datos del cliente: {name}")
             else:
                 self.clear_form()
                 self.result_label.setStyleSheet("color: red;")
@@ -175,9 +179,10 @@ class ClientOperations(QWidget):
 
             if confirmation == QMessageBox.StandardButton.Yes:
                 if self.client_service.remove_client(client_id):
-                    self.clear_form()
                     self.result_label.setStyleSheet("color: green;")
                     self.result_label.setText("Cliente eliminado exitosamente.")
+                    self.logs_service.register_activity(self.current_username_data.username,f"Elimino cliente: {self.nombre_cliente.text()}")
+                    self.clear_form()
                 else:
                     self.clear_form()
                     self.result_label.setStyleSheet("color: red;")

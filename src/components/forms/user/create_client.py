@@ -5,9 +5,12 @@ from PyQt6.QtCore import Qt
 from src.services.client_service import ClientService
 
 class CreateClient(QWidget):
-    def __init__(self, client_service: ClientService):
+    def __init__(self, logs_service, auth_service, client_service: ClientService):
         super().__init__()
+        self.logs_service = logs_service
+        self.auth_service = auth_service
         self.client_service = client_service
+        self.current_username_data = self.auth_service.get_current_user()
         self.init_ui()
 
     def init_ui(self):
@@ -86,11 +89,12 @@ class CreateClient(QWidget):
             email = self.email.text()
             numero_ruc = self.numero_ruc.text()
             nombre_empresa = self.nombre_empresa.text()
-
+            
             if self.client_service.create_client(name, contact_1, contact_2, email, numero_ruc, nombre_empresa):
                 self.clear_form()
                 self.result_label.setStyleSheet("color: green;")
                 self.result_label.setText("Cliente dado de alta exitosamente.")
+                self.logs_service.register_activity(self.current_username_data.username,f"Alta de Cliente: {name}")
             else:
                 self.clear_form()
                 self.result_label.setStyleSheet("color: red;")

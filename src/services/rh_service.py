@@ -27,9 +27,7 @@ class ColaboratorService:
 
     def update_colaborator_by_id(self, colaborator_id, **kwargs):
         """Actualizar un colaborador por su ID."""
-        print(f"Actualizando colaborador con ID: {colaborator_id}")  # Depuración
         success = self.db_colaborator.update_colaborator_by_id(colaborator_id, **kwargs)
-        print(f"Resultado de la actualización: {success}")  # Depuración
         return success
 
     def create_colaborator_record(self, colaborador_id, fecha, descripcion):

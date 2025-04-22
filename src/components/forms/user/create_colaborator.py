@@ -5,9 +5,12 @@ from PyQt6.QtCore import Qt, QDateTime
 from src.services.rh_service import ColaboratorService
 
 class CreateColaborator(QWidget):
-    def __init__(self, colaborator_service: ColaboratorService):
+    def __init__(self, logs_service, auth_service, colaborator_service: ColaboratorService):
         super().__init__()
+        self.logs_service = logs_service
+        self.auth_service = auth_service
         self.colaborator_service = colaborator_service
+        self.current_username_data = self.auth_service.get_current_user()
         self.init_ui()
 
     def init_ui(self):
@@ -158,6 +161,7 @@ class CreateColaborator(QWidget):
                 self.clear_form()
                 self.result_label.setStyleSheet("color: green;")
                 self.result_label.setText("Colaborador dado de alta exitosamente.")
+                self.logs_service.register_activity(self.current_username_data.username,f"Alta de Colaboraor: {nombre}")
             except Exception as e:
                 self.clear_form()
                 self.result_label.setStyleSheet("color: red;")
