@@ -52,6 +52,7 @@ class DisplayWidget(QWidget):
 
     def __init__(
         self, 
+        logs_service,
         auth_service, 
         client_service, 
         colaborator_service, 
@@ -61,6 +62,8 @@ class DisplayWidget(QWidget):
     ):
         super().__init__()
         self.setStyleSheet("background-color: #fafafc;")
+        #--------------------------------------------------------------
+        self.logs_service = logs_service
         #--------------------------------------------------------------
         self.auth_service = auth_service
         self.auth_service.user_authenticated.connect(self.update_current_user_data)

@@ -12,8 +12,9 @@ from PyQt6.QtCore import QSize
 from src.components.widgets.tree_menu.tree_menu import TreeMenu
 
 class AsideWidget(QWidget):
-    def __init__(self, auth_service):
+    def __init__(self, logs_service, auth_service):
         super().__init__()
+        self.logs_service = logs_service
         self.auth_service = auth_service
         self.setStyleSheet("background-color: #fafafc; padding: 1px")
         self.init_ui()
@@ -71,4 +72,6 @@ class AsideWidget(QWidget):
 
     def cerrar_sesion(self):
         self.auth_service.logout()
+        username = self.auth_service.get_current_user().username if self.auth_service.get_current_user() else "Usuario Desconocido"
+        self.logs_service.register_activity(username, "Cierre de sesión")
         QApplication.quit()

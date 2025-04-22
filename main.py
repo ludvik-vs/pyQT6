@@ -32,6 +32,10 @@ from src.services.cashbox_service import CashBoxService
 from src.db.db_operations.db_productions_orders import DatabaseProductionOrders
 from src.services.production_order_service import ProductionOrderService
 
+# LOGS
+from src.db.db_operations.db_logs import DBLogs
+from src.services.logs_services import LogsServices
+
 def load_styles():
     if getattr(sys, 'frozen', False):
         # Entorno empaquetado: usar sys._MEIPASS para acceder al directorio temporal
@@ -56,6 +60,9 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("ACRIL CAR NI")
         self.setStyleSheet(load_styles())
         #--------------------------------------------------------------
+        self.db_logs = DBLogs()
+        self.logs_service = LogsServices(self.db_logs)
+        #--------------------------------------------------------------
         self.user_db_manager = DatabaseUser()
         self.user_db_manager.connect(self.user_db_manager.db_name)
         self.auth_service = AuthService(self.user_db_manager)
@@ -75,8 +82,9 @@ class MainWindow(QMainWindow):
         self.db_cashbox = DBCashBox()
         self.cashbox_service = CashBoxService(self.db_cashbox)
         #--------------------------------------------------------------
-        self.aside_widget = AsideWidget(self.auth_service)
+        self.aside_widget = AsideWidget(self.logs_service, self.auth_service)
         self.display_widget = DisplayWidget(
+            self.logs_service,
             self.auth_service, 
             self.client_service, 
             self.colaborator_service, 
@@ -119,6 +127,7 @@ class MainWindow(QMainWindow):
     def on_login_success(self, user_data):
         """Manejar el éxito del login."""
         print("Login exitoso")
+        self.logs_service.register_activity(user_data.username, "Inicio de sesión")
 
     def center_login_form(self):
         """Centrar el diálogo de login en la pantalla."""
@@ -145,6 +154,17 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("Fusion"))
     window = MainWindow()
+    
+    # Register cleanup function for application exit
+    def cleanup():
+        if hasattr(window.auth_service, 'current_user') and window.auth_service.current_user:
+            window.logs_service.register_activity(
+                window.auth_service.current_user.username, 
+                "Cierre de Sesión"
+            )
+    
+    app.aboutToQuit.connect(cleanup)
+    
     window.start_login()
     print("Entrando al bucle de eventos...")
     sys.exit(app.exec())
