@@ -32,8 +32,11 @@ class WorkOrderDetails(QWidget):
         AttributeError: If any service is not provided.
         TypeError: If any service is not an instance of its respective class.
     """
-    def __init__(self, wo_service, client_service, colaborator_service, user_service, production_order_service):
+    def __init__(self, logs_service, auth_service, wo_service, client_service, colaborator_service, user_service, production_order_service):
         super().__init__()
+        self.logs_service = logs_service
+        self.auth_service = auth_service
+        self.current_username_data = self.auth_service.get_current_user()
         self.wo_service = wo_service
         self.client_service = client_service
         self.colaborator_service = colaborator_service
@@ -285,6 +288,7 @@ class WorkOrderDetails(QWidget):
                 self.load_order_details()
                 self.production_order_service.close_production_order(order_id)
                 self.show_error("info", "Orden cerrada correctamente")
+                self.logs_service.register_activity(self.current_username_data.username,f"Cerro la orden: {self.order_id_input.text()}")
             except Exception as e:
                 self.show_error("error", f"Error al cerrar la orden: {e}")
 

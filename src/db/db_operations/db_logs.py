@@ -25,7 +25,7 @@ class DBLogs(DatabaseManager):
         self._execute_query(query, (username, activity))
 
     def get_register_logs_date_range(self, start_date, end_date):
-        query = f"SELECT * FROM register_logs WHERE timestamp BETWEEN '{start_date}' AND '{end_date}' ORDER BY timestamp DESC;"
+        query = f"SELECT * FROM register_logs WHERE datetime BETWEEN '{start_date}' AND '{end_date}' ORDER BY datetime DESC;"
         result = self._execute_query(query)
         return result
 
@@ -33,7 +33,7 @@ class DBLogs(DatabaseManager):
         query = "SELECT * FROM register_logs"
         if username:
             query += f" WHERE username = '{username}'"
-        query += " ORDER BY timestamp DESC;"
+        query += " ORDER BY datetime DESC;"
         result = self._execute_query(query)
         return result
 
@@ -43,9 +43,9 @@ class DBLogs(DatabaseManager):
         for log in logs:
             log_dict = {
                 "id": log[0],
-                "username": log[1],     
-                "activity": log[2],
-                "timestamp": log[3].strftime("%Y-%m-%d %H:%M:%S")
+                "username": log[2],     # username is in position 2
+                "activity": log[3],     # activity is in position 3
+                "timestamp": log[1]     # datetime is in position 1, already a string
             }
             logs_json.append(log_dict)
         return json.dumps(logs_json)
@@ -56,9 +56,9 @@ class DBLogs(DatabaseManager):
         for log in logs:
             log_dict = {
                 "id": log[0],
-                "username": log[1],     
-                "activity": log[2],
-                "timestamp": log[3].strftime("%Y-%m-%d %H:%M:%S")
+                "username": log[2],     # username is in position 2
+                "activity": log[3],     # activity is in position 3
+                "timestamp": log[1]     # datetime is in position 1, already a string
             }
             logs_json.append(log_dict)
         return json.dumps(logs_json)

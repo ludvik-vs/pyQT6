@@ -47,6 +47,9 @@ from src.components.tables.po_table import ProductionOrderTable
 # Admin
 from src.components.forms.caja.cash_discount import CashDiscountForm
 
+#LOGS
+from src.components.tables.historia_logs import LogsHistoryTable
+
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
 
@@ -110,6 +113,10 @@ class DisplayWidget(QWidget):
                     self.logs_service,
                     self.current_user_data
                 ), 0, 0),
+            "Historial de Actividades": lambda: self.grid_layout.addWidget(
+                LogsHistoryTable(
+                    self.logs_service,
+                ), 0, 0),
             "Alta de Cliente": lambda: self.grid_layout.addWidget(
                 CreateClient(
                     self.logs_service,
@@ -146,17 +153,22 @@ class DisplayWidget(QWidget):
                 ColaboratorTableWidget(self.colaborator_service), 0, 0),
             "Crear Orden de Trabajo": lambda: self.grid_layout.addWidget(
                 CrearOrdenForm(
+                    self.logs_service,
                     self.current_user_data,
                     self.auth_service,
                     self.client_service,
                     self.colaborator_service,
                     self.work_order_service), 0, 0),
-            "Detalle de Orden": lambda: self.grid_layout.addWidget(WorkOrderDetails(
-                self.work_order_service,
-                self.client_service,
-                self.colaborator_service,
-                self.auth_service,
-                self.production_order_service), 0, 0),
+            "Detalle de Orden": lambda: self.grid_layout.addWidget(
+                WorkOrderDetails(
+                    self.logs_service,
+                    self.auth_service,
+                    self.work_order_service,
+                    self.client_service,
+                    self.colaborator_service,
+                    self.auth_service,
+                    self.production_order_service
+                ), 0, 0),
             "Tabla de Órdenes": lambda: self.grid_layout.addWidget(
                 WorkOrderTable(self.work_order_service), 0, 0),
             "Crear Orden de Producción": lambda: self.grid_layout.addWidget(

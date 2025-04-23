@@ -18,7 +18,6 @@ class AsideWidget(QWidget):
         self.auth_service = auth_service
         self.setStyleSheet("background-color: #fafafc; padding: 1px")
         self.init_ui()
-
         # Conectar la señal de autenticación
         self.auth_service.user_authenticated.connect(self.update_user_interface)
         self.update_user_interface(auth_service.get_current_user())
@@ -71,7 +70,8 @@ class AsideWidget(QWidget):
             self.tree_menu.set_user_access([])
 
     def cerrar_sesion(self):
-        self.auth_service.logout()
-        username = self.auth_service.get_current_user().username if self.auth_service.get_current_user() else "Usuario Desconocido"
+        current_user = self.auth_service.get_current_user()
+        username = current_user.username if current_user else "Usuario Desconocido"
         self.logs_service.register_activity(username, "Cierre de sesión")
+        self.auth_service.logout()
         QApplication.quit()

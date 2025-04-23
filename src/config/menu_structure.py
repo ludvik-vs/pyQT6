@@ -4,7 +4,8 @@ class MenuStructure:
         return {
             '1 - Inicio': [
                 'ACRIL CAR', 
-                'Cambiar Contraseña'
+                'Cambiar Contraseña',
+                'Historial de Actividades'
                 ],
             '2 - Administración de Usuarios': [
                 'Crear Usuario', 
