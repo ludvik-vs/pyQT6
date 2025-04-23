@@ -15,14 +15,17 @@ from src.components.custom.cq_messagebox import CQMessageBox
 class CancelOrderForm(QWidget):
     def __init__(
         self, 
+        logs_service,
         current_user_data, 
         aunth_service, 
         work_order_service,
         production_order_service
         ):
         super().__init__()
+        self.logs_service = logs_service
         self.current_user_data = current_user_data
         self.aunth_service = aunth_service
+        self.current_username_data = self.aunth_service.get_current_user()
         self.work_order_service = work_order_service
         self.production_order_service = production_order_service
         self.init_ui()
@@ -141,6 +144,7 @@ class CancelOrderForm(QWidget):
                 self.production_order_service.cancel_production_order(order_id)
             
             CQMessageBox().info_message("Orden anulada con exito")
+            self.logs_service.register_activity(self.current_username_data.username,f"Anulo la orden: {order_id}")
             self.clear_form()
             
         except Exception as e:

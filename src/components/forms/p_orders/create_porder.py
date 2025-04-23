@@ -8,6 +8,7 @@ import sqlite3
 class CrearProductionOrdenForm(QWidget):
     def __init__(
         self,
+        logs_service,
         current_user_data,
         aunth_service,
         client_service,
@@ -16,8 +17,10 @@ class CrearProductionOrdenForm(QWidget):
         production_order_service
     ):
         super().__init__()
+        self.logs_service = logs_service
         self.current_user_data = current_user_data
         self.aunth_service = aunth_service
+        self.current_username_data = self.aunth_service.get_current_user()
         self.client_service = client_service
         self.colaborator_service = colaborator_service
         self.work_order_service = work_order_service
@@ -164,6 +167,7 @@ class CrearProductionOrdenForm(QWidget):
                     note=note
                 )
                 QMessageBox.information(self, "Éxito", "Orden de producción creada exitosamente.")
+                self.logs_service.register_activity(self.current_username_data.username,f"Creo la orden de producción: {work_order_id}")
                 self.clean_form()
                 self.work_order_service.update_work_order(work_order_id, order_status="procesando")
             except sqlite3.IntegrityError as e:

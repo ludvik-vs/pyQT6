@@ -4,9 +4,11 @@ from PyQt6.QtWidgets import (
 from src.services.auth_service import AuthService
 
 class UserOperations(QWidget):
-    def __init__(self, auth_service: AuthService):
+    def __init__(self, logs_service, auth_service: AuthService):
         super().__init__()
+        self.logs_service = logs_service
         self.auth_service = auth_service
+        self.current_username_data = self.auth_service.get_current_user()
         self.init_ui()
 
     def init_ui(self):
@@ -142,6 +144,7 @@ class UserOperations(QWidget):
             self.auth_service.db_manager.grant_access(user_id, access)
 
         self.show_message("Accesos guardados exitosamente.", QMessageBox.Icon.Information)
+        self.logs_service.register_activity(self.current_username_data.username,f"Modifico accesos al usuario ID: {user_id}")
         self.clear_form()
 
     def clear_form(self):
@@ -187,6 +190,7 @@ class UserOperations(QWidget):
 
             # Eliminar el usuario
             if self.auth_service.db_manager.remove_user(user_id):
+                self.logs_service.register_activity(self.current_username_data.username,f"Elimino al usuario ID: {user_id}")
                 self.show_message("Usuario y accesos eliminados exitosamente.", QMessageBox.Icon.Information)
                 self.clear_form()
             else:

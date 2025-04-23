@@ -173,6 +173,7 @@ class DisplayWidget(QWidget):
                 WorkOrderTable(self.work_order_service), 0, 0),
             "Crear Orden de Producción": lambda: self.grid_layout.addWidget(
                 CrearProductionOrdenForm(
+                    self.logs_service,
                     self.current_user_data,
                     self.auth_service,
                     self.client_service,
@@ -184,6 +185,7 @@ class DisplayWidget(QWidget):
                     self.production_order_service), 0, 0),
             "Ingresos de Caja": lambda: self.grid_layout.addWidget(
                 FormularioIngresoCaja(
+                    self.logs_service,
                     self.auth_service,
                     self.client_service,
                     self.work_order_service,
@@ -191,6 +193,7 @@ class DisplayWidget(QWidget):
                 ), 0, 0),
             "Egresos de Caja": lambda: self.grid_layout.addWidget(
                 FormularioEgresoCaja(
+                    self.logs_service,
                     self.auth_service,
                     self.work_order_service,
                     self.cashbox_service
@@ -210,14 +213,21 @@ class DisplayWidget(QWidget):
                     self.production_order_service,
                     self.cashbox_service
             ), 0, 0),
-            "Crear Usuario": lambda: self.grid_layout.addWidget(CreateUserForm(
-                self.auth_service), 0, 0),
-            "Operaciones de Usuario": lambda: self.grid_layout.addWidget(UserOperations(
-                self.auth_service), 0, 0),
+            "Crear Usuario": lambda: self.grid_layout.addWidget(
+                CreateUserForm(
+                    self.logs_service,
+                    self.auth_service
+                ), 0, 0),
+            "Operaciones de Usuario": lambda: self.grid_layout.addWidget(
+                UserOperations(
+                    self.logs_service,
+                    self.auth_service
+                ), 0, 0),
             "Tabla de Usuarios": lambda: self.grid_layout.addWidget(UserTableWidget(
                 self.auth_service), 0, 0),
             "Anular Orden": lambda: self.grid_layout.addWidget(
                 CancelOrderForm(
+                    self.logs_service,
                     self.current_user_data,
                     self.auth_service,
                     self.work_order_service,
@@ -225,6 +235,7 @@ class DisplayWidget(QWidget):
                 ), 0, 0),
             "Catálogo de Movimientos": lambda: self.grid_layout.addWidget(
                 CashMovementForm(
+                    self.logs_service,
                     self.cashbox_service,
                     self.auth_service
                 ), 0, 0),
@@ -242,6 +253,7 @@ class DisplayWidget(QWidget):
                 ), 0, 0),
             "Aprobar Descuento": lambda: self.grid_layout.addWidget(
                 CashDiscountForm(
+                    self.logs_service,
                     self.current_user_data,
                     self.work_order_service,
                     self.cashbox_service

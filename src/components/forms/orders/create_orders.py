@@ -213,7 +213,6 @@ class CrearOrdenForm(QWidget):
         self.services = eval(services)
 
     def procesar_orden(self):
-
         numero_de_orden = self.orden_input.text()
         id_colaborator = self.colaborador_id_input.text()
 

@@ -41,10 +41,12 @@ class MovimientoDialog(QDialog):
         }
 
 class CashMovementForm(QMainWindow):
-    def __init__(self, cashbox_service, auth_service):
+    def __init__(self, logs_service, cashbox_service, auth_service):
         super().__init__()
+        self.logs_service = logs_service
         self.cashbox_service = cashbox_service
         self.auth_service = auth_service
+        self.current_username_data = self.auth_service.get_current_user()
 
         self.setWindowTitle("Administrador de Movimientos de Caja")
         self.setGeometry(100, 100, 800, 600)
@@ -93,6 +95,8 @@ class CashMovementForm(QMainWindow):
                 tipo=data["tipo"],
                 descripcion=data["descripcion"]
             )
+            nombre_movimiento = data["nombre"]
+            self.logs_service.register_activity(self.current_username_data.username,f"Agrego movimiento: {nombre_movimiento}")
             self.load_movimientos()
 
     def edit_movimiento(self):
@@ -114,6 +118,7 @@ class CashMovementForm(QMainWindow):
                 tipo=data["tipo"],
                 descripcion=data["descripcion"]
             )
+            self.logs_service.register_activity(self.current_username_data.username, f'Edito movimiento: {data["nombre"]}')
             self.load_movimientos()
 
     def delete_movimiento(self):
@@ -125,6 +130,7 @@ class CashMovementForm(QMainWindow):
         # Get the ID directly from the table instead of calculating it
         movimiento_id = int(self.table.item(selected_row, 0).text())
         self.cashbox_service.delete_movimiento_service(movimiento_id)
+        self.logs_service.register_activity(self.current_username_data.username,f"Elimino movimiento, id: {movimiento_id}")
         self.load_movimientos()
 
 if __name__ == "__main__":

@@ -19,13 +19,16 @@ class FormularioIngresoCaja(QWidget):
     """
     def __init__(
         self,
+        logs_service,
         auth_service,
         client_service,
         work_order_service,
         cashbox_service
         ):
         super().__init__()
+        self.logs_service = logs_service
         self.auth_service = auth_service
+        self.current_username_data = self.auth_service.get_current_user()
         self.client_service = client_service
         self.work_order_service = work_order_service
         self.cashbox_service = cashbox_service
@@ -180,6 +183,7 @@ class FormularioIngresoCaja(QWidget):
                         numero_orden
                     )
                     QMessageBox().information(self, "Éxito", "Ingreso de caja registrado correctamente")
+                    self.logs_service.register_activity(self.current_username_data.username,f"Ingreso de caja para la orden: {numero_orden} - monto: {monto}")
                 except Exception as e:
                     QMessageBox().warning(self, "Error", f"Error no se realizo registro en caja: {e}")
 

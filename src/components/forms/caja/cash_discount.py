@@ -6,8 +6,9 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 
 class CashDiscountForm(QWidget):
-    def __init__(self, current_user_data, work_order_service, cashbox_service):
+    def __init__(self, logs_service, current_user_data, work_order_service, cashbox_service):
         super().__init__()
+        self.logs_service = logs_service
         self.work_order_service = work_order_service
         self.current_user_data = current_user_data
         self.cashbox_service = cashbox_service
@@ -139,6 +140,7 @@ class CashDiscountForm(QWidget):
             )
 
             QMessageBox.information(self, "Éxito", "Descuento grabado exitosamente.")
+            self.logs_service.register_activity(self.current_user_data.username,f"Aplico descuento a la orden {numero_orden}, por un monto de: {cash_discount}")
             self.clean_form()  # Add this line
 
         except ValueError as ve:

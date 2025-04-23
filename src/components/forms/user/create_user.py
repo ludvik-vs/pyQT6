@@ -2,9 +2,11 @@ from PyQt6.QtWidgets import QWidget, QFormLayout, QLabel, QLineEdit, QComboBox, 
 from src.services.auth_service import AuthService
 
 class CreateUserForm(QWidget):
-    def __init__(self, auth_service: AuthService):
+    def __init__(self, logs_service, auth_service: AuthService):
         super().__init__()
+        self.logs_service = logs_service
         self.auth_service = auth_service
+        self.current_username_data = self.auth_service.get_current_user()
         self.initUI()
 
     def initUI(self):
@@ -47,6 +49,7 @@ class CreateUserForm(QWidget):
         success = self.auth_service.register_user(username, password, role)
         if success:
             QMessageBox.information(self, 'Éxito', 'Usuario creado exitosamente.')
+            self.logs_service.register_activity(self.current_username_data.username,f"Creo el usuario: {username}")
             self.clear_form()  # Limpiar el formulario después de crear el usuario
         else:
             QMessageBox.warning(self, 'Error', 'No se pudo crear el usuario.')

@@ -148,7 +148,7 @@ class ColaboratorRegister(QWidget):
             fecha = datetime.now().strftime("%Y-%m-%d")
             self.service.create_colaborator_record(colaborator_id, fecha, description)
             QMessageBox.information(self, "Éxito", "Registro creado exitosamente.")
-            self.logs_service.register_activity(self.current_username_data.username,f"Agrego registro del colaborador: {self.self.nombre_label.text()}")
+            self.logs_service.register_activity(self.current_username_data.username,f"Agrego registro del colaborador: {self.nombre_label.text()}")
             self.description_input.clear()
             self.load_registers(colaborator_id)  # Recargar registros
         else:

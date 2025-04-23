@@ -19,12 +19,15 @@ class FormularioEgresoCaja(QWidget):
     """
     def __init__(
         self,
+        logs_service,
         auth_service,
         work_order_service,
         cashbox_service
         ):
         super().__init__()
+        self.logs_service = logs_service
         self.auth_service = auth_service
+        self.current_username_data = self.auth_service.get_current_user()
         self.work_order_service = work_order_service
         self.cashbox_service = cashbox_service
         self.initUI()
@@ -143,6 +146,7 @@ class FormularioEgresoCaja(QWidget):
             )
 
             QMessageBox().information(self, "Éxito", "Egreso de caja registrado correctamente")
+            self.logs_service.register_activity(self.current_username_data.username,f"Salida de caja, monto: {monto}")
             self.limpiar_formulario()
 
         except Exception as e:
