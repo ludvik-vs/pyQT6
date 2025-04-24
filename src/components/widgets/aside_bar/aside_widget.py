@@ -1,60 +1,85 @@
 from PyQt6.QtWidgets import (
-    QWidget, 
-    QLabel, 
-    QVBoxLayout, 
-    QHBoxLayout, 
-    QPushButton, 
+    QWidget,
+    QLabel,
+    QVBoxLayout,
+    QHBoxLayout,
+    QPushButton,
     QApplication,
     QStyle
-    )
-from PyQt6.QtGui import QIcon
+)
+from PyQt6.QtGui import QIcon, QFont
 from PyQt6.QtCore import QSize
 from src.components.widgets.tree_menu.tree_menu import TreeMenu
 
 class AsideWidget(QWidget):
+
     def __init__(self, logs_service, auth_service):
         super().__init__()
         self.logs_service = logs_service
         self.auth_service = auth_service
-        self.setStyleSheet("background-color: #fafafc; padding: 1px")
+        self.setStyleSheet("""
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 10px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+        """)
         self.init_ui()
-        # Conectar la señal de autenticación
         self.auth_service.user_authenticated.connect(self.update_user_interface)
         self.update_user_interface(auth_service.get_current_user())
 
     def init_ui(self):
-
         self.main_layout = QVBoxLayout()
         self.sec_layout = QHBoxLayout()
 
         self.username_label = QLabel("Cargando...")
-        close_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarCloseButton )
+        self.username_label.setFont(QFont("Arial", 12, QFont.Weight.Bold))
+
+        close_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarCloseButton)
         self.logout_button = QPushButton()
         self.logout_button.setIcon(close_icon)
-        self.logout_button.setIconSize(QSize(20, 20))
-        self.logout_button.setStyleSheet(
-            """
-                padding: 0px;
-                margin: 0px;
-                max-width: 40px;
-                min-height: 20px;
-            """
-        )
+        self.logout_button.setIconSize(QSize(54, 54))
+        self.logout_button.setStyleSheet("""
+            QPushButton {
+                background-color: #e74c3c;
+                color: #FFFFFF;
+                border: none;
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #c0392b;
+            }
+            QPushButton::icon {
+                color: white;
+                background-color: white;
+            }
+        """)
         self.logout_button.setToolTip("Salir")
         self.sec_layout.addWidget(self.logout_button)
         self.sec_layout.addWidget(self.username_label)
 
-        # Conectar el botón de cerrar sesión
         self.logout_button.clicked.connect(self.cerrar_sesion)
 
-        # Agregar el layout secundario al layout principal
         self.main_layout.addLayout(self.sec_layout)
 
-        # Crear una instancia de TreeMenu
         self.tree_menu = TreeMenu()
+        self.tree_menu.setStyleSheet("""
+            QTreeView {
+                background-color: #34495e;
+                color: #ecf0f1;
+                border: none;
+            }
+            QTreeView::item:selected {
+                background-color: #1abc9c;
+                color: #ecf0f1;
+            }
+            QTreeView::item:hover {
+                background-color: #2980b9;
+            }
+        """)
         self.main_layout.addWidget(self.tree_menu)
-
-        # Asegurarse de que el QTreeView ocupe todo el espacio disponible
         self.main_layout.setStretchFactor(self.tree_menu, 1)
 
         self.setLayout(self.main_layout)
