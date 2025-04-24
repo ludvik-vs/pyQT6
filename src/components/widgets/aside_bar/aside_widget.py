@@ -31,33 +31,35 @@ class AsideWidget(QWidget):
 
     def init_ui(self):
         self.main_layout = QVBoxLayout()
-        self.sec_layout = QHBoxLayout()
+        self.sec_layout = QVBoxLayout()
+        self.cls_btn_layout = QHBoxLayout()
 
         self.username_label = QLabel("Cargando...")
         self.username_label.setFont(QFont("Arial", 12, QFont.Weight.Bold))
 
-        close_icon = self.style().standardIcon(QStyle.StandardPixmap.SP_TitleBarCloseButton)
-        self.logout_button = QPushButton()
-        self.logout_button.setIcon(close_icon)
-        self.logout_button.setIconSize(QSize(54, 54))
+        # Create logout button with icon
+        self.logout_button = QPushButton('Cerrar')
+        self.logout_button.setIconSize(QSize(16, 16))
         self.logout_button.setStyleSheet("""
             QPushButton {
                 background-color: #e74c3c;
                 color: #FFFFFF;
                 border: none;
                 border-radius: 5px;
-                padding: 5px;
+                padding: 8px 12px;
+                min-width: 80px;
             }
             QPushButton:hover {
                 background-color: #c0392b;
             }
-            QPushButton::icon {
-                color: white;
-                background-color: white;
-            }
         """)
         self.logout_button.setToolTip("Salir")
-        self.sec_layout.addWidget(self.logout_button)
+        
+        # Add widgets to layouts
+        self.cls_btn_layout.addWidget(self.logout_button)
+        self.cls_btn_layout.addStretch()  # This pushes the button to the left
+        
+        self.sec_layout.addLayout(self.cls_btn_layout)
         self.sec_layout.addWidget(self.username_label)
 
         self.logout_button.clicked.connect(self.cerrar_sesion)
