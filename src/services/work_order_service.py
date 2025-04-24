@@ -72,10 +72,10 @@ class WorkOrderService:
 
     #Reporte
     def get_open_workorders_filter_service(self):
-        """Devuelve todas las órdenes de trabajo con estado 'abierta'."""
+        """Devuelve todas las órdenes de trabajo con estado 'abierta' o 'procesando'."""
         query = '''
             SELECT * FROM work_orders
-            WHERE order_status = 'abierta'
+            WHERE order_status IN ('abierta', 'procesando')
             ORDER BY end_date ASC
         '''
         cursor = self.db._execute_query(query)

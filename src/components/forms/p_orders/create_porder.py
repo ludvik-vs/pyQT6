@@ -107,7 +107,7 @@ class CrearProductionOrdenForm(QWidget):
         # Obtener datos de la orden de trabajo
         order_data = self.work_order_service.get_work_order(work_order_id)
         client_details = self.cargar_client_data(order_data[5])
-        colaborador_details = self.cargar_colaborador_data(order_data[4])
+        colaborador_details = self.cargar_colaborador_data(order_data[6])
         order_details_list = self.work_order_service.get_work_order_items(work_order_id)
         if order_data:
             self.start_date_label.setText(f"Fecha de Inicio: {order_data[2]}")

@@ -26,7 +26,7 @@ class LogsHistoryTable(QWidget):
         # Start date filter
         start_date_label = QLabel("Fecha Inicio:", self)
         self.start_date = QDateTimeEdit(self)
-        self.start_date.setDateTime(QDateTime.currentDateTime().addDays(-7))
+        self.start_date.setDateTime(QDateTime.currentDateTime().addDays(-1))
         self.start_date.setCalendarPopup(True)
         date_filter_layout.addWidget(start_date_label)
         date_filter_layout.addWidget(self.start_date)
@@ -34,7 +34,7 @@ class LogsHistoryTable(QWidget):
         # End date filter
         end_date_label = QLabel("Fecha Fin:", self)
         self.end_date = QDateTimeEdit(self)
-        self.end_date.setDateTime(QDateTime.currentDateTime())
+        self.end_date.setDateTime(QDateTime.currentDateTime().addDays(1))
         self.end_date.setCalendarPopup(True)
         date_filter_layout.addWidget(end_date_label)
         date_filter_layout.addWidget(self.end_date)

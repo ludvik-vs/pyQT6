@@ -256,7 +256,7 @@ class CrearOrdenForm(QWidget):
             try:
                 self.work_order_service.add_work_order_item(numero_de_orden, id_colaborator, str(services))
                 QMessageBox.information(self, "Éxito", f"Orden de trabajo {numero_de_orden} creada exitosamente.")
-                self.logs_service.register_activity(self.current_username_data.username,f"Creo la orden: {self.orden_input.text()}")
+                self.logs_service.register_activity(self.current_username_data.username,f"Creo la orden de trabajo: {self.orden_input.text()}")
                 self.clear_form()
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Error al agregar ítems a la orden: {e}")

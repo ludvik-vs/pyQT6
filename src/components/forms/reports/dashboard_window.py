@@ -86,9 +86,9 @@ class DashboardWindow(QMainWindow):
         date_layout.setContentsMargins(20, 10, 20, 10)
 
         self.start_date = QDateEdit()
-        self.start_date.setDate(QDate.currentDate().addMonths(-1))
+        self.start_date.setDate(QDate.currentDate().addMonths(-6))
         self.end_date = QDateEdit()
-        self.end_date.setDate(QDate.currentDate())
+        self.end_date.setDate(QDate.currentDate().addMonths(1))
 
         refresh_btn = QPushButton("Actualizar Dashboard")
         refresh_btn.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -156,25 +156,14 @@ class DashboardWindow(QMainWindow):
             'total_discount_amount': self.create_stat_box(
                 "Monto Total Descuentos", "C$ 0.00",
                 "#9b59b6", "Valor monetario total de descuentos"
-            ),
-            'total_payments': self.create_stat_box(
-                "Total Pagos", "C$ 0.00",
-                "#3498db", "Monto total de pagos recibidos"
-            ),
-            'cash_payments': self.create_stat_box(
-                "Pagos en Efectivo", "C$ 0.00",
-                "#16a085", "Total de pagos recibidos en efectivo"
-            ),
-            'card_payments': self.create_stat_box(
-                "Pagos con Tarjeta", "C$ 0.00",
-                "#8e44ad", "Total de pagos recibidos con tarjeta"
             )
         }
 
+        # Update positions for 8 boxes instead of 10
         positions = [
             (0, 0), (0, 1), (0, 2),
             (1, 0), (1, 1), (1, 2),
-            (2, 0), (2, 1), (2, 2)
+            (2, 0), (2, 1)
         ]
 
         for (key, box), pos in zip(self.stat_boxes.items(), positions):
@@ -252,17 +241,6 @@ class DashboardWindow(QMainWindow):
         discounts = self.cashbox_service.get_discounts_in_date_range(start_date, end_date)
         if discounts:
             self.update_stat_box('total_discounts', str(len(discounts)))
-
-        # Get payment statistics
-        if order_stats and 'payment_stats' in order_stats:
-            payment_stats = order_stats['payment_stats']
-            total_payments = sum(stat[1] for stat in payment_stats)
-            cash_payments = sum(stat[1] for stat in payment_stats if stat[3] == 'efectivo')
-            card_payments = sum(stat[1] for stat in payment_stats if stat[3] == 'tarjeta')
-
-            self.update_stat_box('total_payments', f"C$ {total_payments:,.2f}")
-            self.update_stat_box('cash_payments', f"C$ {cash_payments:,.2f}")
-            self.update_stat_box('card_payments', f"C$ {card_payments:,.2f}")
 
         # Get discount statistics with amounts
         discount_stats = self.cashbox_service.get_total_discounts_amount_service(start_date, end_date)

@@ -52,7 +52,7 @@ class CashDiscountForm(QWidget):
         self.monto_inicial_value = QLabel("0.00", self)
         self.details_layout.addRow(self.monto_inicial_label, self.monto_inicial_value)
 
-        self.nuevo_monto_label = QLabel("Nuevo Monto (C$):", self)
+        self.nuevo_monto_label = QLabel("Monto del descuento en (C$):", self)
         self.nuevo_monto_input = QDoubleSpinBox(self)
         self.nuevo_monto_input.setMaximum(9999999.99)
         self.nuevo_monto_input.setMinimum(0.00)
