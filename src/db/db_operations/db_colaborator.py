@@ -8,7 +8,6 @@ class DatabaseColaborators(DatabaseManager):
             self.insert_default_colaborator()
 
     def create_colaborator_table(self):
-        """Crear la tabla de colaboradores."""
         query_1 = '''
             CREATE TABLE IF NOT EXISTS colaboradores (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,15 +24,18 @@ class DatabaseColaborators(DatabaseManager):
                 puesto TEXT,
                 fecha_nacimiento DATE,
                 numero_seguro_social TEXT,
-                informacion_adicional TEXT
+                informacion_adicional TEXT,
+                sincronizado INTEGER DEFAULT 0
             )
         '''
+
         query_2 = '''
             CREATE TABLE IF NOT EXISTS registros_colaborador (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 colaborador_id INTEGER NOT NULL,
                 fecha DATE NOT NULL,
                 descripcion TEXT NOT NULL,
+                sincronizado INTEGER DEFAULT 0,
                 FOREIGN KEY (colaborador_id) REFERENCES colaboradores(id)
             )
         '''

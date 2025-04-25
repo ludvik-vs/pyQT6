@@ -6,8 +6,18 @@ class DatabaseUser(DatabaseManager):
     def __init__(self):
         super().__init__()
         if not self.tables_exist_and_have_records():
-            self.create_user_table()
-            self.create_access_table()
+            try:
+                self.create_user_table()
+                print("Tabla de 'users' creada corectamente.")
+            except sqlite3.OperationalError:
+                print("Error al crear la tabla de usuarios.")
+            
+            try:
+                self.create_access_table()
+                print("Tabla de 'user_access' creada corectamente.")
+            except sqlite3.OperationalError:
+                print("Error al crear la tabla de accesos.")
+
             self.insert_default_users()
 
     def create_user_table(self):
@@ -17,7 +27,8 @@ class DatabaseUser(DatabaseManager):
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
-                role TEXT NOT NULL
+                role TEXT NOT NULL,
+                sincronizado INTEGER DEFAULT 0
             )
         '''
         with self.conn:
@@ -31,6 +42,7 @@ class DatabaseUser(DatabaseManager):
                 user_id INTEGER,
                 branch_name TEXT,
                 sub_branch_name TEXT,
+                sincronizado INTEGER DEFAULT 0,
                 PRIMARY KEY (user_id, branch_name, sub_branch_name),
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )

@@ -13,7 +13,6 @@ class DatabaseWorkOrder(DatabaseManager):
         self.create_work_order_payments_table()
 
     def create_work_orders_table(self):
-        """Crea la tabla de órdenes de trabajo."""
         query = '''
             CREATE TABLE IF NOT EXISTS work_orders (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,30 +25,33 @@ class DatabaseWorkOrder(DatabaseManager):
                 total_cost REAL DEFAULT 0,
                 order_status TEXT NOT NULL DEFAULT 'abierta' CHECK (order_status IN ('abierta', 'procesando', 'cerrada', 'anulada')),
                 note TEXT,
+                sincronizado INTEGER DEFAULT 0,
                 FOREIGN KEY (user_id) REFERENCES users(id),
                 FOREIGN KEY (client_id) REFERENCES clients(id),
                 FOREIGN KEY (colaborador_id) REFERENCES colaboradores(id)
             )
         '''
-        self._execute_query(query)
-        #self._insert_work_order('777', '2021-01-01', '2021-01-02', 1, 1, 1, 600, 'Abierta', "Nota Ejemplo")
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
 
     def create_work_order_items_table(self):
-        """Crea la tabla de ítems de órdenes de trabajo."""
         query = '''
             CREATE TABLE IF NOT EXISTS work_order_items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 work_order_id INTEGER NOT NULL,
                 colaborator_id INTEGER NOT NULL,
                 services TEXT NOT NULL,
+                sincronizado INTEGER DEFAULT 0,
                 FOREIGN KEY (work_order_id) REFERENCES work_orders(id),
                 FOREIGN KEY (colaborator_id) REFERENCES colaboradores(id)
             )
         '''
-        self._execute_query(query)
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
 
     def create_work_order_payments_table(self):
-        """Crea la tabla de pagos de órdenes de trabajo."""
         query = '''
             CREATE TABLE IF NOT EXISTS work_order_payments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,11 +61,14 @@ class DatabaseWorkOrder(DatabaseManager):
                 payment REAL NOT NULL,
                 user_log_registration INTEGER NOT NULL,
                 note TEXT,
+                sincronizado INTEGER DEFAULT 0,
                 FOREIGN KEY (user_log_registration) REFERENCES users(id),
                 FOREIGN KEY (work_order_id) REFERENCES work_orders(id)
             )
         '''
-        self._execute_query(query)
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
         # Valida si existe registro en la tabal work_order_payments
         #self._insert_payments("777", "payment_date",  "payment_method", "note",  1000.00 )
 

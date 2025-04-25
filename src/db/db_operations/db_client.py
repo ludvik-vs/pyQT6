@@ -9,7 +9,6 @@ class DatabaseClient(DatabaseManager):
             self.insert_default_clients()
 
     def create_client_table(self):
-        """Crear la tabla de clientes."""
         query = '''
             CREATE TABLE IF NOT EXISTS clients (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,7 +17,8 @@ class DatabaseClient(DatabaseManager):
                 contact_2 TEXT,
                 email TEXT NOT NULL,
                 numero_ruc TEXT,
-                nombre_empresa TEXT
+                nombre_empresa TEXT,
+                sincronizado INTEGER DEFAULT 0
             )
         '''
         with self.conn:

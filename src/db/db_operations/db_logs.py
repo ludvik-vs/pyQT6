@@ -15,10 +15,13 @@ class DBLogs(DatabaseManager):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             username TEXT NOT NULL,
-            activity TEXT NOT NULL
+            activity TEXT NOT NULL,
+            sincronizado INTEGER DEFAULT 0
         );
         """
-        self._execute_query(query)
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
 
     def insert_register_log(self, username, activity):
         query = "INSERT INTO register_logs (username, activity) VALUES (?, ?);"

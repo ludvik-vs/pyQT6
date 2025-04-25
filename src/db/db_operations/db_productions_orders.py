@@ -23,12 +23,15 @@ class DatabaseProductionOrders(DatabaseManager):
                 order_status TEXT NOT NULL DEFAULT 'abierta' CHECK (order_status IN ('abierta', 'procesando', 'cerrada', 'anulada')),
                 tasks_details TEXT NOT NULL,
                 note TEXT,
+                sincronizado INTEGER DEFAULT 0,
                 FOREIGN KEY (work_order_id) REFERENCES work_orders(work_order_id),
                 FOREIGN KEY (client_id) REFERENCES clients(id),
                 FOREIGN KEY (colaborador_id) REFERENCES colaboradores(id)
             )
         '''
-        self._execute_query(query)
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
 
     def get_all_orders(self):
         query = '''

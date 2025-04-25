@@ -25,12 +25,16 @@ class DBCashBox(DatabaseManager):
                 movimiento_caja INTEGER,
                 user_id INTEGER NOT NULL,
                 order_id INTEGER NOT NULL,
+                sincronizado INTEGER DEFAULT 0,
                 FOREIGN KEY (user_id) REFERENCES users(id),
                 FOREIGN KEY (order_id) REFERENCES work_orders(work_order_id),
                 FOREIGN KEY (movimiento_caja) REFERENCES catalogo_movimientos(id)
             );
         """
         self._execute_query(query)
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
 
     def create_table_movimientos(self):
         query = """
@@ -38,10 +42,14 @@ class DBCashBox(DatabaseManager):
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT NOT NULL,
                 tipo TEXT CHECK (tipo IN ('ingreso', 'egreso')),
-                descripcion TEXT
+                descripcion TEXT,
+                sincronizado INTEGER DEFAULT 0
             );
         """
         self._execute_query(query)
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
 
     def create_cash_count_denominations_table(self):
         query = """
@@ -55,21 +63,27 @@ class DBCashBox(DatabaseManager):
             exchange_rate REAL,
             count INTEGER,
             subtotal REAL,
+            sincronizado INTEGER DEFAULT 0,
             FOREIGN KEY (id_user_cashier) REFERENCES users(id)
             FOREIGN KEY (index_identifier) REFERENCES index_identifier(id)
         )
         """
-        self._execute_query(query)
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
     
     def create_index_identifier_table(self):
         query = """
         CREATE TABLE IF NOT EXISTS index_identifier (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             fecha DATE NOT NULL,
-            identifier INTEGER NOT NULL
+            identifier INTEGER NOT NULL,
+            sincronizado INTEGER DEFAULT 0
         );
         """
-        self._execute_query(query)
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
 
     def create_disconunts_table(self):
         query = """
@@ -81,11 +95,14 @@ class DBCashBox(DatabaseManager):
             discount_mont REAL,
             discount_percentage REAL,
             description TEXT,
+            sincronizado INTEGER DEFAULT 0,
             FOREIGN KEY (user_id) REFERENCES users(id),
             FOREIGN KEY (order_id) REFERENCES work_orders(work_order_id)
         );
         """
-        self._execute_query(query)
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute(query)
 
     #Registro de ingreso-------------------------------------------------
     def create_cashbox_entry(self, fecha, descripcion, monto, tipo, metodo_pago, movimiento_caja, user_id, order_id):
