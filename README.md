@@ -40,3 +40,4 @@ db.close()
 
 pyinstaller --onefile --icon=assets/icons/icono.ico main.py
 pyinstaller --onefile --icon=assets/icons/icono.ico --add-data "src/styles;src/styles" --add-data "assets;assets" main.py
+pyinstaller --onefile --icon=assets/icons/icono.ico --add-data "assets/acril_car_banner.jpg;assets" --add-data "src/styles;src/styles" --add-data "assets;assets" --add-data "sync;sync" main.py

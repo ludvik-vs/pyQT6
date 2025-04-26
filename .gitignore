@@ -1,5 +1,6 @@
 /.venv
 /sync
+/dist
 src/sync/
 database.db
 acrilcar_database.db

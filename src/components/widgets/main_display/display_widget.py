@@ -1,3 +1,5 @@
+import sys
+import os
 from PyQt6.QtWidgets import QWidget, QLabel, QGridLayout
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
@@ -307,7 +309,17 @@ class DisplayWidget(QWidget):
         image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         image_label.setScaledContents(True)
         image_label.setFixedSize(800, 600)
-        pixmap = QPixmap('assets/acril_car_banner.jpg')
+
+        # Determine base path
+        if getattr(sys, 'frozen', False):
+            base_path = os.path.dirname(sys.executable)
+        else:
+            base_path = os.path.abspath(os.path.dirname(__file__))
+            base_path = os.path.dirname(os.path.dirname(os.path.dirname(base_path)))
+
+        # Set image path
+        image_path = os.path.join(base_path, 'assets', 'acril_car_banner.jpg')
+        pixmap = QPixmap(image_path)
         image_label.setPixmap(pixmap)
         self.grid_layout.addWidget(image_label, 0, 0, Qt.AlignmentFlag.AlignCenter)
 
