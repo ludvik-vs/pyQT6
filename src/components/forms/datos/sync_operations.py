@@ -187,57 +187,58 @@ class SyncOperations:
                     repo.index.add(['README.md'])
                     repo.index.commit('Initial commit')
                     
-                    # Set main branch and push
+                    # Set main branch
                     repo.git.branch('-M', 'main')
                     print(f"Repositorio Git inicializado en: {self.SYNC_DIR}")
-                    
-                    # First push with -u flag to set upstream
-                    try:
-                        repo.git.push('--set-upstream', 'origin', 'main')
-                    except exc.GitCommandError as e:
-                        if "remote contains work that you do" not in str(e):
-                            raise
-                        # If remote exists and has content, pull first
-                        repo.git.pull('origin', 'main')
-                        repo.git.push('--set-upstream', 'origin', 'main')
                 else:
-                    # Configure existing repository
                     repo = Repo(self.SYNC_DIR)
                     repo.remote('origin').set_url(url_auth)
-                    
-                    try:
-                        # Fetch to update remote refs
-                        repo.remote('origin').fetch()
-                        
-                        # Check if we need to set upstream
-                        if not repo.active_branch.tracking_branch():
-                            repo.git.push('--set-upstream', 'origin', 'main')
-                    except exc.GitCommandError as e:
-                        if "remote contains work that you do" not in str(e):
-                            raise
-                        # If remote exists and has content, pull first
-                        repo.git.pull('origin', 'main')
-                        repo.git.push('--set-upstream', 'origin', 'main')
-                    
                     print("Repositorio Git existente configurado")
+    
+                # Configure Git user for this repository
+                repo.config_writer().set_value("user", "name", "Sync Bot").release()
+                repo.config_writer().set_value("user", "email", "sync@acrilcar.com").release()
+    
+                # Ensure we're on main branch
+                if repo.active_branch.name != 'main':
+                    repo.git.checkout('-B', 'main')
+    
+                # Handle unstaged changes
+                if repo.is_dirty() or len(repo.untracked_files) > 0:
+                    print("Guardando cambios locales pendientes...")
+                    repo.git.add(A=True)
+                    commit_msg = f"sync (pre-pull) {datetime.now().isoformat()} by {usuario_id}"
+                    repo.index.commit(commit_msg)
+    
+                try:
+                    # Try to fetch and set upstream
+                    origin = repo.remote('origin')
+                    origin.fetch()
+                    
+                    # Set upstream and pull
+                    repo.git.branch('--set-upstream-to=origin/main', 'main')
+                    repo.git.pull('--allow-unrelated-histories')
+                except exc.GitCommandError as e:
+                    if "couldn't find remote ref" in str(e) or "no such branch" in str(e).lower():
+                        # If remote is empty, push and set upstream
+                        print("Configurando rama principal en remoto...")
+                        repo.git.push('-u', 'origin', 'main')
+                    else:
+                        raise
     
                 # Pull changes with better error handling
                 try:
                     print("Obteniendo cambios remotos...")
                     origin = repo.remote('origin')
-                    
-                    # Try to fetch first to check connection
                     origin.fetch()
                     
-                    # If fetch successful, try to pull
                     if len(origin.refs):
-                        origin.pull(rebase=True)
+                        repo.git.pull('origin', 'main', '--allow-unrelated-histories')
                     else:
-                        # If remote is empty, just prepare for first push
                         print("Repositorio remoto vacío, preparando primer push")
                 except exc.GitCommandError as e:
                     if "couldn't find remote ref" in str(e):
-                        print("Repositorio remoto vacío, continuando con sincronización inicial...")
+                        print("Repositorio remoto vacío, continuando...")
                     else:
                         raise
     
