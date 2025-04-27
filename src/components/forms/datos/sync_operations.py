@@ -7,7 +7,16 @@ import sys
 import traceback  # Import traceback for error logging
 
 class SyncOperations:
+    """
+    Clase que maneja las operaciones de sincronización entre la base de datos local
+    y un repositorio Git remoto.
+    """
+
     def __init__(self):
+        """
+        Inicializa las rutas y directorios necesarios para la sincronización.
+        Determina la ruta base según si la aplicación está empaquetada (.exe) o en desarrollo.
+        """
         # Determine base path
         if getattr(sys, 'frozen', False):
             base_path = os.path.dirname(sys.executable)
@@ -23,7 +32,17 @@ class SyncOperations:
         self.USUARIO_ID = None
 
     def log_error(self, error_type, error_msg, error_trace=None):
-        """Helper method to format error messages"""
+        """
+        Registra y formatea mensajes de error con marca de tiempo.
+        
+        Args:
+            error_type (str): Tipo de error (ej: ERROR DB, ERROR GIT)
+            error_msg (str): Mensaje descriptivo del error
+            error_trace (str, opcional): Traza completa del error
+        
+        Returns:
+            str: Mensaje de error formateado con timestamp
+        """
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         error_log = f"[{timestamp}] {error_type}: {error_msg}"
         if error_trace:
@@ -32,6 +51,20 @@ class SyncOperations:
         return error_log
 
     def init_sync(self, repo_url, token, db_path, usuario_id, tablas):
+        """
+        Inicializa el entorno de sincronización.
+        
+        Args:
+            repo_url (str): URL del repositorio Git
+            token (str): Token de autenticación de GitHub
+            db_path (str): Ruta al archivo de base de datos
+            usuario_id (str): Identificador único del usuario/máquina
+            tablas (list): Lista de tablas a sincronizar
+        
+        Operaciones:
+            1. Crea directorios de sincronización
+            2. Agrega columna 'sincronizado' a las tablas si no existe
+        """
         self.TABLAS = tablas
         self.DB_PATH = db_path
         self.USUARIO_ID = usuario_id
@@ -59,6 +92,17 @@ class SyncOperations:
         conn.close()
 
     def export_tabla(self, tabla):
+        """
+        Exporta registros no sincronizados de una tabla a archivo JSON.
+        
+        Args:
+            tabla (str): Nombre de la tabla a exportar
+        
+        Operaciones:
+            1. Selecciona registros no sincronizados (sincronizado = 0)
+            2. Genera archivo JSON con timestamp y ID de usuario
+            3. Marca registros como sincronizados en la base de datos
+        """
         carpeta = os.path.join(self.DATA_DIR, tabla)
         conn = sqlite3.connect(self.DB_PATH)
         cur = conn.cursor()
@@ -89,6 +133,17 @@ class SyncOperations:
         conn.close()
 
     def import_tabla(self, tabla):
+        """
+        Importa registros desde archivos JSON a la tabla especificada.
+        
+        Args:
+            tabla (str): Nombre de la tabla donde importar los datos
+        
+        Operaciones:
+            1. Lee todos los archivos JSON del directorio de la tabla
+            2. Inserta registros en la base de datos ignorando duplicados
+            3. Mantiene la estructura de columnas original de la tabla
+        """
         carpeta = os.path.join(self.DATA_DIR, tabla)
         if not os.path.isdir(carpeta):
             return
@@ -114,33 +169,114 @@ class SyncOperations:
         conn.close()
 
     def sincronizar_completo(self, repo_url, token, db_path, usuario_id, tablas):
-        self.init_sync(repo_url, token, db_path, usuario_id, tablas)
-
-        for tabla in tablas:
-            self.export_tabla(tabla)
-
-        url_auth = repo_url.replace('https://', f'https://{token}@')
-
-        if not os.path.exists(os.path.join(self.SYNC_DIR, '.git')):
-            repo = Repo.init(self.SYNC_DIR)
-            repo.create_remote('origin', url_auth)
-        else:
-            repo = Repo(self.SYNC_DIR)
-
         try:
-            repo.remote('origin').pull(rebase=True)
-        except exc.GitCommandError as e:
+            # 1. Inicialización básica y creación de directorios
+            self.init_sync(repo_url, token, db_path, usuario_id, tablas)
+            print("Inicialización completada")
+    
+            # 2. Configuración de Git
+            url_auth = repo_url.replace('https://', f'https://{token}@')
+            try:
+                if not os.path.exists(os.path.join(self.SYNC_DIR, '.git')):
+                    # Initialize new repository
+                    repo = Repo.init(self.SYNC_DIR)
+                    repo.create_remote('origin', url_auth)
+                    
+                    # Create and commit README
+                    open(os.path.join(self.SYNC_DIR, 'README.md'), 'w').write('Data Sync Repository')
+                    repo.index.add(['README.md'])
+                    repo.index.commit('Initial commit')
+                    
+                    # Set main branch and push
+                    repo.git.branch('-M', 'main')
+                    print(f"Repositorio Git inicializado en: {self.SYNC_DIR}")
+                    
+                    # First push with -u flag to set upstream
+                    try:
+                        repo.git.push('--set-upstream', 'origin', 'main')
+                    except exc.GitCommandError as e:
+                        if "remote contains work that you do" not in str(e):
+                            raise
+                        # If remote exists and has content, pull first
+                        repo.git.pull('origin', 'main')
+                        repo.git.push('--set-upstream', 'origin', 'main')
+                else:
+                    # Configure existing repository
+                    repo = Repo(self.SYNC_DIR)
+                    repo.remote('origin').set_url(url_auth)
+                    
+                    try:
+                        # Fetch to update remote refs
+                        repo.remote('origin').fetch()
+                        
+                        # Check if we need to set upstream
+                        if not repo.active_branch.tracking_branch():
+                            repo.git.push('--set-upstream', 'origin', 'main')
+                    except exc.GitCommandError as e:
+                        if "remote contains work that you do" not in str(e):
+                            raise
+                        # If remote exists and has content, pull first
+                        repo.git.pull('origin', 'main')
+                        repo.git.push('--set-upstream', 'origin', 'main')
+                    
+                    print("Repositorio Git existente configurado")
+    
+                # Pull changes with better error handling
+                try:
+                    print("Obteniendo cambios remotos...")
+                    origin = repo.remote('origin')
+                    
+                    # Try to fetch first to check connection
+                    origin.fetch()
+                    
+                    # If fetch successful, try to pull
+                    if len(origin.refs):
+                        origin.pull(rebase=True)
+                    else:
+                        # If remote is empty, just prepare for first push
+                        print("Repositorio remoto vacío, preparando primer push")
+                except exc.GitCommandError as e:
+                    if "couldn't find remote ref" in str(e):
+                        print("Repositorio remoto vacío, continuando con sincronización inicial...")
+                    else:
+                        raise
+    
+                # 4. Importar cambios remotos a SQLite
+                print("Actualizando base de datos con cambios remotos...")
+                for tabla in tablas:
+                    self.import_tabla(tabla)
+                print("Base de datos actualizada con cambios remotos")
+    
+                # 5. Exportar cambios locales
+                print("Exportando cambios locales...")
+                for tabla in tablas:
+                    self.export_tabla(tabla)
+                print("Cambios locales exportados")
+    
+                # 6 y 7. Add, commit y push
+                if repo.is_dirty() or len(repo.untracked_files) > 0:
+                    print("Preparando cambios para sincronización...")
+                    repo.git.add(A=True)
+                    commit_msg = f"sync {datetime.now().isoformat()} by {usuario_id}"
+                    repo.index.commit(commit_msg)
+                    print("Enviando cambios al repositorio remoto...")
+                    repo.remote('origin').push()
+                    print("Sincronización completada exitosamente")
+                else:
+                    print("No hay cambios locales para sincronizar")
+    
+            except exc.GitCommandError as e:
+                error_msg = self.log_error(
+                    "ERROR GIT",
+                    f"Error en operación Git: {str(e)}",
+                    traceback.format_exc()
+                )
+                raise
+    
+        except Exception as e:
             error_msg = self.log_error(
-                "ERROR GIT",
-                f"Git pull failed: {str(e)}",
+                "ERROR CRÍTICO",
+                f"Error en sincronización: {str(e)}",
                 traceback.format_exc()
             )
-            print(f"Command: {e.command}, Status: {e.status}, Stderr: {e.stderr}")
-            raise e
-
-        repo.git.add(A=True)
-        repo.index.commit(f"sync {datetime.now().isoformat()} by {usuario_id}")
-        repo.remote('origin').push()
-
-        for tabla in tablas:
-            self.import_tabla(tabla)
+            raise
