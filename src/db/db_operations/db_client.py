@@ -6,7 +6,7 @@ class DatabaseClient(DatabaseManager):
         super().__init__()
         if not self.tables_exist_and_have_records():
             self.create_client_table()
-            self.insert_default_clients()
+            #self.insert_default_clients()
 
     def create_client_table(self):
         query = '''

@@ -112,10 +112,12 @@ class DatabaseUser(DatabaseManager):
                 cursor.execute("INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
                                 ("admin", admin_hash, "admin"))
                 admin_id = cursor.lastrowid # Obtener el ID del admin insertado
+                '''
                 cursor.execute("INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
                                 ("Francisco Castillo", admin_hash, "admin"))
                 cursor.execute("INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
                                 ("user", user_hash, "user"))
+                '''
                 self.grant_all_access_to_admin(admin_id) # Otorgar todos los accesos al admin
 
     def create_user(self, username, password, role):

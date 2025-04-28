@@ -5,7 +5,7 @@ class DatabaseColaborators(DatabaseManager):
         super().__init__()
         if not self.tables_exist_and_have_records():
             self.create_colaborator_table()
-            self.insert_default_colaborator()
+            #self.insert_default_colaborator()
 
     def create_colaborator_table(self):
         query_1 = '''
