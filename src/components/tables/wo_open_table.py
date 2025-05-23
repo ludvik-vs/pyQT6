@@ -37,10 +37,10 @@ class OpenWorkOrdersTableWidget(QWidget):
         layout.addLayout(filter_export_layout)
 
         self.table = QTableWidget(self)
-        self.table.setColumnCount(9)
+        self.table.setColumnCount(11)
         self.table.setHorizontalHeaderLabels([
             "ID", "No Orden", "Fecha Inicio", "Fecha Fin", "ID Usuario", "ID Cliente",
-            "ID Colaborador", "Costo Total", "Estado"
+            "ID Colaborador", "Costo Total", "Estado", "Servicios", "Comentario"
         ])
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
@@ -94,13 +94,18 @@ class OpenWorkOrdersTableWidget(QWidget):
         if work_orders and isinstance(work_orders[0], tuple):
             work_order_keys = [
                 "id", "work_order_id", "start_date", "end_date", "user_id", "client_id",
-                "colaborator_id", "total_cost", "order_status"
+                "colaborator_id", "total_cost", "order_status", "note"
             ]
             work_orders = [dict(zip(work_order_keys, work_order)) for work_order in work_orders]
 
         today = QDate.currentDate()
 
         for row, work_order in enumerate(work_orders):
+            work_order_services_detail = self.work_order_service.get_work_order_items(str(work_order["work_order_id"]))
+            services_str = work_order_services_detail[0][3]
+            services_list = eval(services_str)
+            services_text = '\n'.join(services_list)
+
             self.table.insertRow(row)
             self.table.setItem(row, 0, QTableWidgetItem(str(work_order["id"])))
             self.table.setItem(row, 1, QTableWidgetItem(str(work_order["work_order_id"])))
@@ -112,6 +117,8 @@ class OpenWorkOrdersTableWidget(QWidget):
             self.table.setItem(row, 6, QTableWidgetItem(str(work_order["colaborator_id"])))
             self.table.setItem(row, 7, QTableWidgetItem(str(work_order["total_cost"])))
             self.table.setItem(row, 8, QTableWidgetItem(work_order["order_status"]))
+            self.table.setItem(row, 9, QTableWidgetItem(services_text))
+            self.table.setItem(row, 10, QTableWidgetItem(work_order["note"]))
 
             # Extract date part from end_date and compare with today
             end_date_str = work_order["end_date"].split(' ')[0]  # Get only the date part
@@ -132,7 +139,7 @@ class OpenWorkOrdersTableWidget(QWidget):
         if all_work_orders and isinstance(all_work_orders[0], tuple):
             work_order_keys = [
                 "id", "work_order_id", "start_date", "end_date", "user_id", "client_id",
-                "colaborator_id", "total_cost", "order_status"
+                "colaborator_id", "total_cost", "order_status", "note"
             ]
             all_work_orders = [dict(zip(work_order_keys, work_order)) for work_order in all_work_orders]
 
@@ -157,6 +164,8 @@ class OpenWorkOrdersTableWidget(QWidget):
             self.table.setItem(row, 6, QTableWidgetItem(str(work_order["colaborator_id"])))
             self.table.setItem(row, 7, QTableWidgetItem(str(work_order["total_cost"])))
             self.table.setItem(row, 8, QTableWidgetItem(work_order["order_status"]))
+            self.table.setItem(row, 9, QTableWidgetItem(services_text))
+            self.table.setItem(row, 10, QTableWidgetItem(work_order["note"]))
 
             # Extract date part from end_date and compare with today
             end_date_str = work_order["end_date"].split(' ')[0]  # Get only the date part

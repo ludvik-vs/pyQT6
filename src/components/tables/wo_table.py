@@ -36,10 +36,10 @@ class WorkOrderTable(QWidget):
         layout.addLayout(filter_export_layout)
 
         self.table = QTableWidget(self)
-        self.table.setColumnCount(9)
+        self.table.setColumnCount(11)
         self.table.setHorizontalHeaderLabels([
             "ID", "No Orden", "Fecha Inicio", "Fecha Fin", "ID Usuario", "ID Cliente",
-            "ID Colaborador", "Costo Total", "Estado"
+            "ID Colaborador", "Costo Total", "Estado", "Servicios", "Comentario"
         ])
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
@@ -83,11 +83,18 @@ class WorkOrderTable(QWidget):
         if work_orders and isinstance(work_orders[0], tuple):
             work_order_keys = [
                 "id", "work_order_id", "start_date", "end_date", "user_id", "client_id",
-                "colaborator_id", "total_cost", "order_status"
+                "colaborator_id", "total_cost", "order_status", "note"
             ]
             work_orders = [dict(zip(work_order_keys, work_order)) for work_order in work_orders]
 
         for row, work_order in enumerate(work_orders):
+            work_order_services_detail = self.work_order_service.get_work_order_items(str(work_order["work_order_id"]))
+            # Extract the string list from index 3 and convert it from string to actual list
+            services_str = work_order_services_detail[0][3]
+            services_list = eval(services_str)
+            # Join all services with newlines
+            services_text = '\n'.join(services_list)
+            
             self.table.insertRow(row)
             self.table.setItem(row, 0, QTableWidgetItem(str(work_order["id"])))
             self.table.setItem(row, 1, QTableWidgetItem(str(work_order["work_order_id"])))
@@ -98,6 +105,8 @@ class WorkOrderTable(QWidget):
             self.table.setItem(row, 6, QTableWidgetItem(str(work_order["colaborator_id"])))
             self.table.setItem(row, 7, QTableWidgetItem(str(work_order["total_cost"])))
             self.table.setItem(row, 8, QTableWidgetItem(work_order["order_status"]))
+            self.table.setItem(row, 9, QTableWidgetItem(services_text))
+            self.table.setItem(row, 10, QTableWidgetItem(work_order["note"]))
 
         self.adjust_column_widths()
         self.result_label.setText(f"Mostrando {len(work_orders)} órdenes de trabajo")
@@ -109,7 +118,7 @@ class WorkOrderTable(QWidget):
         if all_work_orders and isinstance(all_work_orders[0], tuple):
             work_order_keys = [
                 "id", "work_order_id", "start_date", "end_date", "user_id", "client_id",
-                "colaborator_id", "total_cost", "order_status"
+                "colaborator_id", "total_cost", "order_status", "note"
             ]
             all_work_orders = [dict(zip(work_order_keys, work_order)) for work_order in all_work_orders]
 
@@ -131,6 +140,8 @@ class WorkOrderTable(QWidget):
             self.table.setItem(row, 6, QTableWidgetItem(str(work_order["colaborator_id"])))
             self.table.setItem(row, 7, QTableWidgetItem(str(work_order["total_cost"])))
             self.table.setItem(row, 8, QTableWidgetItem(work_order["order_status"]))
+            self.table.setItem(row, 9, QTableWidgetItem(services_text))
+            self.table.setItem(row, 10, QTableWidgetItem(work_order["note"]))
 
         self.result_label.setText(f"Mostrando {len(filtered_work_orders)} órdenes de trabajo filtradas")
 

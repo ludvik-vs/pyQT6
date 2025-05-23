@@ -54,13 +54,13 @@ class ZincDataForm(QWidget):
         self.db_path_input.setPlaceholderText("Ruta de la base de datos")
 
         self.repo_url_input = QLineEdit()
-        #REPO_URL
+        self.repo_url_input.setText("REPOSITORIO_URL")
         self.repo_url_input.setPlaceholderText("URL del repositorio (https://github.com/usuario/repo)")
 
         token_layout = QHBoxLayout()
         
         self.token_input = QLineEdit()
-        self.token_input.setText("TOKEN")
+        self.token_input.setText("TOKENSIO")
         self.token_input.setPlaceholderText("Token de GitHub")
         self.token_input.setEchoMode(QLineEdit.EchoMode.Password)
         token_layout.addWidget(self.token_input)

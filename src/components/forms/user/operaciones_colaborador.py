@@ -43,11 +43,11 @@ class ColaboratorOperations(QWidget):
 
         self.nombre_contacto_emergencia = QLineEdit(self)
         self.telefono_emergencia = QLineEdit(self)
-        self.fecha_baja = QDateTimeEdit(self)
-        self.fecha_baja.setDisplayFormat("dd/MM/yyyy hh:mm AP")
-        self.fecha_baja.setDateTime(QDateTime.currentDateTime())
-        self.fecha_baja.setCalendarPopup(True)
-
+        
+        # Fix fecha_baja initialization
+        self.fecha_baja = QLineEdit(self)
+        self.fecha_baja.setPlaceholderText("AÑO-MES-DIA ejemplo 2025-05-12  ~ '12 Mayo 2025'")  # Only keep the placeholder text
+        
         self.salario = QLineEdit(self)
         self.is_active = QCheckBox(self)
         self.puesto = QLineEdit(self)
@@ -189,7 +189,7 @@ class ColaboratorOperations(QWidget):
             self.nombre_contacto_emergencia.setText(colaborator[6])
             self.telefono_emergencia.setText(colaborator[7])
             if colaborator[8]:
-                self.fecha_baja.setDateTime(QDateTime.fromString(colaborator[8], Qt.DateFormat.ISODate))
+                self.fecha_baja.setText(colaborator[8])  # Simply set the text instead of QDateTime
             
             self.salario.setText(str(colaborator[9]))
             self.is_active.setChecked(bool(colaborator[10]))
@@ -232,7 +232,7 @@ class ColaboratorOperations(QWidget):
         fecha_ingreso = self.fecha_ingreso.date().toString(Qt.DateFormat.ISODate)
         nombre_contacto_emergencia = self.nombre_contacto_emergencia.text()
         telefono_emergencia = self.telefono_emergencia.text()
-        fecha_baja = self.fecha_baja.date().toString(Qt.DateFormat.ISODate)
+        fecha_baja = self.fecha_baja.text()  # Get text directly instead of using date().toString()
         salario = self.salario.text()
         is_active = self.is_active.isChecked()
         puesto = self.puesto.text()

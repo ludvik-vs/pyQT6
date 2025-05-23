@@ -115,7 +115,7 @@ class DatabaseColaborators(DatabaseManager):
         query = f'UPDATE colaboradores SET {fields} WHERE id = ?'
         try:
             self.execute_query(query, values)
-            print(f"Consulta ejecutada: {query} con valores {values}")
+            #print(f"Consulta ejecutada: {query} con valores {values}")
             return True
         except Exception as e:
             print(f"Error al actualizar colaborador: {e}")
