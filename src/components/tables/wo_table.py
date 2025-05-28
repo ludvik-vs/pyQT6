@@ -8,9 +8,10 @@ from PyQt6.QtGui import QIcon
 import openpyxl
 
 class WorkOrderTable(QWidget):
-    def __init__(self, work_order_service):
+    def __init__(self, work_order_service, production_order_service):
         super().__init__()
         self.work_order_service = work_order_service
+        self.production_order_service = production_order_service
         self.init_ui()
 
     def init_ui(self):
@@ -94,6 +95,9 @@ class WorkOrderTable(QWidget):
             services_list = eval(services_str)
             # Join all services with newlines
             services_text = '\n'.join(services_list)
+
+            # Get Production order comment
+            production_order = self.production_order_service.get_production_order_details(str(work_order["work_order_id"]))
             
             self.table.insertRow(row)
             self.table.setItem(row, 0, QTableWidgetItem(str(work_order["id"])))
@@ -106,7 +110,7 @@ class WorkOrderTable(QWidget):
             self.table.setItem(row, 7, QTableWidgetItem(str(work_order["total_cost"])))
             self.table.setItem(row, 8, QTableWidgetItem(work_order["order_status"]))
             self.table.setItem(row, 9, QTableWidgetItem(services_text))
-            self.table.setItem(row, 10, QTableWidgetItem(work_order["note"]))
+            self.table.setItem(row, 10, QTableWidgetItem(production_order["note"]))
 
         self.adjust_column_widths()
         self.result_label.setText(f"Mostrando {len(work_orders)} órdenes de trabajo")
@@ -130,6 +134,15 @@ class WorkOrderTable(QWidget):
         self.table.setRowCount(0)
 
         for row, work_order in enumerate(filtered_work_orders):
+            # Get and process services text
+            work_order_services_detail = self.work_order_service.get_work_order_items(str(work_order["work_order_id"]))
+            services_str = work_order_services_detail[0][3]
+            services_list = eval(services_str)
+            services_text = '\n'.join(services_list)
+
+            # Get Production order comment
+            production_order = self.production_order_service.get_production_order_details(str(work_order["work_order_id"]))
+            
             self.table.insertRow(row)
             self.table.setItem(row, 0, QTableWidgetItem(str(work_order["id"])))
             self.table.setItem(row, 1, QTableWidgetItem(str(work_order["work_order_id"])))
@@ -141,7 +154,7 @@ class WorkOrderTable(QWidget):
             self.table.setItem(row, 7, QTableWidgetItem(str(work_order["total_cost"])))
             self.table.setItem(row, 8, QTableWidgetItem(work_order["order_status"]))
             self.table.setItem(row, 9, QTableWidgetItem(services_text))
-            self.table.setItem(row, 10, QTableWidgetItem(work_order["note"]))
+            self.table.setItem(row, 10, QTableWidgetItem(production_order["note"]))
 
         self.result_label.setText(f"Mostrando {len(filtered_work_orders)} órdenes de trabajo filtradas")
 

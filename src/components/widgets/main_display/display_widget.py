@@ -193,7 +193,10 @@ class DisplayWidget(QWidget):
                     self.production_order_service
                 ), 0, 0),
             "Tabla de Órdenes": lambda: self.grid_layout.addWidget(
-                WorkOrderTable(self.work_order_service), 0, 0),
+                WorkOrderTable(
+                    self.work_order_service,
+                    self.production_order_service
+                ), 0, 0),
             "Crear Orden de Producción": lambda: self.grid_layout.addWidget(
                 CrearProductionOrdenForm(
                     self.logs_service,
@@ -272,7 +275,8 @@ class DisplayWidget(QWidget):
                 ), 0, 0),
             "Reporte de Órdenes": lambda: self.grid_layout.addWidget(
                 OpenWorkOrdersTableWidget(
-                    self.work_order_service
+                    self.work_order_service,
+                    self.production_order_service
                 ), 0, 0),
             "Aprobar Descuento": lambda: self.grid_layout.addWidget(
                 CashDiscountForm(
