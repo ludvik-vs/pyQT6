@@ -36,6 +36,10 @@ from src.services.production_order_service import ProductionOrderService
 from src.db.db_operations.db_logs import DBLogs
 from src.services.logs_services import LogsServices
 
+# SERVER
+from src.api.server import APIServer
+from src.config.api import APIConfig
+
 def load_styles():
     if getattr(sys, 'frozen', False):
         # Entorno empaquetado: usar sys._MEIPASS para acceder al directorio temporal
@@ -53,9 +57,6 @@ def load_styles():
         print(f"Warning: Style file not found at {file_path}")
         return ""  # Return empty string if file not found
 
-# Add these imports at the top with other imports
-from src.api.server import APIServer
-from src.config.api import APIConfig
 
 class MainWindow(QMainWindow):
 
