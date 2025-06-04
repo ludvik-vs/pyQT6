@@ -195,6 +195,10 @@ class DatabaseUser(DatabaseManager):
             cursor.execute('''
                 DELETE FROM users WHERE id = ?
             ''', (id,))
+            # Remove access
+            cursor.execute('''
+                DELETE FROM user_access WHERE user_id =?
+            ''', (id,))
             return cursor.rowcount > 0
 
     def verify_password(self, user_id, password):

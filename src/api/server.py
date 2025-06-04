@@ -5,10 +5,12 @@ from waitress import serve
 import socket
 import requests
 import time
+from src.api.routes.auth_routes import auth_bp  # Add this import
 
 class APIServer:
     def __init__(self):
         self.app = Flask(__name__)
+        self.app.register_blueprint(auth_bp, url_prefix='/api/auth')  # Add this line
         self.setup_routes()
         self.setup_error_handlers()
         self.server_thread = None
