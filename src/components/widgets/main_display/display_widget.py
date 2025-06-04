@@ -51,7 +51,10 @@ from src.components.forms.caja.cash_discount import CashDiscountForm
 
 #LOGS
 from src.components.tables.historia_logs import LogsHistoryTable
-from src.components.forms.datos.sync_gui import ZincDataForm 
+#from src.components.forms.datos.sync_gui import ZincDataForm 
+
+#SERVER
+from src.components.forms.server_status_form import ServerStatusForm
 
 class DisplayWidget(QWidget):
     grid_layout: QGridLayout
@@ -111,31 +114,13 @@ class DisplayWidget(QWidget):
 
         widget_map = {
             "ACRIL CAR": self.show_acril_car_image,
-            "Sincronización de Datos": lambda: self.grid_layout.addWidget(
-                ZincDataForm(
-                    tablas=[
-                        'cash_count_denominations',
-                        'cashbox', 
-                        'catalogo_movimientos', 
-                        'clients',
-                        'colaboradores',
-                        'discounts',
-                        'index_identifier',
-                        'production_orders',
-                        'register_logs',
-                        'registros_colaborador',
-                        'user_access',
-                        'users',
-                        'work_order_items',
-                        'work_order_payments',
-                        'work_orders'
-                    ]
-                ), 0, 0),
             "Cambiar Contraseña": lambda: self.grid_layout.addWidget(
                 PasswordChangeForm(
                     self.logs_service,
                     self.current_user_data
                 ), 0, 0),
+            "Servidor": lambda: self.grid_layout.addWidget(
+                ServerStatusForm(), 0, 0),
             "Historial de Actividades": lambda: self.grid_layout.addWidget(
                 LogsHistoryTable(
                     self.logs_service,

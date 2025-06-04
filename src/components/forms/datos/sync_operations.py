@@ -93,15 +93,10 @@ class SyncOperations:
 
     def export_tabla(self, tabla):
         """
-        Exporta registros no sincronizados de una tabla a archivo JSON.
+        Exporta registros no sincronizados de una tabla a archivo JSON en lotes.
         
         Args:
             tabla (str): Nombre de la tabla a exportar
-        
-        Operaciones:
-            1. Selecciona registros no sincronizados (sincronizado = 0)
-            2. Genera archivo JSON con timestamp y ID de usuario
-            3. Marca registros como sincronizados en la base de datos
         """
         carpeta = os.path.join(self.DATA_DIR, tabla)
         conn = sqlite3.connect(self.DB_PATH)
@@ -110,27 +105,31 @@ class SyncOperations:
         rows = cur.fetchall()
         cols = [c[0] for c in cur.description]
         conn.close()
-
+    
         if not rows:
             return
-
-        ts = datetime.now().strftime("%Y%m%d-%H%M%S")
-        nombre = f"{ts}-{self.USUARIO_ID}.json"
-        path = os.path.join(carpeta, nombre)
-
-        with open(path, "w", encoding="utf-8") as f:
-            payload = [dict(zip(cols, r)) for r in rows]
-            json.dump(payload, f, indent=2, ensure_ascii=False)
-
-        conn = sqlite3.connect(self.DB_PATH)
-        cur = conn.cursor()
-        pk = cols[0]
-        cur.executemany(
-            f"UPDATE {tabla} SET sincronizado = 1 WHERE {pk} = ?",
-            [(r[0],) for r in rows]
-        )
-        conn.commit()
-        conn.close()
+    
+        batch_size = 100  # Define the size of each batch
+        for i in range(0, len(rows), batch_size):
+            batch = rows[i:i + batch_size]
+            ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+            nombre = f"{ts}-{self.USUARIO_ID}-{i//batch_size}.json"
+            path = os.path.join(carpeta, nombre)
+    
+            with open(path, "w", encoding="utf-8") as f:
+                payload = [dict(zip(cols, r)) for r in batch]
+                json.dump(payload, f, indent=2, ensure_ascii=False)
+    
+            # Mark records as synchronized
+            conn = sqlite3.connect(self.DB_PATH)
+            cur = conn.cursor()
+            pk = cols[0]
+            cur.executemany(
+                f"UPDATE {tabla} SET sincronizado = 1 WHERE {pk} = ?",
+                [(r[0],) for r in batch]
+            )
+            conn.commit()
+            conn.close()
 
     def import_tabla(self, tabla):
         """

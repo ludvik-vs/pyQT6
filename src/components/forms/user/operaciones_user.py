@@ -126,26 +126,39 @@ class UserOperations(QWidget):
             return
 
         try:
-            user_id = int(user_id)  # Convertir el ID de string a integer
+            user_id = int(user_id)
         except ValueError:
             self.show_message("El ID del usuario debe ser un número válido.", QMessageBox.Icon.Critical)
             return
 
-        # Obtener accesos seleccionados
-        selected_accesses = [checkbox.text() for checkbox in self.access_checkboxes if checkbox.isChecked()]
-
-        # Revocar todos los accesos actuales
-        current_accesses = self.auth_service.db_manager.get_user_access(user_id)
-        for access in current_accesses:
-            self.auth_service.db_manager.revoke_access(user_id, access[0], access[1])
-
-        # Otorgar los nuevos accesos seleccionados
-        for access in selected_accesses:
-            self.auth_service.db_manager.grant_access(user_id, access)
-
-        self.show_message("Accesos guardados exitosamente.", QMessageBox.Icon.Information)
-        self.logs_service.register_activity(self.current_username_data.username,f"Modifico accesos al usuario ID: {user_id}")
-        self.clear_form()
+        with self.auth_service.db_manager.conn:
+            cursor = self.auth_service.db_manager.conn.cursor()
+            
+            # Begin transaction
+            cursor.execute("BEGIN TRANSACTION")
+            try:
+                # Delete all existing access for this user
+                cursor.execute("DELETE FROM user_access WHERE user_id = ?", (user_id,))
+                
+                # Insert new access records
+                for checkbox in self.access_checkboxes:
+                    if checkbox.isChecked():
+                        cursor.execute('''
+                            INSERT INTO user_access (user_id, branch_name, sub_branch_name)
+                            VALUES (?, ?, ?)
+                        ''', (user_id, checkbox.text(), None))
+                
+                cursor.execute("COMMIT")
+                self.show_message("Accesos guardados exitosamente.", QMessageBox.Icon.Information)
+                self.logs_service.register_activity(
+                    self.current_username_data.username,
+                    f"Modifico accesos al usuario ID: {user_id}"
+                )
+                self.clear_form()
+                
+            except Exception as e:
+                cursor.execute("ROLLBACK")
+                self.show_message(f"Error al guardar accesos: {str(e)}", QMessageBox.Icon.Critical)
 
     def clear_form(self):
         """Limpiar todos los campos del formulario."""

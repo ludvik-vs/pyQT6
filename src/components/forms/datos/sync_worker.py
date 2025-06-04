@@ -9,25 +9,14 @@ from git import exc  # Add this import
 from src.components.forms.datos.sync_operations import SyncOperations
 
 class GitSyncWorker(QThread):
-    """
-    Worker thread para manejar la sincronización con Git.
-    Gestiona la sincronización de datos entre la base de datos local y un repositorio remoto.
-    """
-    
-    # Señal que se emite cuando finaliza la sincronización
-    # Parámetros: (éxito: bool, mensaje: str)
+    # Define signals
     finished = pyqtSignal(bool, str)
+    progress_updated = pyqtSignal(int)
+    status_updated = pyqtSignal(str)  # Add this signal
+    
+    BATCH_SIZE = 10
 
     def __init__(self, db_path, repo_url, token, tablas):
-        """
-        Inicializa el worker de sincronización.
-        
-        Args:
-            db_path (str): Ruta al archivo de la base de datos
-            repo_url (str): URL del repositorio Git
-            token (str): Token de autenticación de GitHub
-            tablas (list): Lista de nombres de tablas a sincronizar
-        """
         super().__init__()
         self.db_path = db_path
         self.repo_url = repo_url
@@ -120,15 +109,18 @@ class GitSyncWorker(QThread):
             return False
 
     def run(self):
-        """
-        Método principal que ejecuta el proceso de sincronización.
-        """
         try:
+            self.status_updated.emit("Iniciando proceso de sincronización...")  # Changed from log_message to status_updated
+            self.progress_updated.emit(0)
+
             # 1. Verificar base de datos
             if not os.path.exists(self.db_path):
                 error_msg = self.log_error("ERROR SISTEMA", f"La base de datos no existe en: {self.db_path}")
                 self.finished.emit(False, error_msg)
                 return
+
+            self.progress_updated.emit(10)
+            self.status_updated.emit("Verificando tablas...")  # Changed from log_message to status_updated
 
             # 2. Verificar que las tablas existan
             conn = sqlite3.connect(self.db_path)
@@ -136,6 +128,7 @@ class GitSyncWorker(QThread):
             for tabla in self.tablas:
                 try:
                     cur.execute(f"SELECT 1 FROM {tabla} LIMIT 1")
+                    self.status_updated.emit(f"Tabla {tabla} verificada correctamente")  # Changed from log_message to status_updated
                 except sqlite3.OperationalError:
                     error_msg = self.log_error("ERROR DB", f"La tabla {tabla} no existe en la base de datos")
                     conn.close()
@@ -143,17 +136,26 @@ class GitSyncWorker(QThread):
                     return
             conn.close()
 
+            self.progress_updated.emit(30)
+            self.status_updated.emit("Inicializando directorio de sincronización...")  # Changed from log_message
+
             # 3. Verificar directorio de sincronización
             if not self.initialize_sync_directory():
                 error_msg = self.log_error("ERROR SISTEMA", "Error al crear directorio de sincronización")
                 self.finished.emit(False, error_msg)
                 return
 
+            self.progress_updated.emit(50)
+            self.status_updated.emit("Preparando columnas de sincronización...")  # Changed from log_message
+
             # 4. Verificar columnas de sincronización
             if not self.initialize_sync_columns():
                 error_msg = self.log_error("ERROR DB", "Error al inicializar columnas de sincronización")
                 self.finished.emit(False, error_msg)
                 return
+
+            self.progress_updated.emit(70)
+            self.status_updated.emit("Iniciando sincronización con repositorio remoto...")  # Changed from log_message
 
             # 5. Ejecutar sincronización
             try:
@@ -164,6 +166,8 @@ class GitSyncWorker(QThread):
                     usuario_id=self.machine_id,
                     tablas=self.tablas
                 )
+                self.progress_updated.emit(100)
+                self.status_updated.emit("¡Sincronización completada exitosamente!")  # Changed from log_message
                 self.finished.emit(True, "Sincronización completada exitosamente")
             except exc.GitCommandError as e:
                 error_msg = self.log_error("ERROR GIT", str(e))
@@ -183,3 +187,14 @@ class GitSyncWorker(QThread):
                 traceback.format_exc()
             )
             self.finished.emit(False, error_msg)
+
+    def commit_batch(self, repo, tabla, batch):
+        """Commit a batch of records"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        commit_message = f"Sync {tabla} - Batch {timestamp}"
+        
+        # Here you would write the batch data to files
+        # Implementation depends on your specific data format needs
+        
+        repo.index.add('*')
+        repo.index.commit(commit_message)

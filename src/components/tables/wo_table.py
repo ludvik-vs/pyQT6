@@ -90,15 +90,14 @@ class WorkOrderTable(QWidget):
 
         for row, work_order in enumerate(work_orders):
             work_order_services_detail = self.work_order_service.get_work_order_items(str(work_order["work_order_id"]))
-            # Extract the string list from index 3 and convert it from string to actual list
             services_str = work_order_services_detail[0][3]
             services_list = eval(services_str)
-            # Join all services with newlines
             services_text = '\n'.join(services_list)
 
-            # Get Production order comment
+            # Get Production order comment and handle None case
             production_order = self.production_order_service.get_production_order_details(str(work_order["work_order_id"]))
-            
+            note = production_order["note"] if production_order is not None else ""
+
             self.table.insertRow(row)
             self.table.setItem(row, 0, QTableWidgetItem(str(work_order["id"])))
             self.table.setItem(row, 1, QTableWidgetItem(str(work_order["work_order_id"])))
@@ -110,7 +109,7 @@ class WorkOrderTable(QWidget):
             self.table.setItem(row, 7, QTableWidgetItem(str(work_order["total_cost"])))
             self.table.setItem(row, 8, QTableWidgetItem(work_order["order_status"]))
             self.table.setItem(row, 9, QTableWidgetItem(services_text))
-            self.table.setItem(row, 10, QTableWidgetItem(production_order["note"]))
+            self.table.setItem(row, 10, QTableWidgetItem(note))
 
         self.adjust_column_widths()
         self.result_label.setText(f"Mostrando {len(work_orders)} órdenes de trabajo")
@@ -140,9 +139,10 @@ class WorkOrderTable(QWidget):
             services_list = eval(services_str)
             services_text = '\n'.join(services_list)
 
-            # Get Production order comment
+            # Get Production order comment and handle None case
             production_order = self.production_order_service.get_production_order_details(str(work_order["work_order_id"]))
-            
+            note = production_order["note"] if production_order is not None else ""
+
             self.table.insertRow(row)
             self.table.setItem(row, 0, QTableWidgetItem(str(work_order["id"])))
             self.table.setItem(row, 1, QTableWidgetItem(str(work_order["work_order_id"])))
@@ -154,7 +154,7 @@ class WorkOrderTable(QWidget):
             self.table.setItem(row, 7, QTableWidgetItem(str(work_order["total_cost"])))
             self.table.setItem(row, 8, QTableWidgetItem(work_order["order_status"]))
             self.table.setItem(row, 9, QTableWidgetItem(services_text))
-            self.table.setItem(row, 10, QTableWidgetItem(production_order["note"]))
+            self.table.setItem(row, 10, QTableWidgetItem(note))
 
         self.result_label.setText(f"Mostrando {len(filtered_work_orders)} órdenes de trabajo filtradas")
 

@@ -2,7 +2,8 @@ import sys
 import os
 from PyQt6.QtWidgets import (
     QWidget, QApplication, QVBoxLayout, QFormLayout,
-    QLineEdit, QPushButton, QScrollArea, QMessageBox, QHBoxLayout
+    QLineEdit, QPushButton, QScrollArea, QMessageBox, QHBoxLayout,
+    QProgressBar, QTextEdit  # Add these imports
 )
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
@@ -61,7 +62,7 @@ class ZincDataForm(QWidget):
         token_layout = QHBoxLayout()
         
         self.token_input = QLineEdit()
-        
+
         self.token_input.setText("TOKENSIO")
         self.token_input.setPlaceholderText("Token de GitHub")
         self.token_input.setEchoMode(QLineEdit.EchoMode.Password)
@@ -82,6 +83,18 @@ class ZincDataForm(QWidget):
         form_layout.addRow("Token GitHub:", token_layout)
 
         main_layout.addLayout(form_layout)
+
+        # Add progress display
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setVisible(False)
+        main_layout.addWidget(self.progress_bar)
+
+        # Add log display
+        self.log_display = QTextEdit()
+        self.log_display.setReadOnly(True)
+        self.log_display.setMaximumHeight(150)
+        self.log_display.setVisible(False)
+        main_layout.addWidget(self.log_display)
 
         self.sync_button = QPushButton("Sincronizar")
         self.sync_button.clicked.connect(self.start_sync)
@@ -115,28 +128,33 @@ class ZincDataForm(QWidget):
             QMessageBox.warning(self, "Error", f"Base de datos no encontrada en: {db_path}")
             return
         
-        # Deshabilitar botón y mostrar estado
+        # Show progress elements
+        self.progress_bar.setVisible(True)
+        self.log_display.setVisible(True)
+        self.log_display.clear()  # Changed from status_text to log_display
+        self.progress_bar.setValue(0)
         self.sync_button.setEnabled(False)
-        self.sync_button.setText("Sincronizando...")
         
-        # Iniciar worker
+        # Create and setup worker
         self.worker = GitSyncWorker(
             db_path=db_path,
             repo_url=repo_url,
             token=token,
             tablas=self.tablas
         )
-        self.worker.finished.connect(self.on_sync_finished)
+        self.worker.progress_updated.connect(self.progress_bar.setValue)
+        self.worker.status_updated.connect(self.update_status)
+        self.worker.finished.connect(self.sync_completed)
         self.worker.start()
 
-    def on_sync_finished(self, success, message):
-        """
-        Manejador de evento para cuando finaliza la sincronización.
-        
-        Inputs:
-            success (bool): True si la sincronización fue exitosa, False si falló
-            message (str): Mensaje describiendo el resultado de la operación
-        """
+    def update_status(self, message):
+        self.log_display.append(message)  # Changed from status_text to log_display
+        # Auto-scroll to bottom
+        self.log_display.verticalScrollBar().setValue(
+            self.log_display.verticalScrollBar().maximum()
+        )
+
+    def sync_completed(self, success, message):
         self.sync_button.setEnabled(True)
         if success:
             QMessageBox.information(self, "Éxito", message)

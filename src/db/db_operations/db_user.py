@@ -3,6 +3,7 @@ from src.db.database_manager import DatabaseManager
 from src.config.menu_structure import MenuStructure
 
 class DatabaseUser(DatabaseManager):
+    
     def __init__(self):
         super().__init__()
         if not self.tables_exist_and_have_records():
@@ -17,8 +18,13 @@ class DatabaseUser(DatabaseManager):
                 print("Tabla de 'user_access' creada corectamente.")
             except sqlite3.OperationalError:
                 print("Error al crear la tabla de accesos.")
-
+    
             self.insert_default_users()
+        
+        # Add this line to clean up duplicates during initialization
+        deleted_count = self.cleanup_duplicate_access()
+        if deleted_count > 0:
+            print(f"Se eliminaron {deleted_count} registros duplicados de accesos")
 
     def create_user_table(self):
         """Crear la tabla de usuarios."""
@@ -55,6 +61,15 @@ class DatabaseUser(DatabaseManager):
         """Otorgar acceso a una rama o sub-rama a un usuario."""
         with self.conn:
             cursor = self.conn.cursor()
+            # Check if access already exists
+            cursor.execute('''
+                SELECT 1 FROM user_access 
+                WHERE user_id = ? AND branch_name = ? AND sub_branch_name = ?
+            ''', (user_id, branch_name, sub_branch_name))
+            
+            if cursor.fetchone():
+                return True  # Access already exists
+            
             try:
                 cursor.execute('''
                     INSERT INTO user_access (user_id, branch_name, sub_branch_name)
@@ -63,6 +78,27 @@ class DatabaseUser(DatabaseManager):
                 return True
             except sqlite3.IntegrityError:
                 return False
+
+    def grant_all_access_to_admin(self, user_id):
+        """Otorgar todos los accesos a un usuario con rol de 'admin'."""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT role FROM users WHERE id = ?", (user_id,))
+        user_role = cursor.fetchone()
+        
+        if user_role and user_role[0] == 'admin':
+            # First, remove any existing access
+            cursor.execute("DELETE FROM user_access WHERE user_id = ?", (user_id,))
+            
+            all_branches = MenuStructure.get_all_branches()
+            all_sub_branches = MenuStructure.get_menu_structure()
+            
+            with self.conn:
+                for branch in all_branches:
+                    if branch not in all_sub_branches:
+                        self.grant_access(user_id, branch)
+                    else:
+                        for sub_branch in all_sub_branches[branch]:
+                            self.grant_access(user_id, branch, sub_branch)
 
     def revoke_access(self, user_id, branch_name, sub_branch_name=None):
         """Revocar acceso a una rama o sub-rama a un usuario."""
@@ -179,3 +215,17 @@ class DatabaseUser(DatabaseManager):
                 UPDATE users SET password_hash = ? WHERE id = ?
             ''', (password_hash, user_id))
             return cursor.rowcount > 0
+
+    def cleanup_duplicate_access(self):
+        """Limpiar registros duplicados de la tabla user_access."""
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                DELETE FROM user_access 
+                WHERE rowid NOT IN (
+                    SELECT MIN(rowid)
+                    FROM user_access
+                    GROUP BY user_id, branch_name, sub_branch_name
+                )
+            """)
+            return cursor.rowcount

@@ -53,12 +53,20 @@ def load_styles():
         print(f"Warning: Style file not found at {file_path}")
         return ""  # Return empty string if file not found
 
+# Add these imports at the top with other imports
+from src.api.server import APIServer
+from src.config.api import APIConfig
+
 class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
         self.setWindowTitle("ACRIL CAR NI")
         self.setStyleSheet(load_styles())
+        
+        # Initialize API Server
+        self.api_server = APIServer()
+        
         #--------------------------------------------------------------
         self.db_logs = DBLogs()
         self.logs_service = LogsServices(self.db_logs)
@@ -155,6 +163,10 @@ if __name__ == "__main__":
     app.setStyle(QStyleFactory.create("Fusion"))
     window = MainWindow()
     
+    # Start API server if enabled
+    if APIConfig.SERVER_ENABLED:
+        window.api_server.start()
+    
     # Register cleanup function for application exit
     def cleanup():
         if hasattr(window.auth_service, 'current_user') and window.auth_service.current_user:
@@ -162,6 +174,9 @@ if __name__ == "__main__":
                 window.auth_service.current_user.username, 
                 "Cierre de Sesión"
             )
+        # Stop API server if it was started
+        if APIConfig.SERVER_ENABLED:
+            window.api_server.stop()
     
     app.aboutToQuit.connect(cleanup)
     

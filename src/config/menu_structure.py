@@ -6,7 +6,7 @@ class MenuStructure:
                 'ACRIL CAR', 
                 'Cambiar Contraseña',
                 'Historial de Actividades',
-                'Sincronización de Datos'
+                "Servidor"
                 ],
             '2 - Administración de Usuarios': [
                 'Crear Usuario', 
